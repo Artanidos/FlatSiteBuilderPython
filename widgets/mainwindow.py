@@ -372,7 +372,7 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("Site has no pages or posts to build.")
         else:        
             gen = Generator()
-            gen.generateSite(self.site)
+            gen.generateSite(self, self.site)
             self.statusBar().showMessage(self.site.title + " has been generated")
             
     def editMenu(self, item):

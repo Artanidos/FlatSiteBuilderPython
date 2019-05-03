@@ -29,6 +29,9 @@ class Content:
     def __init__(self, type):
         self.content_type = type
         self.attributes = {}
+        self.keywords = ""
+        self.script = ""
+        self.excerpt = ""
 
     def setSource(self, source):
         self.source = source
@@ -51,6 +54,9 @@ class Content:
     def setKeywords(self, value):
         self.keywords = value
 
+    def setScript(self, value):
+        self.script = value
+
     def setDate(self, value):
         self.date = value
 
@@ -59,3 +65,7 @@ class Content:
 
     def contentType(self):
         return self.content_type
+
+    def url(self):
+        url = self.source
+        return url.replace(".xml", ".html")

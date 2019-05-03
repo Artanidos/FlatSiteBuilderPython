@@ -19,9 +19,12 @@
 #
 #############################################################################
 
-from PySide2.QtWidgets import QWizard, QWizardPage, QLabel, QLineEdit, QComboBox, QGridLayout, QVBoxLayout
+import os, datetime
+from lxml.etree import Element, CDATA, SubElement, ElementTree
+from PySide2.QtWidgets import QWizard, QWizardPage, QLabel, QLineEdit, QComboBox, QGridLayout, QVBoxLayout, QDialog
 from PySide2.QtCore import Signal, QDir
 from PySide2.QtGui import QPixmap
+
 
 class SiteWizard(QWizard):
     loadSite = Signal(object)
@@ -36,7 +39,61 @@ class SiteWizard(QWizard):
         self.setWindowTitle("Site Wizard")
 
     def accept(self):
-    	pass
+        siteName = self.field("siteName")
+        description = self.field("description")
+        copyright = self.field("copyright")
+        path = os.path.join(self.install_directory, "sources", siteName.lower())
+        os.mkdir(path)
+        os.mkdir(os.path.join(path, "pages"))
+        os.mkdir(os.path.join(path, "posts"))
+        os.mkdir(os.path.join(path, "content"))
+        os.mkdir(os.path.join(path, "includes"))
+        os.mkdir(os.path.join(path, "layouts"))
+        os.mkdir(os.path.join(path, "assets"))
+        os.mkdir(os.path.join(path, "assets", "css"))
+        os.mkdir(os.path.join(path, "assets", "fonts"))
+        os.mkdir(os.path.join(path, "assets", "js"))
+        os.mkdir(os.path.join(path, "assets", "images"))
+        
+        site = Element("Site")
+        site.attrib["theme"] = self.field("theme")
+        site.attrib["title"] = siteName
+        if description:
+            site.attrib["description"] = description
+        if copyright:
+            site.attrib["copyright"] = copyright
+        tree = ElementTree(site)
+        tree.write(os.path.join(path, "Site.xml"), encoding = "utf-8", method = "xml", xml_declaration = True)
+
+        menus = Element("Menus")
+        menu = SubElement(menus, "Menu")
+        menu.attrib["name"] = "default"
+        item = SubElement(menu, "Item")
+        item.attrib["title"] = "Index"
+        item.attrib["url"] = "index.html"
+        tree = ElementTree(menus)
+        tree.write(os.path.join(path, "Menus.xml"), encoding = "utf-8", method = "xml", xml_declaration = True)
+
+        page = Element("Content")
+        page.attrib["title"] = "Index"
+        page.attrib["menu"] = "default"
+        page.attrib["author"] = "admin"
+        page.attrib["layout"] = "default"
+        page.attrib["date"] = datetime.datetime.now().strftime("%d.%m.%Y")
+        section = SubElement(page, "Section")
+        row = SubElement(section, "Row")
+        column = SubElement(row, "Column")
+        column.attrib["span"] = "12"
+        text = SubElement(column, "Text")
+        text.text = CDATA("<h1>Welcome</h1>")
+        tree = ElementTree(page)
+        tree.write(os.path.join(path, "pages", "index.xml"), encoding = "utf-8", method = "xml", xml_declaration = True)
+
+        super().accept()
+
+        self.loadSite.emit(path + "/Site.xml")
+        self.buildSite.emit()
+
 
 class IntroPage(QWizardPage):
 
@@ -83,7 +140,7 @@ class SiteInfoPage(QWizardPage):
         self.theme = QComboBox()
         self.themeLabel.setBuddy(self.theme)
 
-        themesDir =  QDir(install_directory + "/themes")
+        themesDir =  QDir(os.path.join(install_directory, "themes"))
         for theme in themesDir.entryList(QDir.NoDotAndDotDot | QDir.Dirs):
             self.theme.addItem(theme)
 	    
@@ -109,9 +166,8 @@ class SiteInfoPage(QWizardPage):
         self.siteNameLineEdit.textChanged.connect(self.siteNameChanged)
 
     def siteNameChanged(self, name):
-        dir = QDir(self.install_directory + "/sources/" + name.toLower())
-        if dir.exists() and name:
-            self.warning.setText("WARNING<br/>A site with the name " + name.toLower() + " already exists.<br/>If you continue self site will be overridden.")
+        if os.path.isdir(os.path.join(self.install_directory, "sources", name.lower())):
+            self.warning.setText("WARNING<br/>A site with the name " + name.lower() + " already exists.<br/>If you continue self site will be overridden.")
         else:
             self.warning.setText("")
 
@@ -122,14 +178,9 @@ class ConclusionPage(QWizardPage):
         self.setTitle("Conclusion")
         self.setPixmap(QWizard.WatermarkPixmap, QPixmap("./images/wizard.png"))
 
-        label = QLabel()
-        label.setWordWrap(True)
+        self.label = QLabel("Click Finish to generate the site skeleton.")
+        self.label.setWordWrap(True)
 
         layout = QVBoxLayout()
-        layout.addWidget(label)
+        layout.addWidget(self.label)
         self.setLayout(layout)
-
-    def initializePage(self):
-        finishText = self.wizard().buttonText(QWizard.FinishButton)
-        finishText.remove('&')
-        label.setText("Click %1 to generate the site skeleton.").arg(finishText)

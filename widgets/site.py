@@ -48,7 +48,7 @@ class Site:
     def load(self):
         parser = make_parser()
         parser.setContentHandler(SiteHandler(self))
-        parser.parse(self.source_path + "/Site.xml")
+        parser.parse(os.path.join(self.source_path, "Site.xml"))
         self.win.statusBar().showMessage("Site has been loaded")
     
     def save(self):
@@ -65,7 +65,7 @@ class Site:
             site.attrib[att] = value
 
         tree = et.ElementTree(site)
-        tree.write(self.source_path + "/Site.xml", encoding = "utf-8", method = "xml", xml_declaration = True)
+        tree.write(os.path.join(self.source_path, "Site.xml"), encoding = "utf-8", method = "xml", xml_declaration = True)
         self.win.statusBar().showMessage("Site has been saved")
 
 
@@ -89,7 +89,7 @@ class Site:
                     for att, value in subitem.attributes.items():
                        si.attrib[att] = value
         tree = et.ElementTree(menus)
-        tree.write(self.source_path + "/Menus.xml", encoding = "utf-8", method = "xml", xml_declaration = True)                 
+        tree.write(os.path.join(self.source_path, "Menus.xml"), encoding = "utf-8", method = "xml", xml_declaration = True)                 
         self.win.statusBar().showMessage("Menus have been saved")
 
         
@@ -100,7 +100,7 @@ class Site:
         self.menus.clear()
         parser = make_parser()
         parser.setContentHandler(MenuHandler(self))
-        parser.parse(self.source_path + "/Menus.xml")        
+        parser.parse(os.path.join(self.source_path, "Menus.xml"))        
         self.win.statusBar().showMessage("Menus have been loaded")
 
     def removeMenu(self, menu):
@@ -150,21 +150,21 @@ class Site:
 
     def loadPages(self):
         self.pages.clear()
-        for r, d, files in os.walk(self.source_path + "/pages"):
-            for filename in files:  
+        for r, d, files in os.walk(os.path.join(self.source_path, "pages")):
+            for filename in files:
                 parser = make_parser()
                 parser.setContentHandler(ContentHandler(self, filename, ContentType.PAGE))
-                parser.parse(self.source_path + "/pages/" + filename)           
+                parser.parse(os.path.join(self.source_path, "pages", filename))           
 
         self.win.statusBar().showMessage("Pages have been loaded")
 
     def loadPosts(self):
         self.posts.clear()
-        for r, d, files in os.walk(self.source_path + "/posts"):
-            for filename in files:  
+        for r, d, files in os.walk(os.path.join(self.source_path, "posts")):
+            for filename in files:
                 parser = make_parser()
                 parser.setContentHandler(ContentHandler(self, filename, ContentType.POST))
-                parser.parse(self.source_path + "/posts/" + filename)           
+                parser.parse(os.path.join(self.source_path, "posts", filename))           
 
         self.win.statusBar().showMessage("Pages have been loaded")
         
@@ -196,14 +196,14 @@ class SiteHandler(handler.ContentHandler):
 
 class ContentHandler(handler.ContentHandler):
 
-    def __init__(self, site, filename, type):
+    def __init__(self, site, filename, t):
         self.site = site
         self.filename = filename
-        self.type = type
+        self.type = t
 
     def startElement(self, name, attrs):
         if name == "Content":
-            content = Content(type)
+            content = Content(self.type)
             content.setSource(self.filename)
             self.site.addPage(content)
             for att, value in attrs.items():
