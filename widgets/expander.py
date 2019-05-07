@@ -23,11 +23,12 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PySide2.QtCore import QParallelAnimationGroup, QPropertyAnimation, Qt, Property, Signal
 from PySide2.QtGui import QImage, QPalette, QPixmap, QColor
 
+
 class Expander(QWidget):
     expanded = Signal(object)
     clicked = Signal()
 
-    def __init__(self, header, normal_icon = "", hovered_icon = "", selected_icon = ""):
+    def __init__(self, header, normal_icon="", hovered_icon="", selected_icon=""):
         QWidget.__init__(self)
         self.is_expanded = False
         self.text = header
@@ -73,7 +74,7 @@ class Expander(QWidget):
         self.setLayout(vbox)
 
         self.hyper.linkActivated.connect(self.buttonClicked)
-       
+
         self.anim = QParallelAnimationGroup()
         self.height_anim = QPropertyAnimation(self.content, "maximumHeight".encode("utf-8"))
         self.color_anim = QPropertyAnimation(self, "color".encode("utf-8"))
@@ -81,7 +82,6 @@ class Expander(QWidget):
         self.color_anim.setDuration(200)
         self.anim.addAnimation(self.height_anim)
         self.anim.addAnimation(self.color_anim)
-
 
     def setExpanded(self, value):
         if value == self.is_expanded:
@@ -108,7 +108,6 @@ class Expander(QWidget):
             self.collapseContent()
         self.expanded.emit(self.is_expanded)
 
-
     def addLayout(self, layout):
         self.content.setLayout(layout)
 
@@ -116,7 +115,7 @@ class Expander(QWidget):
         pal = self.palette()
         pal.setColor(QPalette.Background, color)
         self.setPalette(pal)
-    
+
     def readCOLOR(self):
         return Qt.black
 
@@ -151,4 +150,3 @@ class Expander(QWidget):
         self.setExpanded(not self.is_expanded)
         if self.is_expanded:
             self.clicked.emit()
-    

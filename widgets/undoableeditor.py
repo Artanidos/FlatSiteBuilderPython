@@ -20,14 +20,14 @@
 
 from widgets.flatbutton import FlatButton
 from PySide2.QtWidgets import QWidget, QHBoxLayout, QLabel, QGridLayout, QUndoStack, QUndoCommand
-from PySide2.QtGui import QFont
 from PySide2.QtCore import QFileInfo, QDir, QFile
+
 
 class UndoableEditor(QWidget):
 
     def __init__(self):
         QWidget.__init__(self)
-        m_filename = "";
+        self.filename = ""
         self.undoStack = QUndoStack()
         self.undo = FlatButton("./images/undo_normal.png", "./images/undo_hover.png", "", "./images/undo_disabled.png")
         self.redo = FlatButton("./images/redo_normal.png", "./images/redo_hover.png", "", "./images/redo_disabled.png")
@@ -61,6 +61,7 @@ class UndoableEditor(QWidget):
         changeCommand = ChangeFileCommand(self, self.filename, text)
         self.undoStack.push(changeCommand)
 
+
 class ChangeFileCommand(QUndoCommand):
     fileVersionNumber = 0
 
@@ -74,8 +75,8 @@ class ChangeFileCommand(QUndoCommand):
         info = QFileInfo(filename)
         dir = info.dir().dirName()
         file = info.fileName()
-        self.undoFilename = QDir.tempPath() + "/FlatSiteBuilder/" + dir + "/" + file + "." + str(ChangeFileCommand.fileVersionNumber)  + ".undo"
-        self.redoFilename = QDir.tempPath() + "/FlatSiteBuilder/" + dir + "/" + file + "." + str(ChangeFileCommand.fileVersionNumber)  + ".redo"
+        self.undoFilename = QDir.tempPath() + "/FlatSiteBuilder/" + dir + "/" + file + "." + str(ChangeFileCommand.fileVersionNumber) + ".undo"
+        self.redoFilename = QDir.tempPath() + "/FlatSiteBuilder/" + dir + "/" + file + "." + str(ChangeFileCommand.fileVersionNumber) + ".redo"
 
     def undo(self):
         dest = QFile(self.filename)
@@ -83,7 +84,7 @@ class ChangeFileCommand(QUndoCommand):
             dest.remove()
         QFile.copy(self.undoFilename, self.filename)
         self.editor.load()
-    
+
     def redo(self):
         redo = QFile(self.redoFilename)
         if redo.exists():
@@ -96,6 +97,3 @@ class ChangeFileCommand(QUndoCommand):
             QFile.copy(self.filename, self.undoFilename)
             self.editor.save()
             QFile.copy(self.filename, self.redoFilename)
-        
-    
-

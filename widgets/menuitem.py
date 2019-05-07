@@ -18,6 +18,7 @@
 #
 #############################################################################
 
+
 class MenuItem:
 
     def __init__(self):
@@ -47,13 +48,12 @@ class MenuItem:
         self.isSubitem = sub
 
     def addMenuitem(self, item):
-        self.items.append(item) 
+        self.items.append(item)
         item.setParentItem(self)
 
     def removeMenuitem(self, item):
-        self.items.remove(item) 
+        self.items.remove(item)
         item.setParentItem(None)
 
     def setParentItem(self, parent):
         self.parentItem = parent
-    

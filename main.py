@@ -41,14 +41,14 @@ if __name__ == "__main__":
     app.setFont(font)
 
     p = app.palette()
-    p.setColor(QPalette.Window, QColor(53,53,53))
+    p.setColor(QPalette.Window, QColor(53, 53, 53))
     p.setColor(QPalette.WindowText, Qt.white)
     p.setColor(QPalette.Base, QColor(64, 66, 68))
-    p.setColor(QPalette.AlternateBase, QColor(53,53,53))
+    p.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
     p.setColor(QPalette.ToolTipBase, Qt.white)
     p.setColor(QPalette.ToolTipText, Qt.black)
     p.setColor(QPalette.Text, Qt.white)
-    p.setColor(QPalette.Button, QColor(53,53,53))
+    p.setColor(QPalette.Button, QColor(53, 53, 53))
     p.setColor(QPalette.ButtonText, Qt.white)
     p.setColor(QPalette.BrightText, Qt.red)
     p.setColor(QPalette.Highlight, QColor("#45bbe6"))
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     install_directory = settings.value("installDirectory")
     if not install_directory:
         dlg = InstallDialog()
-        dlg.exec()
+        dlg.exec_()
         install_directory = dlg.install_directory
         if not install_directory:
             sys.exit(-1)

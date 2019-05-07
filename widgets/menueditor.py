@@ -20,10 +20,12 @@
 
 from widgets.animateableeditor import AnimateableEditor
 from widgets.flatbutton import FlatButton
+from widgets.menuitem import MenuItem
 from widgets.imageselector import ImageSelector
-from PySide2.QtWidgets import QLabel, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLineEdit, QTreeWidgetItem, QPushButton, QTreeWidget, QHeaderView, QAbstractItemView
-from PySide2.QtCore import Signal, Qt
+from PySide2.QtWidgets import QFileDialog, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLineEdit, QTreeWidgetItem, QPushButton, QTreeWidget, QHeaderView, QAbstractItemView
+from PySide2.QtCore import Signal, Qt, QFileInfo, QFile
 from PySide2.QtGui import QImage
+
 
 class MenuEditorTableCellButtons(QWidget):
     deleteItem = Signal(object)
@@ -32,7 +34,7 @@ class MenuEditorTableCellButtons(QWidget):
     itemRight = Signal(object)
     itemUp = Signal(object)
     itemDown = Signal(object)
-    
+
     def __init__(self):
         QWidget.__init__(self)
         self.delete = FlatButton("./images/trash_normal.png", "./images/trash_hover.png")
@@ -74,37 +76,38 @@ class MenuEditorTableCellButtons(QWidget):
 
     def deleteItemClicked(self):
         self.deleteItem.emit(self.item)
-    
+
     def editItemClicked(self):
         self.editItem.emit(self.item)
-    
+
     def itemLeftClicked(self):
         self.itemLeft.emit(self.item)
-    
+
     def itemRightClicked(self):
         self.itemRight.emit(self.item)
-    
+
     def itemUpClicked(self):
         self.itemUp.emit(self.item)
-    
+
     def itemDownClicked(self):
         self.itemDown.emit(self.item)
-    
+
     def setEnableLeft(self, mode):
         self.left.setEnabled(mode)
-    
+
     def setEnableRight(self, mode):
         self.right.setEnabled(mode)
-    
+
     def setEnableUp(self, mode):
         self.up.setEnabled(mode)
-    
+
     def setEnableDown(self, mode):
         self.down.setEnabled(mode)
-    
+
+
 class MenuEditor(AnimateableEditor):
     contentChanged = Signal(object)
-    menuChanged =  Signal(str)
+    menuChanged = Signal(str)
 
     def __init__(self, win, menu, site):
         AnimateableEditor.__init__(self)
@@ -172,9 +175,9 @@ class MenuEditor(AnimateableEditor):
 
     def reloadMenu(self, menu):
         if not menu:
-            this.close.emit()
+            self.close.emit()
             return
-        
+
         self.menu = menu
         self.tree.clear()
 
@@ -182,7 +185,7 @@ class MenuEditor(AnimateableEditor):
         for i in range(0, len(self.menu.items)):
             item = self.menu.items[i]
             self.addTreeItem(item)
-        
+
         self.tree.expandAll()
         self.tree.sortItems(4, Qt.AscendingOrder)
         self.updateButtonStates()
@@ -204,8 +207,8 @@ class MenuEditor(AnimateableEditor):
             stwi.setFlags(stwi.flags() | Qt.ItemIsEditable)
             stwi.setText(0, sub.title())
             stwi.setText(1, sub.url())
-            stwi.setText(4, QString.number(i))
-            stwi.setData(0, Qt.UserRole, QVariant.fromValue(sub))
+            stwi.setText(4, str(i))
+            stwi.setData(0, Qt.UserRole, sub)
             twi.addChild(stwi)
             self.addTableCellButtons(sub, stwi)
 
@@ -249,38 +252,38 @@ class MenuEditor(AnimateableEditor):
         self.redo.setEnabled(self.undoStack.canRedo())
         self.undo.setToolTip("Undo " + self.undoStack.undoText())
         self.redo.setToolTip("Redo " + self.undoStack.redoText())
-    
+
     def canUndoChanged(self, can):
         self.undo.setEnabled(can)
-    
+
     def canRedoChanged(self, can):
         self.redo.setEnabled(can)
-    
+
     def undoTextChanged(self, text):
         self.undo.setToolTip("Undo " + text)
-    
+
     def redoTextChanged(self, text):
         self.redo.setToolTip("Redo " + text)
 
     def getUndoRedoText(self, item, action):
-        return "menuitem (" + item.title + ") from menu (" + self.menu.name + ") " + action;
-    
+        return "menuitem (" + item.title + ") from menu (" + self.menu.name + ") " + action
+
     def undoEdit(self):
         self.undoStack.undo()
-    
+
     def redoEdit(self):
         self.undoStack.redo()
-    
+
     def addButtonClicked(self):
         menuitem = MenuItem()
         self.menu.addMenuitem(menuitem)
         self.addTreeItem(menuitem)
-        self.menuChanged.emit(getUndoRedoText(menuitem, "added"))
+        self.menuChanged.emit(self.getUndoRedoText(menuitem, "added"))
 
         self.updateButtonStates()
-        item = self.tree.topLevelItem(getRow(menuitem))
+        item = self.tree.topLevelItem(self.getRow(menuitem))
         self.tree.editItem(item, 0)
-    
+
     def closeEditor(self):
         self.closes.emit()
 
@@ -288,9 +291,9 @@ class MenuEditor(AnimateableEditor):
         if self.menu.name != self.name.text:
             action = "menu name changed from \"" + self.menu.name + "\" to \"" + self.name.text + "\""
             self.menu.setName(self.name.text())
-            contentChanged.emit(self.menu)
+            self.contentChanged.emit(self.menu)
             self.menuChanged.emit(action)
-        
+
     def itemChanged(self, twi, column):
         action = ""
         item = twi.data(0, Qt.UserRole)
@@ -301,7 +304,7 @@ class MenuEditor(AnimateableEditor):
             item.setUrl(twi.text(1))
             action = "url changed"
         self.menuChanged.emit(self.getUndoRedoText(item, action))
-    
+
     def getRow(self, menuitem):
         for i in range(0, self.tree.topLevelItemCount()):
             item = self.tree.topLevelItem(i)
@@ -327,9 +330,9 @@ class MenuEditor(AnimateableEditor):
 
         self.updateButtonStates()
         self.menuChanged.emit(self.getUndoRedoText(menuitem, "deleted"))
-    
+
     def itemLeft(self, menuitem):
-        row = getRow(menuitem.parentItem())
+        row = self.getRow(menuitem.parentItem())
         parent = self.tree.topLevelItem(row)
         for i in range(parent.childCount()):
             child = parent.child(i)
@@ -341,10 +344,9 @@ class MenuEditor(AnimateableEditor):
                 parent.takeChild(i)
                 self.addTreeItem(menuitem)
                 break
-            
-        self.updateButtonStates()
-        self.menuChanged.emit(getUndoRedoText(menuitem, "changed to top item"))
 
+        self.updateButtonStates()
+        self.menuChanged.emit(self.getUndoRedoText(menuitem, "changed to top item"))
 
     def iconClicked(self, itemselector, button):
         mi = itemselector.item()
@@ -353,11 +355,11 @@ class MenuEditor(AnimateableEditor):
             fileName = ""
             dialog = QFileDialog()
             dialog.setFileMode(QFileDialog.AnyFile)
-            dialog.setNameFilter(tr("Images (*.png *.gif *.jpg)All (*)"))
-            dialog.setWindowTitle(tr("Load Image"))
+            dialog.setNameFilter("Images (*.png *.gif *.jpg)All (*)")
+            dialog.setWindowTitle("Load Image")
             dialog.setOption(QFileDialog.DontUseNativeDialog, True)
             dialog.setAcceptMode(QFileDialog.AcceptOpen)
-            if dialog.exec():
+            if dialog.exec_():
                 fileName = dialog.selectedFiles().first()
             del dialog
             if not fileName:
@@ -376,14 +378,14 @@ class MenuEditor(AnimateableEditor):
             mi.setIcon(path.mid(path.indexOf("assets/images/")))
             itemselector.setImage(QImage(path))
             action = "icon changed"
-        
+
         elif button == Qt.RightButton:
             action = "icon removed"
             mi.setIcon("")
             itemselector.setImage(QImage("./images/image_placeholder.png"))
-        
-        self.menuChanged.emit(getUndoRedoText(mi, action))
-    
+
+        self.menuChanged.emit(self.getUndoRedoText(mi, action))
+
     def updateButtonStates(self):
         for i in range(0, self.tree.topLevelItemCount()):
             twi = self.tree.topLevelItem(i)
@@ -397,6 +399,3 @@ class MenuEditor(AnimateableEditor):
                 stwi = twi.child(j)
                 stcb = self.tree.itemWidget(stwi, 3)
                 stcb.setEnableLeft(True)
-            
-        
-    

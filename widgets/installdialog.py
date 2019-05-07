@@ -23,6 +23,7 @@ from PySide2.QtWidgets import QLabel, QPushButton, QGridLayout, QHBoxLayout, QVB
 from PySide2.QtCore import QDir, Slot
 from PySide2.QtGui import QPixmap
 
+
 class InstallDialog(QDialog):
     def __init__(self):
         QDialog.__init__(self)
@@ -68,7 +69,7 @@ class InstallDialog(QDialog):
             rc = QMessageBox.question(self, "Warning", "The folder already exists and is not empty. Do you really want to use this directory to install FlatSiteBuilder?")
             if rc != QMessageBox.Yes:
                 return
-        
+
         self.install_directory = self.path.text()
         self.close()
 
@@ -85,9 +86,9 @@ class InstallDialog(QDialog):
         dialog.setOption(QFileDialog.DontUseNativeDialog, True)
         dialog.setAcceptMode(QFileDialog.AcceptOpen)
         dialog.setDirectory(self.path.text())
-        if dialog.exec():
+        if dialog.exec_():
             fileName = dialog.selectedFiles()[0]
-        
+
         if not fileName:
             return
         self.install_directory = fileName

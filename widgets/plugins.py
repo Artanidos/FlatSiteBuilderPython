@@ -18,30 +18,30 @@
 #
 #############################################################################
 
+
 class Plugins:
-	actualThemeEditorPlugin = None
-	actualPublishPlugin = None
-	themePlugins = {}
-	publishPlugins = {}
-	elementPlugins = {}
-	usedPlugins = []
+    actualThemeEditorPlugin = None
+    actualPublishPlugin = None
+    themePlugins = {}
+    publishPlugins = {}
+    elementPlugins = {}
+    usedPlugins = []
 
-	def __init__(self):
-		pass
+    def __init__(self):
+        pass
 
-	@staticmethod
-	def setActualThemeEditorPlugin(tep): 
-		actualThemeEditorPlugin = tep
+    @staticmethod
+    def setActualThemeEditorPlugin(tep):
+        Plugins.actualThemeEditorPlugin = tep
 
-	@staticmethod
-	def themePluginNames():
-		return Plugins.themePlugins.keys()
+    @staticmethod
+    def themePluginNames():
+        return Plugins.themePlugins.keys()
 
-	@staticmethod
-	def publishPluginNames():
-		return Plugins.publishPlugins.keys()
+    @staticmethod
+    def publishPluginNames():
+        return Plugins.publishPlugins.keys()
 
-	@staticmethod
-	def setActualPublishPlugin(ap):
-		actualPublishPlugin = ap
-    
+    @staticmethod
+    def setActualPublishPlugin(ap):
+        Plugins.actualPublishPlugin = ap

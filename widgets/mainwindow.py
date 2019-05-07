@@ -28,13 +28,16 @@ from widgets.contentlist import ContentList
 from widgets.menulist import MenuList
 from widgets.menueditor import MenuEditor
 from widgets.content import ContentType
+from widgets.webview import WebView
+from widgets.webpage import WebPage
 from widgets.plugins import Plugins
 from widgets.sitewizard import SiteWizard
 from widgets.contenteditor import ContentEditor
 from widgets.themechooser import ThemeChooser
 from widgets.sitesettingseditor import SiteSettingsEditor
-from PySide2.QtWidgets import QLabel, QWizard, QPushButton, QVBoxLayout, QMainWindow, QWidget, QScrollArea, QDockWidget, QUndoStack
-from PySide2.QtCore import Slot, Signal, Qt, QMetaObject, QRect, QCoreApplication, QDir, QSettings, QByteArray, QEvent, QPoint, QAbstractAnimation, QPropertyAnimation
+from PySide2.QtWidgets import QVBoxLayout, QMainWindow, QWidget, QScrollArea, QDockWidget, QUndoStack, QApplication
+from PySide2.QtCore import Signal, Qt, QUrl, QRect, QCoreApplication, QDir, QSettings, QByteArray, QEvent, QPoint, QAbstractAnimation, QPropertyAnimation
+
 
 class MainWindow(QMainWindow):
     siteLoaded = Signal(object)
@@ -66,7 +69,7 @@ class MainWindow(QMainWindow):
             if site.exists():
                 gen = Generator()
                 gen.generateSite(self, self.site)
-        
+
         self.dashboard.setExpanded(True)
         self.showDashboard()
         self.statusBar().showMessage("Ready")
@@ -100,7 +103,7 @@ class MainWindow(QMainWindow):
         content_box.addWidget(pages_button)
         content_box.addWidget(posts_button)
         self.content.addLayout(content_box)
-        
+
         app_box = QVBoxLayout()
         themes_button = HyperLink("Themes")
         menus_button = HyperLink("Menus")
@@ -160,7 +163,7 @@ class MainWindow(QMainWindow):
             self.method_after_animation = "showDashboard"
             self.editor.closeEditor()
             return
-        
+
         db = Dashboard(self.site, self.default_path)
         db.loadSite.connect(self.loadProject)
         db.previewSite.connect(self.previewSite)
@@ -187,19 +190,19 @@ class MainWindow(QMainWindow):
         event.accept()
 
     def writeSettings(self):
-        settings = QSettings(QSettings.IniFormat, QSettings.UserScope,  QCoreApplication.organizationName(), QCoreApplication.applicationName())
+        settings = QSettings(QSettings.IniFormat, QSettings.UserScope, QCoreApplication.organizationName(), QCoreApplication.applicationName())
         settings.setValue("geometry", self.saveGeometry())
         settings.setValue("state", self.saveState())
         if self.site:
             settings.setValue("lastSite", self.site.source_path)
 
     def readSettings(self):
-        settings = QSettings(QSettings.IniFormat, QSettings.UserScope,  QCoreApplication.organizationName(), QCoreApplication.applicationName())
+        settings = QSettings(QSettings.IniFormat, QSettings.UserScope, QCoreApplication.organizationName(), QCoreApplication.applicationName())
         geometry = settings.value("geometry", QByteArray())
         if geometry.isEmpty():
             availableGeometry = QApplication.desktop().availableGeometry(self)
             self.resize(availableGeometry.width() / 3, availableGeometry.height() / 2)
-            self.move((availableGeometry.width() - width()) / 2, (availableGeometry.height() - height()) / 2)
+            self.move((availableGeometry.width() - self.width() / 2, (availableGeometry.height() - self.height()) / 2))
         else:
             self.restoreGeometry(geometry)
             self.restoreState(settings.value("state"))
@@ -216,18 +219,18 @@ class MainWindow(QMainWindow):
         for key in Plugins.themePluginNames():
             tei = Plugins.getThemePlugin(key)
             if tei:
-                if tei.themeName() == self.site.theme():        
+                if tei.themeName() == self.site.theme():
                     Plugins.setActualThemeEditorPlugin(tei.className())
-                    self.themeSettingsButton.setVisible(true)
+                    self.themeSettingsButton.setVisible(True)
                     break
-        
+
         if not self.site.publisher:
             if len(Plugins.publishPluginNames()) > 0:
                 self.site.setPublisher(Plugins.publishPluginNames[0])
-        
+
         Plugins.setActualPublishPlugin(self.site.publisher)
         self.siteLoaded.emit(self.site)
-    
+
     def dashboardExpanded(self, value):
         if value:
             self.content.setExpanded(False)
@@ -251,46 +254,46 @@ class MainWindow(QMainWindow):
             self.dashboard.setExpanded(False)
             self.content.setExpanded(False)
             self.appearance.setExpanded(False)
-        
+
     def showMenus(self):
         if self.editor:
             self.method_after_animation = "showMenus"
             self.editor.closeEditor()
             return
-        
+
         edit = MenuList(self, self.site)
         edit.editContent.connect(self.editMenu)
         self.setCentralWidget(edit)
-    
+
     def showPages(self):
         if self.editor:
             self.method_after_animation = "showPages"
             self.editor.closeEditor()
             return
-        
+
         list = ContentList(self.site, ContentType.PAGE)
         list.editContent.connect(self.editContent)
         self.setCentralWidget(list)
-    
+
     def showPosts(self):
         if self.editor:
             self.method_after_animation = "showPosts"
             self.editor.closeEditor()
             return
-        
+
         list = ContentList(self.site, ContentType.POST)
         list.editContent.connect(self.editContent)
         self.setCentralWidget(list)
-    
+
     def showThemes(self):
         if self.editor:
             self.method_after_animation = "showThemes"
             self.editor.closeEditor()
             return
-        
+
         tc = ThemeChooser(self, self.site)
         self.setCentralWidget(tc)
-    
+
     def showThemesSettings(self):
         tei = Plugins.getThemePlugin(Plugins.actualThemeEditorPlugin())
         if tei:
@@ -298,35 +301,35 @@ class MainWindow(QMainWindow):
                 self.method_after_animation = "showThemesSettings"
                 self.editor.closeEditor()
                 return
-            
+
             path = self.site.sourcePath()
             tei.setWindow(self)
             tei.setSourcePath(path)
             self.setCentralWidget(tei)
         else:
             self.statusBar().showMessage("Unable to load plugin " + Plugins.actualThemeEditorPlugin())
-        
+
     def showSettings(self):
         if self.editor:
             self.method_after_animation = "showSettings"
             self.editor.closeEditor()
             return
-        
+
         sse = SiteSettingsEditor(self, self.site)
         self.setCentralWidget(sse)
 
     def showMenu(self):
         self.navigationdock.setVisible(True)
 
-    def dockVisibilityChanged(self, visible):    
+    def dockVisibilityChanged(self, visible):
         self.showDock.setVisible(not visible)
-    
+
     def previewSite(self, content):
         if self.editor and content:
             self.contentAfterAnimation = content
             self.editor.closeEditor()
             return
-        
+
         dir = self.install_directory + "/sites"
         path = QDir(dir + "/" + self.site.title())
         if not content:
@@ -338,7 +341,7 @@ class MainWindow(QMainWindow):
                         break
             elif self.site.posts().count() > 0:
                 content = self.site.posts()[0]
-        
+
         if content:
             file = content.url()
 
@@ -359,9 +362,9 @@ class MainWindow(QMainWindow):
         if pi:
             self.setCentralWidget(pi)
             pi.setSitePath(self.site.deployPath())
-        
+
     def createSite(self):
-        wiz = SiteWizard(self.install_directory, parent = self)
+        wiz = SiteWizard(self.install_directory, parent=self)
         wiz.loadSite.connect(self.loadProject)
         wiz.buildSite.connect(self.buildSite)
         wiz.show()
@@ -370,11 +373,11 @@ class MainWindow(QMainWindow):
         self.site.loadMenus()
         if len(self.site.pages) == 0 and len(self.site.posts) == 0:
             self.statusBar().showMessage("Site has no pages or posts to build.")
-        else:        
+        else:
             gen = Generator()
             gen.generateSite(self, self.site)
             self.statusBar().showMessage(self.site.title + " has been generated")
-            
+
     def editMenu(self, item):
         menu = item.data(Qt.UserRole)
         me = MenuEditor(self, menu, self.site)
@@ -383,7 +386,7 @@ class MainWindow(QMainWindow):
         if list:
             list.registerMenuEditor(me)
             list.editedItemChanged.connect(self.editedItemChanged)
-        
+
         self.editor.closes.connect(self.editorClosed)
         self.editor.contentChanged.connect(self.menuChanged)
         self.animate(item)
@@ -395,7 +398,7 @@ class MainWindow(QMainWindow):
         self.editor.closes.connect(self.editorClosed)
         self.animate(item)
 
-    def animate(self, item):   
+    def animate(self, item):
         panel = self.centralWidget()
         self.list = item.tableWidget()
         self.row = item.row()
@@ -403,7 +406,7 @@ class MainWindow(QMainWindow):
         # create a cell widget to get the right position in the table
         self.cellWidget = QWidget()
         self.list.setCellWidget(self.row, 1, self.cellWidget)
-        pos = self.cellWidget.mapTo(panel, QPoint(0,0))
+        pos = self.cellWidget.mapTo(panel, QPoint(0, 0))
 
         self.editor.setParent(panel)
         self.editor.move(pos)
@@ -415,8 +418,8 @@ class MainWindow(QMainWindow):
         self.animation.setStartValue(QRect(pos.x(), pos.y(), self.cellWidget.size().width(), self.cellWidget.size().height()))
         self.animation.setEndValue(QRect(0, 0, panel.size().width(), panel.size().height()))
         self.animation.start()
-    
-    def eventFilter(self, watched, event):    
+
+    def eventFilter(self, watched, event):
         if watched == self and event.type() == QEvent.Resize and self.editor:
             w = self.centralWidget()
             if w:
@@ -424,13 +427,13 @@ class MainWindow(QMainWindow):
         return False
 
     def editorClosed(self):
-        pos = self.cellWidget.mapTo(self.centralWidget(), QPoint(0,0))
+        pos = self.cellWidget.mapTo(self.centralWidget(), QPoint(0, 0))
         # correct end values in case of resizing the window
         self.animation.setStartValue(QRect(pos.x(), pos.y(), self.cellWidget.size().width(), self.cellWidget.size().height()))
         self.animation.finished.connect(self.animationFineshedZoomOut)
         self.animation.setDirection(QAbstractAnimation.Backward)
         self.animation.start()
-    
+
     def animationFineshedZoomOut(self):
         self.list.removeCellWidget(self.row, 1)
         del self.animation
@@ -459,18 +462,18 @@ class MainWindow(QMainWindow):
             self.showPages()
         elif self.method_after_animation == "showPosts":
             self.showPosts()
-                
+
         if self.content_after_animation:
-            previewSite(self.content_after_animation)
+            self.previewSite(self.content_after_animation)
             self.content_after_animation = None
-        
+
     def contentChanged(self, content):
         self.list.item(self.row, 1).setText(content.title())
         self.list.item(self.row, 2).setText(content.source())
         self.list.item(self.row, 3).setText(content.layout())
         self.list.item(self.row, 4).setText(content.author())
         self.list.item(self.row, 5).setText(content.date().toString("dd.MM.yyyy"))
-    
+
     def menuChanged(self, menu):
         self.list.item(self.row, 1).setText(menu.name())
 
@@ -480,4 +483,3 @@ class MainWindow(QMainWindow):
         self.row = item.row()
         self.cellWidget = QWidget()
         self.list.setCellWidget(self.row, 1, self.cellWidget)
-

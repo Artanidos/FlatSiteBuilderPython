@@ -18,13 +18,15 @@
 #
 #############################################################################
 
-import os, datetime
+import os
+import datetime
 from widgets.content import ContentType, Content
 from widgets.menu import Menu
 from widgets.menuitem import MenuItem
 from xml.sax import make_parser, handler
 from xml.etree import ElementTree as et
 from PySide2.QtCore import QFileInfo
+
 
 class Site:
 
@@ -50,7 +52,7 @@ class Site:
         parser.setContentHandler(SiteHandler(self))
         parser.parse(os.path.join(self.source_path, "Site.xml"))
         self.win.statusBar().showMessage("Site has been loaded")
-    
+
     def save(self):
         site = et.Element("Site")
         site.attrib["theme"] = self.theme
@@ -68,7 +70,6 @@ class Site:
         tree.write(os.path.join(self.source_path, "Site.xml"), encoding = "utf-8", method = "xml", xml_declaration = True)
         self.win.statusBar().showMessage("Site has been saved")
 
-
     def saveMenus(self):
         menus = et.Element("Menus")
         for menu in self.menus:
@@ -77,7 +78,7 @@ class Site:
             for item in menu.items:
                 i = et.SubElement(m, "Item")
                 i.attrib["title"] = item.title
-                i.attrib["url"] = item.url 
+                i.attrib["url"] = item.url
                 i.attrib["icon"] = item.icon
                 for att, value in item.attributes.items():
                     i.attrib[att] = value
@@ -87,25 +88,24 @@ class Site:
                     si.attrib["url"] = si.url
                     si.attrib["icon"] = si.icon
                     for att, value in subitem.attributes.items():
-                       si.attrib[att] = value
+                        si.attrib[att] = value
         tree = et.ElementTree(menus)
-        tree.write(os.path.join(self.source_path, "Menus.xml"), encoding = "utf-8", method = "xml", xml_declaration = True)                 
+        tree.write(os.path.join(self.source_path, "Menus.xml"), encoding = "utf-8", method = "xml", xml_declaration = True)
         self.win.statusBar().showMessage("Menus have been saved")
 
-        
     def addMenu(self, menu):
         self.menus.append(menu)
 
-    def loadMenus(self):    
+    def loadMenus(self):
         self.menus.clear()
         parser = make_parser()
         parser.setContentHandler(MenuHandler(self))
-        parser.parse(os.path.join(self.source_path, "Menus.xml"))        
+        parser.parse(os.path.join(self.source_path, "Menus.xml"))
         self.win.statusBar().showMessage("Menus have been loaded")
 
     def removeMenu(self, menu):
         self.menus.remove(menu)
-    
+
     def publisher(self):
         return self.publisher
 
@@ -154,7 +154,7 @@ class Site:
             for filename in files:
                 parser = make_parser()
                 parser.setContentHandler(ContentHandler(self, filename, ContentType.PAGE))
-                parser.parse(os.path.join(self.source_path, "pages", filename))           
+                parser.parse(os.path.join(self.source_path, "pages", filename))
 
         self.win.statusBar().showMessage("Pages have been loaded")
 
@@ -164,10 +164,10 @@ class Site:
             for filename in files:
                 parser = make_parser()
                 parser.setContentHandler(ContentHandler(self, filename, ContentType.POST))
-                parser.parse(os.path.join(self.source_path, "posts", filename))           
+                parser.parse(os.path.join(self.source_path, "posts", filename))
 
         self.win.statusBar().showMessage("Pages have been loaded")
-        
+
 
 class SiteHandler(handler.ContentHandler):
     def __init__(self, site):
@@ -223,7 +223,7 @@ class ContentHandler(handler.ContentHandler):
                     content.setDate(datetime.datetime.strptime(value, "%d.%m.%Y"))
                 else:
                     content.addAttribute(att, value)
-            
+
 
 class MenuHandler(handler.ContentHandler):
     def __init__(self, site):
@@ -241,7 +241,7 @@ class MenuHandler(handler.ContentHandler):
             self.current_menu.setId(self.id)
             self.current_menu.setName(attrs["name"])
         elif name == "Item":
-            if self.current_item: # sub menu item
+            if self.current_item:  # sub menu item
                 tmp_item = MenuItem()
                 self.current_item.addMenuItem(tmp_item)
                 self.current_item = tmp_item
@@ -254,12 +254,11 @@ class MenuHandler(handler.ContentHandler):
                     self.current_item.setUrl(value)
                 elif att == "icon":
                     self.current_item.setIcon(value)
-                else: # set additional html attributes like class="scrollTo"
+                else:  # set additional html attributes like class="scrollTo"
                     self.current_item.addAttribute(att, value)
         else:
             print("Unknown tag name in MenuHandler:", name)
-    
-                    
+
     def endElement(self, name):
         if name == "Item":
             self.current_menu.addMenuItem(self.current_item)
@@ -268,13 +267,11 @@ class MenuHandler(handler.ContentHandler):
             self.site.addMenu(self.current_menu)
             self.current_menu = None
 
-                                
-                                
-        #                            if(menu.name() == "Item")                                    
+        #                            if(menu.name() == "Item")
         #                                MenuItem *subitem = MenuItem()
         #                                subitem.setSubitem(True)
         #                                foreach(QXmlStreamAttribute att, menu.attributes())
-        #                                
+        #
         #                                    QString attName = att.name().toString()
         #                                    QString value = att.value().toString()
         #                                    if(attName == "title")

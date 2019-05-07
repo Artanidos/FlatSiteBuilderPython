@@ -22,6 +22,7 @@ from PySide2.QtWidgets import QWidget
 from PySide2.QtGui import QPainter
 from PySide2.QtCore import Signal, Qt
 
+
 class ImageSelector(QWidget):
     clickedSelector = Signal(object, int)
     clicked = Signal()
@@ -38,14 +39,13 @@ class ImageSelector(QWidget):
 
     def mousePressEvent(self, event):
         event.accept()
-    
+
     def mouseReleaseEvent(self, event):
         event.accept()
         if self.item:
-            clickedSelector.emit(self, event.button())
+            self.clickedSelector.emit(self, event.button())
         else:
-            clicked.emit()
-    
+            self.clicked.emit()
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -56,4 +56,3 @@ class ImageSelector(QWidget):
         x = (event.rect().size().width() - scaledImage.size().width()) / 2.0
         y = (event.rect().size().height() - scaledImage.size().height()) / 2.0
         painter.drawImage(x, y, scaledImage)
-    

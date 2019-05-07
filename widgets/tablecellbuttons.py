@@ -22,6 +22,7 @@ from widgets.flatbutton import FlatButton
 from PySide2.QtWidgets import QWidget, QHBoxLayout
 from PySide2.QtCore import Signal
 
+
 class TableCellButtons(QWidget):
     deleteItem = Signal(object)
     editItem = Signal(object)

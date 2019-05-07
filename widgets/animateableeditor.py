@@ -21,6 +21,7 @@
 from PySide2.QtWidgets import QWidget
 from PySide2.QtCore import Signal, Property
 
+
 class AnimateableEditor(QWidget):
     closes = Signal()
 
@@ -29,7 +30,7 @@ class AnimateableEditor(QWidget):
 
     def readX(self):
         return super.x()
-    
+
     def setX(self, value):
         self.move(value, super.y())
 
@@ -48,12 +49,10 @@ class AnimateableEditor(QWidget):
     def readHeight(self):
         return super.height()
 
-    def setHeight(slef, value):
+    def setHeight(self, value):
         self.resize(super.width(), value)
-    
+
     x = Property(int, readX, setX)
     y = Property(int, readY, setY)
     width = Property(int, readWidth, setWidth)
     height = Property(int, readHeight, setHeight)
-    
-    

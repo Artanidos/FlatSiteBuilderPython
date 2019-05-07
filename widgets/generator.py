@@ -23,14 +23,16 @@ from django.template import Context, Engine
 from django.utils.safestring import mark_safe
 from xml.sax import make_parser, handler
 from widgets.content import ContentType
-import os, shutil
+import os
+import shutil
+
 
 class Generator(handler.ContentHandler):
     install_directory = ""
-    
+
     def __init__(self):
         self.content = ""
-        
+
     @staticmethod
     def sitesPath():
         return os.path.join(Generator.install_directory, "sites")
@@ -39,7 +41,7 @@ class Generator(handler.ContentHandler):
     def themesPath():
         return os.path.join(Generator.install_directory, "themes")
 
-    def generateSite(self, win, site, content_to_build = None):
+    def generateSite(self, win, site, content_to_build=None):
         self.site = site
         site_dir = os.path.join(Generator.install_directory, "sites", site.title)
         if not content_to_build:
@@ -51,7 +53,7 @@ class Generator(handler.ContentHandler):
                 for d in dirs:
                     if d != ".git":
                         shutil.rmtree(os.path.join(site_dir, d))
-        
+
         pages = []
         posts = []
         menus = {}
@@ -70,9 +72,9 @@ class Generator(handler.ContentHandler):
 
             for att, value in content.attributes.items():
                 cm[att] = value
-            
+
             pages.append(cm)
-        
+
         for content in site.posts:
             cm = {}
             cm["author"] = content.author
@@ -85,13 +87,12 @@ class Generator(handler.ContentHandler):
             cm["url"] = content.url
             cm["keywords"] = content.keywords
             cm["script"] = content.script
-            
+
             for att, value in content.attributes.items():
                 cm[att] = value
 
             posts.append(cm)
-        
-        
+
         for menu in site.menus:
             items = []
             for item in menu.items:
@@ -104,7 +105,7 @@ class Generator(handler.ContentHandler):
                     if attributes:
                         attributes += " "
                     attributes += att + "=\"" + value + "\""
-                
+
                 menuitem["attributes"] = attributes
                 subitems = {}
                 for subitem in item.items:
@@ -116,20 +117,18 @@ class Generator(handler.ContentHandler):
                     for att, value in subitem.attributes.items():
                         if attributes:
                             attributes += " "
-                        attributes += attName + "=\"" + subitem.attributes().value(attName) + "\""
-                    
+                        attributes += att + "=\"" + subitem.attributes().value(att) + "\""
+
                     submenuitem["attributes"] = attributes
                     subitems.append(submenuitem)
-                
+
                 menuitem["items"] = subitems
                 menuitem["hasItems"] = len(subitems) > 0
                 items.append(menuitem)
-            
+
             menus[menu.name] = items
-        
 
         #qStableSort(posts.begin(), posts.end(), postLaterThan)
-
 
         sitevars = {}
         sitevars["title"] = site.title
@@ -139,19 +138,16 @@ class Generator(handler.ContentHandler):
         sitevars["source"] = site.source_path
         sitevars["keywords"] = site.keywords
         sitevars["author"] = site.author
-        sitevars["pages"] = pages;
-        sitevars["posts"] = posts;
+        sitevars["pages"] = pages
+        sitevars["posts"] = posts
 
         for att, value in site.attributes.items():
             sitevars[att] = value
-        
         #tei = Plugins.getThemePlugin(Plugins.actualThemeEditorPlugin)
         #if tei:
         #    tei.setWindow(win)
         #    tei.setSourcePath(site.source_path)
         #    themevars = tei.themeVars()
-    
-        
 
         context = Context()
         context["site"] = sitevars
@@ -160,9 +156,9 @@ class Generator(handler.ContentHandler):
         copy_assets = False
         if not os.path.exists(site_dir):
             os.mkdir(site_dir)
-            copyAssets = True
-        
-        if not content_to_build or copyAssets:
+            copy_assets = True
+
+        if not content_to_build or copy_assets:
             # first copy assets from site, they will not be overridden by theme assets
             self.copytree(os.path.join(site.source_path, "assets"), os.path.join(Generator.install_directory, "sites", site.title, "assets"))
             self.copytree(os.path.join(site.source_path, "content"), os.path.join(Generator.install_directory, "sites", site.title))
@@ -182,9 +178,9 @@ class Generator(handler.ContentHandler):
             os.path.join(Generator.install_directory, "themes", self.site.theme, "layouts"),
             os.path.join(Generator.install_directory, "themes", self.site.theme, "includes")
         ]
-        eng = Engine(dirs = dirs, debug = True)
+        eng = Engine(dirs=dirs, debug=True)
         cm = {}
-        
+
         if content.content_type == ContentType.PAGE:
             subdir = "pages"
             cm["author"] = content.author
@@ -230,22 +226,21 @@ class Generator(handler.ContentHandler):
 
         layout = content.layout
         if not layout:
-            layout = "default";
+            layout = "default"
         layout = layout + ".html"
 
         context["page"] = cm
         context["content"] = mark_safe(self.content)
 
         outputfile = os.path.join(Generator.install_directory, "sites", self.site.title, content.url())
-        
+
         try:
             with open(outputfile, 'w') as f:
-                f.write(eng.render_to_string(layout, context = context))
+                f.write(eng.render_to_string(layout, context=context))
             print("Created file " + outputfile)
         except:
-            msg = "Generate content failed: Unable to create file " +  outputfile
+            msg = "Generate content failed: Unable to create file " + outputfile
             print(msg)
-        
 
     def copytree(self, src, dst):
         names = os.listdir(src)
@@ -259,12 +254,9 @@ class Generator(handler.ContentHandler):
             else:
                 shutil.copy2(srcname, dstname)
 
-
     def startElement(self, name, attrs):
         if name == "Content":
             pass
         elif name == "Section":
-            self.content += "<h2>Hello world</h2>" #todo SectionPropertyEditor.getHtml(&xml, m_site->sourcePath()
-
-
-            
+            self.content += "<h2>Hello world</h2>"
+            #todo SectionPropertyEditor.getHtml(&xml, m_site->sourcePath()

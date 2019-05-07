@@ -20,12 +20,13 @@
 
 from enum import Enum
 
+
 class ContentType(Enum):
-	PAGE = 1
-	POST = 2
+    PAGE = 1
+    POST = 2
+
 
 class Content:
-
     def __init__(self, type):
         self.content_type = type
         self.attributes = {}

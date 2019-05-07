@@ -24,6 +24,7 @@ from PySide2.QtGui import QFont, QDesktopServices
 from PySide2.QtCore import QUrl, Qt, Slot, Signal
 from PySide2.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 
+
 class Dashboard(QWidget):
     loadSite = Signal(object)
     createSite = Signal()
@@ -95,7 +96,7 @@ class Dashboard(QWidget):
         self.publish_button.clicked.connect(self.publishClicked)
         self.preview_button.clicked.connect(self.previewClicked)
         self.build_button.clicked.connect(self.buildClicked)
-        
+
         manager = QNetworkAccessManager(self)
         manager.finished.connect(self.fileIsReady)
         manager.get(QNetworkRequest(QUrl("https://artanidos.github.io/FlatSiteBuilder/news.html")))
@@ -119,7 +120,7 @@ class Dashboard(QWidget):
         dialog.setOption(QFileDialog.DontUseNativeDialog, True)
         dialog.setAcceptMode(QFileDialog.AcceptOpen)
         dialog.setDirectory(self.default_path)
-        if dialog.exec():
+        if dialog.exec_():
             fileName = dialog.selectedFiles()[0]
         del dialog
         if not fileName:

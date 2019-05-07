@@ -23,7 +23,8 @@ from widgets.flatbutton import FlatButton
 from widgets.animateableeditor import AnimateableEditor
 from widgets.content import ContentType
 from PySide2.QtWidgets import QUndoStack, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
-from PySide2.QtCore import Qt, Property
+from PySide2.QtCore import Qt
+
 
 class ContentEditor(AnimateableEditor):
 
@@ -65,23 +66,15 @@ class ContentEditor(AnimateableEditor):
         self.layouts.setMaximumWidth(100)
 
         #foreach(Menu *menu, self.site.menus())
-        
         #    self.menus.addItem(menu.name())
-        
-
         #QDir layouts(self.site.sourcePath() + "/layouts")
         #foreach(QString file, layouts.entryList(QDir.Files))
-        
         #    self.layouts.addItem(file.mid(0, file.indexOf(".html")))
-        
-
         #QDir themelayouts(Generator.themesPath() + "/" + self.site.theme() + "/layouts")
         #foreach(QString file, themelayouts.entryList(QDir.Files))
-        
         #    QString layout = file.mid(0, file.indexOf(".html"))
         #    if(self.layouts.findText(layout) < 0)
         #        self.layouts.addItem(layout)
-        
 
         self.close = FlatButton("./images/close_normal.png", "./images/close_hover.png")
         self.close.setToolTip("Close Content Editor")
@@ -133,7 +126,7 @@ class ContentEditor(AnimateableEditor):
         else:
             self.previewLink.setText("view page")
             self.filename = self.site.source_path + "/pages/" + content.source
-            
+
         self.load()
 
         self.close.clicked.connect(self.closeEditor)
@@ -155,7 +148,6 @@ class ContentEditor(AnimateableEditor):
         #connect(self.undoStack, SIGNAL(undoTextChanged(QString)), self, SLOT(undoTextChanged(QString)))
         #connect(self.undoStack, SIGNAL(redoTextChanged(QString)), self, SLOT(redoTextChanged(QString)))
         #connect(self.script, SIGNAL(clicked()), self, SLOT(script()))
-
 
     def load(self):
         pass

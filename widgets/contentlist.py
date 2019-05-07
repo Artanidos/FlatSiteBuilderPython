@@ -24,6 +24,7 @@ from widgets.tablecellbuttons import TableCellButtons
 from PySide2.QtWidgets import QWidget, QUndoStack, QTableWidgetItem, QVBoxLayout, QHBoxLayout, QGridLayout, QPushButton, QLabel, QTableWidget, QAbstractItemView, QHeaderView
 from PySide2.QtCore import Signal, Qt, QFileInfo
 
+
 class ContentList(QWidget):
     editContent = Signal(object)
 
@@ -66,9 +67,9 @@ class ContentList(QWidget):
         self.list.verticalHeader().hide()
         self.list.setSelectionMode(QAbstractItemView.SingleSelection)
         self.list.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.list.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch )
+        self.list.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.list.setToolTip("Double click to edit item")
-        labels =  ["", "Name", "Source", "Layout", "Author", "Date"]
+        labels = ["", "Name", "Source", "Layout", "Author", "Date"]
         self.list.setHorizontalHeaderLabels(labels)
 
         self.reload()
@@ -109,7 +110,7 @@ class ContentList(QWidget):
                     contentToEdit = content
                     row = self.list.rowCount()
                 self.addListItem(content)
-        
+
         if contentToEdit:
             self.addedContentName = ""
             self.list.selectRow(row)
@@ -147,30 +148,29 @@ class ContentList(QWidget):
 
     def canUndoChanged(self, can):
         self.undo.setEnabled(can)
-    
+
     def canRedoChanged(self, can):
         self.redo.setEnabled(can)
-    
+
     def undoTextChanged(self, text):
         self.undo.setToolTip("Undo " + text)
-    
+
     def redoTextChanged(self, text):
         self.redo.setToolTip("Redo " + text)
-    
+
     def doundo(self):
         self.undoStack.undo()
-    
+
     def doredo(self):
         self.undoStack.redo()
-    
+
     def buttonClicked(self):
         self.addedContentName = self.site.createTemporaryContent(self.type)
         info = QFileInfo(self.addedContentName)
-        self.addedContentName =  info.fileName()
+        self.addedContentName = info.fileName()
         reload()
 
     def tableDoubleClicked(self, r, i):
         item = self.list.item(r, 1)
         self.undoStack.clear()
         self.editContent.emit(item)
-    

@@ -24,6 +24,7 @@ from widgets.plugins import Plugins
 from widgets.generator import Generator
 from PySide2.QtWidgets import QLineEdit, QComboBox, QVBoxLayout, QLabel
 
+
 class SiteSettingsEditor(UndoableEditor):
     def __init__(self, win, site):
         UndoableEditor.__init__(self)
@@ -43,7 +44,6 @@ class SiteSettingsEditor(UndoableEditor):
             pi = Plugins.getPublishPlugin(key)
             if pi:
                 self.publisher.addItem(pi.displayName(), key)
-        
 
         vbox = QVBoxLayout()
         vbox.addStretch()
@@ -106,24 +106,23 @@ class SiteSettingsEditor(UndoableEditor):
     def publisherChanged(self, publisher):
         if self.site.publisher != publisher:
             self.contentChanged("publisher changed")
-    
+
     def titleChanged(self):
         if self.site.title != self.title.text():
             self.contentChanged("title changed")
-    
+
     def authorChanged(self):
         if self.site.author != self.author.text():
             self.contentChanged("author changed")
-    
+
     def descriptionChanged(self):
         if self.site.description != self.description.text():
             self.contentChanged("description changed")
-    
+
     def copyrightChanged(self):
         if self.site.copyright != self.copyright.text():
             self.contentChanged("copyright changed")
-    
+
     def keywordsChanged(self):
         if self.site.keywords != self.keywords.text():
             self.contentChanged("keywords changed")
-    

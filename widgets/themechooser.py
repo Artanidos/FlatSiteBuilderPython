@@ -20,6 +20,7 @@
 
 from widgets.undoableeditor import UndoableEditor
 
+
 class ThemeChooser(UndoableEditor):
-	def __init__(self, win, site):
-		UndoableEditor.__init__(self)
+    def __init__(self, win, site):
+        UndoableEditor.__init__(self)

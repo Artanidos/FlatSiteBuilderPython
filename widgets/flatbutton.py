@@ -23,6 +23,7 @@ from PySide2.QtWidgets import QLabel, QWidget
 from PySide2.QtCore import Qt, Signal
 from PySide2.QtGui import QPixmap, QImage
 
+
 class FlatButton(QLabel):
     clickedWithReturn = Signal(object)
     clicked = Signal()
@@ -32,7 +33,7 @@ class FlatButton(QLabel):
         self.returncode = ""
         self.setCursor(Qt.PointingHandCursor)
 
-    def __init__(self, normal_icon, hover_icon, pressed_icon = "", disabled_icon = ""):
+    def __init__(self, normal_icon, hover_icon, pressed_icon="", disabled_icon=""):
         QLabel.__init__(self)
 
         self.enabled = True

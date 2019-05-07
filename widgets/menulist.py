@@ -21,9 +21,9 @@
 from widgets.undoableeditor import UndoableEditor
 from widgets.tablecellbuttons import TableCellButtons
 from widgets.menu import Menu
-from widgets.menueditor import MenuEditor
 from PySide2.QtWidgets import QPushButton, QTableWidget, QAbstractItemView, QHeaderView, QTableWidgetItem
 from PySide2.QtCore import Signal, Qt
+
 
 class MenuList(UndoableEditor):
     editContent = Signal(object)
@@ -44,7 +44,7 @@ class MenuList(UndoableEditor):
         self.list.verticalHeader().hide()
         self.list.setSelectionMode(QAbstractItemView.SingleSelection)
         self.list.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.list.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch )
+        self.list.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.list.setToolTip("Double click to edit item")
         labels = ["", "Name"]
         self.list.setHorizontalHeaderLabels(labels)
@@ -71,10 +71,9 @@ class MenuList(UndoableEditor):
             if menu.id == menuId:
                 self.list.selectRow(self.list.rowCount() - 1)
                 self.menuInEditor = menu
-                editedItemChanged.emit(item)
+                self.editedItemChanged.emit(item)
         if self.editor:
             self.editor.reloadMenu(self.menuInEditor)
-    
 
     def addListItem(self, menu):
         rows = self.list.rowCount()
@@ -96,9 +95,9 @@ class MenuList(UndoableEditor):
         self.editor.registerUndoStack(self.undoStack)
         self.editor.menuChanged.connect(self.menuChanged)
 
-    def unregisterMenuEditor(self):    
+    def unregisterMenuEditor(self):
         self.editor = None
-    
+
     def deleteMenu(self, menu):
         for row in range(0, self.list.rowCount()):
             item = self.list.item(row, 1)
@@ -108,8 +107,7 @@ class MenuList(UndoableEditor):
                 self.list.removeRow(row)
                 self.menuChanged("menu \"" + m.name + "\" deleted")
                 break
-            
-        
+
     def editMenu(self, menu):
         for row in range(0, self.list.rowCount()):
             item = self.list.item(row, 1)
@@ -119,19 +117,18 @@ class MenuList(UndoableEditor):
                 self.list.selectRow(row)
                 self.editContent.emit(item)
                 break
-            
+
     def save(self):
         self.site.saveMenus()
-        
+
     def menuChanged(self, text):
         self.contentChanged(text)
-
 
     def tableDoubleClicked(self, r, b):
         item = self.list.item(r, 1)
         self.menuInEditor = item.data(Qt.UserRole)
         self.editContent.emit(item)
-    
+
     def buttonClicked(self):
         menu = Menu()
         self.site.addMenu(menu)
@@ -139,4 +136,3 @@ class MenuList(UndoableEditor):
         self.list.selectRow(self.list.rowCount() - 1)
         self.menuChanged("menu added")
         self.tableDoubleClicked(self.list.rowCount() - 1, 0)
-    

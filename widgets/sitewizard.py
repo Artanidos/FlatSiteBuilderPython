@@ -19,9 +19,10 @@
 #
 #############################################################################
 
-import os, datetime
+import os
+import datetime
 from lxml.etree import Element, CDATA, SubElement, ElementTree
-from PySide2.QtWidgets import QWizard, QWizardPage, QLabel, QLineEdit, QComboBox, QGridLayout, QVBoxLayout, QDialog
+from PySide2.QtWidgets import QWizard, QWizardPage, QLabel, QLineEdit, QComboBox, QGridLayout, QVBoxLayout
 from PySide2.QtCore import Signal, QDir
 from PySide2.QtGui import QPixmap
 
@@ -54,7 +55,7 @@ class SiteWizard(QWizard):
         os.mkdir(os.path.join(path, "assets", "fonts"))
         os.mkdir(os.path.join(path, "assets", "js"))
         os.mkdir(os.path.join(path, "assets", "images"))
-        
+
         site = Element("Site")
         site.attrib["theme"] = self.field("theme")
         site.attrib["title"] = siteName
@@ -103,13 +104,14 @@ class IntroPage(QWizardPage):
         self.setPixmap(QWizard.WatermarkPixmap, QPixmap("./images/wizard.png"))
 
         label = QLabel("This wizard will generate a skeleton website. "
-                              "You simply need to specify the site name and set a "
-                              "few options to produce the site.")
+                       "You simply need to specify the site name and set a "
+                       "few options to produce the site.")
         label.setWordWrap(True)
 
         layout = QVBoxLayout()
         layout.addWidget(label)
         self.setLayout(layout)
+
 
 class SiteInfoPage(QWizardPage):
 
@@ -118,7 +120,7 @@ class SiteInfoPage(QWizardPage):
         self.install_directory = install_directory
         self.setTitle("Site Information")
         self.setSubTitle("Specify basic information about the site for which you "
-	                   "want to generate site files.")
+                         "want to generate site files.")
         self.setPixmap(QWizard.LogoPixmap, QPixmap("./images/icon64.png"))
 
         self.siteNameLabel = QLabel("&Site title:")
@@ -140,10 +142,10 @@ class SiteInfoPage(QWizardPage):
         self.theme = QComboBox()
         self.themeLabel.setBuddy(self.theme)
 
-        themesDir =  QDir(os.path.join(install_directory, "themes"))
+        themesDir = QDir(os.path.join(install_directory, "themes"))
         for theme in themesDir.entryList(QDir.NoDotAndDotDot | QDir.Dirs):
             self.theme.addItem(theme)
-	    
+
         self.registerField("siteName*", self.siteNameLineEdit)
         self.registerField("description", self.descriptionLineEdit)
         self.registerField("copyright", self.copyrightLineEdit)
@@ -170,6 +172,7 @@ class SiteInfoPage(QWizardPage):
             self.warning.setText("WARNING<br/>A site with the name " + name.lower() + " already exists.<br/>If you continue self site will be overridden.")
         else:
             self.warning.setText("")
+
 
 class ConclusionPage(QWizardPage):
 
