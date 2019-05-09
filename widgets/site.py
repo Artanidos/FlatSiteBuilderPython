@@ -22,8 +22,9 @@ import datetime
 import os
 from widgets.content import ContentType, Content
 from widgets.menu import Menu
-from widgets.menuitem import MenuItem
-from PyQt5.QtCore import QFileInfo, QObject, pyqtProperty
+from widgets.menuitem import Menuitem
+from PyQt5.QtCore import QFileInfo, QObject, pyqtProperty, QUrl
+from PyQt5.QtQml import QQmlEngine, QQmlComponent
 
 
 class Site(QObject):
@@ -43,7 +44,7 @@ class Site(QObject):
         self.attributes = {}
         self.pages = []
         self.posts = []
-        self.menus = []
+        self.menus = None
 
     @pyqtProperty('QString')
     def publisher(self):
@@ -127,7 +128,27 @@ class Site(QObject):
         self.win.statusBar().showMessage("Site has been saved")
 
     def saveMenus(self):
-        pass
+        with open(os.path.join(self.source_path, "Menus.qml"), "w") as f:
+            f.write("import FlatSiteBuilder 2.0\n\n")
+            f.write("Menus {\n")
+            for menu in self.menus.menus:
+                f.write("    Menu {\n")
+                f.write("        name: '" + menu.name + "'\n")
+                for item in menu.items:
+                    f.write("        Menuitem {\n")
+                    f.write("            title: '" + item.title + "'\n")
+                    f.write("            url: '" + item.url + "'\n")
+                    f.write("            icon: '" + item.icon + "'\n")
+                    for subitem in item.items:
+                        f.write("            Menuitem {\n")
+                        f.write("                title: '" + subitem.title + "'\n")
+                        f.write("                url: '" + subitem.url + "'\n")
+                        f.write("                icon: '" + subitem.icon + "'\n")
+                        f.write("            }\n")
+                    f.write("        }\n")
+                f.write("    }\n")
+            f.write("}\n")
+        self.win.statusBar().showMessage("Menus have been saved")
         # menus = et.Element("Menus")
         # for menu in self.menus:
         #     m = et.SubElement(menus, "Menu")
@@ -154,7 +175,15 @@ class Site(QObject):
         self.menus.append(menu)
 
     def loadMenus(self):
-        pass
+        engine = QQmlEngine()
+        component = QQmlComponent(engine)
+        component.loadUrl(QUrl(os.path.join(self.source_path, "Menus.qml")))
+        self.menus = component.create()
+        if self.menus is not None:
+            self.win.statusBar().showMessage("Menus have been loaded")
+        else:
+            for error in component.errors():
+                print(error.toString())
         # self.menus.clear()
         # parser = make_parser()
         # parser.setContentHandler(MenuHandler(self))

@@ -18,25 +18,49 @@
 #
 #############################################################################
 
+from PyQt5.QtCore import QObject, pyqtProperty, Q_CLASSINFO
+from PyQt5.QtQml import QQmlListProperty
 
-class MenuItem:
 
-    def __init__(self):
-        self.title = ""
-        self.url = ""
-        self.icon = ""
+class Menuitem(QObject):
+    Q_CLASSINFO('DefaultProperty', 'items')
+
+    def __init__(self, parent = None):
+        super().__init__(parent)
+        self._title = ""
+        self._url = ""
+        self._icon = ""
         self.attributes = {}
-        self.items = []
+        self._items = []
         self.parentItem = None
 
-    def setTitle(self, title):
-        self.title = title
+    @pyqtProperty(QQmlListProperty)
+    def items(self):
+        return QQmlListProperty(Menuitem, self, self._items)
 
-    def setUrl(self, url):
-        self.url = url
+    @pyqtProperty('QString')
+    def title(self):
+        return self._title
 
-    def setIcon(self, icon):
-        self.icon = icon
+    @title.setter
+    def title(self, title):
+        self._title = title
+
+    @pyqtProperty('QString')
+    def url(self):
+        return self._url
+
+    @url.setter
+    def url(self, url):
+        self._url = url
+
+    @pyqtProperty('QString')
+    def icon(self):
+        return self._icon
+
+    @icon.setter
+    def icon(self, icon):
+        self._icon = icon
 
     def addAttribute(self, key, value):
         self.attributes[key] = value

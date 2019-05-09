@@ -18,34 +18,19 @@
 #
 #############################################################################
 
-from widgets.menuitem import Menuitem
+from widgets.menu import Menu
 from PyQt5.QtCore import QObject, pyqtProperty, Q_CLASSINFO
 from PyQt5.QtQml import QQmlListProperty
 
 
-class Menu(QObject):
-    Q_CLASSINFO('DefaultProperty', 'items')
+class Menus(QObject):
+    Q_CLASSINFO('DefaultProperty', 'menus')
 
     def __init__(self, parent = None):
         super().__init__(parent)
-        self.id = 0
-        self._name = ""
-        self._items = []
 
-    def setId(self, id):
-        self.id = id
+        self._menus = []
 
     @pyqtProperty(QQmlListProperty)
-    def items(self):
-        return QQmlListProperty(Menuitem, self, self._items)
-
-    @pyqtProperty('QString')
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, name):
-        self._name = name
-
-    def addMenuItem(self, item):
-        self.items.append(item)
+    def menus(self):
+        return QQmlListProperty(Menu, self, self._menus)

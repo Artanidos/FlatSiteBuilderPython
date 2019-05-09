@@ -66,7 +66,7 @@ class MenuList(UndoableEditor):
         if self.menuInEditor:
             menuId = self.menuInEditor.id()
         self.menuInEditor = None
-        for menu in self.site.menus:
+        for menu in self.site.menus.menus:
             item = self.addListItem(menu)
             if menu.id == menuId:
                 self.list.selectRow(self.list.rowCount() - 1)

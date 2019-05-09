@@ -20,7 +20,7 @@
 
 from widgets.animateableeditor import AnimateableEditor
 from widgets.flatbutton import FlatButton
-from widgets.menuitem import MenuItem
+from widgets.menuitem import Menuitem
 from widgets.imageselector import ImageSelector
 from PyQt5.QtWidgets import QFileDialog, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLineEdit, QTreeWidgetItem, QPushButton, QTreeWidget, QHeaderView, QAbstractItemView
 from PyQt5.QtCore import pyqtSignal, Qt, QFileInfo, QFile
@@ -205,8 +205,8 @@ class MenuEditor(AnimateableEditor):
             sub = item.items[i]
             stwi = QTreeWidgetItem()
             stwi.setFlags(stwi.flags() | Qt.ItemIsEditable)
-            stwi.setText(0, sub.title())
-            stwi.setText(1, sub.url())
+            stwi.setText(0, sub.title)
+            stwi.setText(1, sub.url)
             stwi.setText(4, str(i))
             stwi.setData(0, Qt.UserRole, sub)
             twi.addChild(stwi)
@@ -298,10 +298,10 @@ class MenuEditor(AnimateableEditor):
         action = ""
         item = twi.data(0, Qt.UserRole)
         if column == 0:
-            item.setTitle(twi.text(0))
+            item.title = twi.text(0)
             action = "title changed"
         elif column == 1:
-            item.setUrl(twi.text(1))
+            item.url = twi.text(1)
             action = "url changed"
         self.menuChanged.emit(self.getUndoRedoText(item, action))
 
