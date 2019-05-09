@@ -149,30 +149,9 @@ class Site(QObject):
                 f.write("    }\n")
             f.write("}\n")
         self.win.statusBar().showMessage("Menus have been saved")
-        # menus = et.Element("Menus")
-        # for menu in self.menus:
-        #     m = et.SubElement(menus, "Menu")
-        #     m.attrib["name"] = menu.name
-        #     for item in menu.items:
-        #         i = et.SubElement(m, "Item")
-        #         i.attrib["title"] = item.title
-        #         i.attrib["url"] = item.url
-        #         i.attrib["icon"] = item.icon
-        #         for att, value in item.attributes.items():
-        #             i.attrib[att] = value
-        #         for subitem in item.items:
-        #             si = et.SubElement(i, "Item")
-        #             si.attrib["title"] = si.title
-        #             si.attrib["url"] = si.url
-        #             si.attrib["icon"] = si.icon
-        #             for att, value in subitem.attributes.items():
-        #                 si.attrib[att] = value
-        # tree = et.ElementTree(menus)
-        # tree.write(os.path.join(self.source_path, "Menus.xml"), encoding = "utf-8", method = "xml", xml_declaration = True)
-        # self.win.statusBar().showMessage("Menus have been saved")
 
     def addMenu(self, menu):
-        self.menus.append(menu)
+        self.menus.menus.append(menu)
 
     def loadMenus(self):
         engine = QQmlEngine()
@@ -184,11 +163,6 @@ class Site(QObject):
         else:
             for error in component.errors():
                 print(error.toString())
-        # self.menus.clear()
-        # parser = make_parser()
-        # parser.setContentHandler(MenuHandler(self))
-        # parser.parse(os.path.join(self.source_path, "Menus.xml"))
-        # self.win.statusBar().showMessage("Menus have been loaded")
 
     def removeMenu(self, menu):
         self.menus.remove(menu)
@@ -277,78 +251,3 @@ class Site(QObject):
 #                 else:
 #                     content.addAttribute(att, value)
 
-
-# class MenuHandler(handler.ContentHandler):
-#     def __init__(self, site):
-#         self.site = site
-#         self.id = 0
-#         self.current_menu = None
-#         self.current_item = None
-
-#     def startElement(self, name, attrs):
-#         if name == "Menus":
-#             pass
-#         elif name == "Menu":
-#             self.id += 1
-#             self.current_menu = Menu()
-#             self.current_menu.setId(self.id)
-#             self.current_menu.setName(attrs["name"])
-#         elif name == "Item":
-#             if self.current_item:  # sub menu item
-#                 tmp_item = MenuItem()
-#                 self.current_item.addMenuItem(tmp_item)
-#                 self.current_item = tmp_item
-#             else:
-#                 self.current_item = MenuItem()
-#             for att, value in attrs.items():
-#                 if att == "title":
-#                     self.current_item.setTitle(value)
-#                 elif att == "url":
-#                     self.current_item.setUrl(value)
-#                 elif att == "icon":
-#                     self.current_item.setIcon(value)
-#                 else:  # set additional html attributes like class="scrollTo"
-#                     self.current_item.addAttribute(att, value)
-#         else:
-#             print("Unknown tag name in MenuHandler:", name)
-
-#     def endElement(self, name):
-#         if name == "Item":
-#             self.current_menu.addMenuItem(self.current_item)
-#             self.current_item = None
-#         elif name == "Menu":
-#             self.site.addMenu(self.current_menu)
-#             self.current_menu = None
-
-        #                            if(menu.name() == "Item")
-        #                                MenuItem *subitem = MenuItem()
-        #                                subitem.setSubitem(True)
-        #                                foreach(QXmlStreamAttribute att, menu.attributes())
-        #
-        #                                    QString attName = att.name().toString()
-        #                                    QString value = att.value().toString()
-        #                                    if(attName == "title")
-        #                                        subitem.setTitle(value)
-        #                                    else if(attName == "url")
-        #                                        subitem.setUrl(value)
-        #                                    else if(attName == "icon")
-        #                                        subitem.setIcon(value)
-        #                                    else //set additional html attributes like class="scrollTo"
-        #                                        subitem.addAttribute(attName, value)
-        #                                
-        #                                item.addMenuitem(subitem)
-        #                                menu.readNext()
-        #                            
-        #                            else
-        #                                menu.skipCurrentElement()
-        #                        m.addMenuitem(item)
-        #                        menu.readNext()                    
-        #                    else
-        #                        menu.skipCurrentElement()
-        #                
-        #                addMenu(m)
-                    
-        #            else
-        #                menu.skipCurrentElement()
-                
-            

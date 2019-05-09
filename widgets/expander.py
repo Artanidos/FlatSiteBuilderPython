@@ -63,14 +63,14 @@ class Expander(QWidget):
         hbox.addSpacing(5)
         hbox.addWidget(self.hyper)
         hbox.addStretch()
-        hbox.margin = 8
+        hbox.setContentsMargins(8, 8, 8, 8)
         vbox.addLayout(hbox)
         self.content = QWidget()
         self.content.setStyleSheet("background-color: " + self.palette().base().color().name())
         self.content.setMaximumHeight(0)
 
         vbox.addWidget(self.content)
-        vbox.margin = 0
+        vbox.setContentsMargins(0, 0, 0, 0)
         self.setLayout(vbox)
 
         self.hyper.linkActivated.connect(self.buttonClicked)
