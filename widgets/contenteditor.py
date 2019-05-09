@@ -114,7 +114,7 @@ class ContentEditor(AnimateableEditor):
         self.vbox.addLayout(self.layout)
         self.setLayout(self.vbox)
 
-        if self.content.contentType() == ContentType.POST:
+        if self.content.content_type == ContentType.POST:
             self.previewLink.setText("view post")
             self.excerptLabel = QLabel("Excerpt")
             self.layout.addWidget(self.excerptLabel, 5, 0)

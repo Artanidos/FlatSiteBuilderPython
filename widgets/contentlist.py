@@ -18,6 +18,7 @@
 #
 #############################################################################
 
+import datetime
 from widgets.content import ContentType
 from widgets.flatbutton import FlatButton
 from widgets.tablecellbuttons import TableCellButtons
@@ -141,8 +142,7 @@ class ContentList(QWidget):
         authorItem = QTableWidgetItem(content.author)
         authorItem.setFlags(authorItem.flags() ^ Qt.ItemIsEditable)
         self.list.setItem(rows, 4, authorItem)
-
-        dateItem = QTableWidgetItem(content.date.strftime("%d.%m.%Y"))
+        dateItem = QTableWidgetItem(content.date)
         dateItem.setFlags(dateItem.flags() ^ Qt.ItemIsEditable)
         self.list.setItem(rows, 5, dateItem)
 

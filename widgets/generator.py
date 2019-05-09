@@ -93,7 +93,7 @@ class Generator(handler.ContentHandler):
 
             posts.append(cm)
 
-        for menu in site.menus:
+        for menu in site.menus.menus:
             items = []
             for item in menu.items:
                 menuitem = {}
@@ -107,7 +107,7 @@ class Generator(handler.ContentHandler):
                     attributes += att + "=\"" + value + "\""
 
                 menuitem["attributes"] = attributes
-                subitems = {}
+                subitems = []
                 for subitem in item.items:
                     submenuitem = {}
                     submenuitem["title"] = subitem.title
@@ -206,9 +206,9 @@ class Generator(handler.ContentHandler):
             cm["script"] = content.script
 
         self.content = ""
-        parser = make_parser()
-        parser.setContentHandler(self)
-        parser.parse(os.path.join(self.site.source_path, subdir, content.source))
+        #parser = make_parser()
+        #parser.setContentHandler(self)
+        #parser.parse(os.path.join(self.site.source_path, subdir, content.source))
 
         # pluginvars.clear();
         # foreach(QString key, Plugins::elementPluginNames())

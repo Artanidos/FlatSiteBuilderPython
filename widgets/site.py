@@ -163,6 +163,7 @@ class Site(QObject):
         else:
             for error in component.errors():
                 print(error.toString())
+        del engine
 
     def removeMenu(self, menu):
         self.menus.remove(menu)
@@ -174,18 +175,23 @@ class Site(QObject):
         self.pages.append(page)
 
     def loadPages(self):
-        pass
-        # self.pages.clear()
-        # for r, d, files in os.walk(os.path.join(self.source_path, "pages")):
-        #     for filename in files:
-        #         parser = make_parser()
-        #         parser.setContentHandler(ContentHandler(self, filename, ContentType.PAGE))
-        #         parser.parse(os.path.join(self.source_path, "pages", filename))
-
-        # self.win.statusBar().showMessage("Pages have been loaded")
+        self.pages.clear()
+        source = "index.qml"
+        engine = QQmlEngine()
+        component = QQmlComponent(engine)
+        component.loadUrl(QUrl(os.path.join(self.source_path, "pages", source)))
+        page = component.create()
+        if self.menus is not None:
+            page.source = source
+            page.content_type = ContentType.PAGE
+            self.pages.append(page)
+            self.win.statusBar().showMessage("Page has been loaded")
+        else:
+            for error in component.errors():
+                print(error.toString())
+        del engine
 
     def loadPosts(self):
-        pass
         # self.posts.clear()
         # for r, d, files in os.walk(os.path.join(self.source_path, "posts")):
         #     for filename in files:
@@ -193,61 +199,4 @@ class Site(QObject):
         #         parser.setContentHandler(ContentHandler(self, filename, ContentType.POST))
         #         parser.parse(os.path.join(self.source_path, "posts", filename))
 
-        # self.win.statusBar().showMessage("Pages have been loaded")
-
-
-# class SiteHandler(handler.ContentHandler):
-#     def __init__(self, site):
-#         self.site = site
-
-#     def startElement(self, name, attrs):
-#         if name == "Site":
-#             for att, value in attrs.items():
-#                 if att == "theme":
-#                     self.site.theme = value
-#                 elif att == "description":
-#                     self.site.description = value
-#                 elif att == "copyright":
-#                     self.site.copyright = value
-#                 elif att == "title":
-#                     self.site.title = value
-#                 elif att == "keywords":
-#                     self.site.keywords = value
-#                 elif att == "author":
-#                     self.site.author = value
-#                 elif att == "publisher":
-#                     self.site.publisher = value
-#                 else:
-#                     self.site.addAttribute(att, value)
-
-
-# class ContentHandler(handler.ContentHandler):
-
-#     def __init__(self, site, filename, t):
-#         self.site = site
-#         self.filename = filename
-#         self.type = t
-
-#     def startElement(self, name, attrs):
-#         if name == "Content":
-#             content = Content(self.type)
-#             content.setSource(self.filename)
-#             self.site.addPage(content)
-#             for att, value in attrs.items():
-#                 if att == "excerpt":
-#                     content.setExerpt(value)
-#                 elif att == "title":
-#                     content.setTitle(value)
-#                 elif att == "menu":
-#                     content.setMenu(value)
-#                 elif att == "author":
-#                     content.setAuthor(value)
-#                 elif att == "layout":
-#                     content.setLayout(value)
-#                 elif att == "keywords":
-#                     content.setKeywords(value)
-#                 elif att == "date":
-#                     content.setDate(datetime.datetime.strptime(value, "%d.%m.%Y"))
-#                 else:
-#                     content.addAttribute(att, value)
-
+        self.win.statusBar().showMessage("Pages have been loaded")

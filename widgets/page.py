@@ -27,7 +27,7 @@ class ContentType(Enum):
     POST = 2
 
 
-class Content(QObject):
+class Page(QObject):
 
     def __init__(self, parent=None):
         super().__init__(parent)

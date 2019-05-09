@@ -24,6 +24,7 @@ import sys
 from widgets.installdialog import InstallDialog
 from widgets.mainwindow import MainWindow
 from widgets.site import Site
+from widgets.content import Content
 from widgets.menus import Menus
 from widgets.menu import Menu
 from widgets.menuitem import Menuitem
@@ -43,6 +44,7 @@ if __name__ == "__main__":
     app.setStyleSheet("QPushButton:hover { color: #45bbe6 }")
 
     qmlRegisterType(Site, 'FlatSiteBuilder', 2, 0, 'Site')
+    qmlRegisterType(Content, 'FlatSiteBuilder', 2, 0, 'Content')
     qmlRegisterType(Menus, 'FlatSiteBuilder', 2, 0, 'Menus')
     qmlRegisterType(Menu, 'FlatSiteBuilder', 2, 0, 'Menu')
     qmlRegisterType(Menuitem, 'FlatSiteBuilder', 2, 0, 'Menuitem')
