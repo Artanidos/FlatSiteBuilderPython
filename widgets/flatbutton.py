@@ -19,14 +19,14 @@
 #
 #############################################################################
 
-from PySide2.QtWidgets import QLabel, QWidget
-from PySide2.QtCore import Qt, Signal
-from PySide2.QtGui import QPixmap, QImage
+from PyQt5.QtWidgets import QLabel, QWidget
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QPixmap, QImage
 
 
 class FlatButton(QLabel):
-    clickedWithReturn = Signal(object)
-    clicked = Signal()
+    clickedWithReturn = pyqtSignal(object)
+    clicked = pyqtSignal()
 
     def __init__(self):
         self.enabled = True

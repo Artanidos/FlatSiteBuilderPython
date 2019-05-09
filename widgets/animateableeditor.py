@@ -18,41 +18,44 @@
 #
 #############################################################################
 
-from PySide2.QtWidgets import QWidget
-from PySide2.QtCore import Signal, Property
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtCore import pyqtSignal, pyqtProperty
 
 
 class AnimateableEditor(QWidget):
-    closes = Signal()
+    closes = pyqtSignal()
 
     def __init__(self):
         QWidget.__init__(self)
 
-    def readX(self):
+    @pyqtProperty('int')
+    def x(self):
         return super.x()
 
-    def setX(self, value):
+    @x.setter
+    def x(self, value):
         self.move(value, super.y())
 
-    def readY(self):
+    @pyqtProperty('int')
+    def y(self):
         return super.y()
 
-    def setY(self, value):
+    @y.setter
+    def y(self, value):
         self.move(super.x(), value)
 
-    def readWidth(self):
+    @pyqtProperty('int')
+    def width(self):
         return super.width()
 
-    def setWidth(self, value):
+    @width.setter
+    def width(self, value):
         self.resize(value, super.height())
 
-    def readHeight(self):
+    @pyqtProperty('int')
+    def height(self):
         return super.height()
 
-    def setHeight(self, value):
+    @height.setter
+    def height(self, value):
         self.resize(super.width(), value)
-
-    x = Property(int, readX, setX)
-    y = Property(int, readY, setY)
-    width = Property(int, readWidth, setWidth)
-    height = Property(int, readHeight, setHeight)

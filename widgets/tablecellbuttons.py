@@ -19,13 +19,13 @@
 #############################################################################
 
 from widgets.flatbutton import FlatButton
-from PySide2.QtWidgets import QWidget, QHBoxLayout
-from PySide2.QtCore import Signal
+from PyQt5.QtWidgets import QWidget, QHBoxLayout
+from PyQt5.QtCore import pyqtSignal
 
 
 class TableCellButtons(QWidget):
-    deleteItem = Signal(object)
-    editItem = Signal(object)
+    deleteItem = pyqtSignal(object)
+    editItem = pyqtSignal(object)
 
     def __init__(self):
         QWidget.__init__(self)

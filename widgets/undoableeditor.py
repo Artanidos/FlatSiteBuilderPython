@@ -19,8 +19,8 @@
 #############################################################################
 
 from widgets.flatbutton import FlatButton
-from PySide2.QtWidgets import QWidget, QHBoxLayout, QLabel, QGridLayout, QUndoStack, QUndoCommand
-from PySide2.QtCore import QFileInfo, QDir, QFile
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QGridLayout, QUndoStack, QUndoCommand
+from PyQt5.QtCore import QFileInfo, QDir, QFile
 
 
 class UndoableEditor(QWidget):

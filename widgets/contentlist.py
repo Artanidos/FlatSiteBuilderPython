@@ -21,12 +21,12 @@
 from widgets.content import ContentType
 from widgets.flatbutton import FlatButton
 from widgets.tablecellbuttons import TableCellButtons
-from PySide2.QtWidgets import QWidget, QUndoStack, QTableWidgetItem, QVBoxLayout, QHBoxLayout, QGridLayout, QPushButton, QLabel, QTableWidget, QAbstractItemView, QHeaderView
-from PySide2.QtCore import Signal, Qt, QFileInfo
+from PyQt5.QtWidgets import QWidget, QUndoStack, QTableWidgetItem, QVBoxLayout, QHBoxLayout, QGridLayout, QPushButton, QLabel, QTableWidget, QAbstractItemView, QHeaderView
+from PyQt5.QtCore import pyqtSignal, Qt, QFileInfo
 
 
 class ContentList(QWidget):
-    editContent = Signal(object)
+    editContent = pyqtSignal(object)
 
     def __init__(self, site, type):
         QWidget.__init__(self)

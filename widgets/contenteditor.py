@@ -22,8 +22,8 @@ from widgets.hyperlink import HyperLink
 from widgets.flatbutton import FlatButton
 from widgets.animateableeditor import AnimateableEditor
 from widgets.content import ContentType
-from PySide2.QtWidgets import QUndoStack, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
-from PySide2.QtCore import Qt
+from PyQt5.QtWidgets import QUndoStack, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
+from PyQt5.QtCore import Qt
 
 
 class ContentEditor(AnimateableEditor):

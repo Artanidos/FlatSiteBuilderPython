@@ -19,14 +19,14 @@
 #
 #############################################################################
 
-from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
-from PySide2.QtCore import QParallelAnimationGroup, QPropertyAnimation, Qt, Property, Signal
-from PySide2.QtGui import QImage, QPalette, QPixmap, QColor
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
+from PyQt5.QtCore import QParallelAnimationGroup, QPropertyAnimation, Qt, pyqtProperty, pyqtSignal
+from PyQt5.QtGui import QImage, QPalette, QPixmap, QColor
 
 
 class Expander(QWidget):
-    expanded = Signal(object)
-    clicked = Signal()
+    expanded = pyqtSignal(object)
+    clicked = pyqtSignal()
 
     def __init__(self, header, normal_icon="", hovered_icon="", selected_icon=""):
         QWidget.__init__(self)
@@ -63,14 +63,14 @@ class Expander(QWidget):
         hbox.addSpacing(5)
         hbox.addWidget(self.hyper)
         hbox.addStretch()
-        hbox.setMargin(8)
+        hbox.margin = 8
         vbox.addLayout(hbox)
         self.content = QWidget()
         self.content.setStyleSheet("background-color: " + self.palette().base().color().name())
         self.content.setMaximumHeight(0)
 
         vbox.addWidget(self.content)
-        vbox.setMargin(0)
+        vbox.margin = 0
         self.setLayout(vbox)
 
         self.hyper.linkActivated.connect(self.buttonClicked)
@@ -97,7 +97,7 @@ class Expander(QWidget):
         else:
             self.is_expanded = False
             pal = self.palette()
-            pal.setColor(QPalette.Background, self.normal_color)
+            pal.setColor(QPalette.Background, QColor(self.normal_color))
             self.setPalette(pal)
             self.icon.setPixmap(QPixmap.fromImage(self.normal_icon))
             self.hyper.setText("<a style=\"color: " + self.label_normal_color + "; text-decoration: none;\" href=\"#\">" + self.text + "</a>")
@@ -111,15 +111,15 @@ class Expander(QWidget):
     def addLayout(self, layout):
         self.content.setLayout(layout)
 
-    def setCOLOR(self, color):
-        pal = self.palette()
-        pal.setColor(QPalette.Background, color)
-        self.setPalette(pal)
-
-    def readCOLOR(self):
+    @pyqtProperty('QColor')
+    def color(self):
         return Qt.black
 
-    color = Property(QColor, readCOLOR, setCOLOR)
+    @color.setter
+    def color(self, color):
+        pal = self.palette()
+        pal.setColor(QPalette.Background, QColor(color))
+        self.setPalette(pal)
 
     def mouseReleaseEvent(self, me):
         self.setExpanded(not self.is_expanded)

@@ -19,9 +19,9 @@
 #
 #############################################################################
 
-from PySide2.QtWidgets import QLabel, QPushButton, QGridLayout, QHBoxLayout, QVBoxLayout, QDialog, QLineEdit, QMessageBox, QFileDialog
-from PySide2.QtCore import QDir, Slot
-from PySide2.QtGui import QPixmap
+from PyQt5.QtWidgets import QLabel, QPushButton, QGridLayout, QHBoxLayout, QVBoxLayout, QDialog, QLineEdit, QMessageBox, QFileDialog
+from PyQt5.QtCore import QDir, pyqtSlot
+from PyQt5.QtGui import QPixmap
 
 
 class InstallDialog(QDialog):
@@ -62,7 +62,7 @@ class InstallDialog(QDialog):
         cancel.clicked.connect(self.cancelClicked)
         choose.clicked.connect(self.chooseClicked)
 
-    @Slot()
+    @pyqtSlot()
     def installClicked(self, clicked):
         install_dir = QDir(self.path.text())
         if install_dir.exists() and install_dir:
@@ -73,12 +73,12 @@ class InstallDialog(QDialog):
         self.install_directory = self.path.text()
         self.close()
 
-    @Slot()
+    @pyqtSlot()
     def cancelClicked(self, clicked):
         self.install_directory = ""
         self.close()
 
-    @Slot()
+    @pyqtSlot()
     def chooseClicked(self, clicked):
         dialog = QFileDialog()
         dialog.setFileMode(QFileDialog.DirectoryOnly)

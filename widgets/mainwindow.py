@@ -18,6 +18,7 @@
 #
 #############################################################################
 
+import os
 from widgets.flatbutton import FlatButton
 from widgets.expander import Expander
 from widgets.generator import Generator
@@ -35,16 +36,17 @@ from widgets.sitewizard import SiteWizard
 from widgets.contenteditor import ContentEditor
 from widgets.themechooser import ThemeChooser
 from widgets.sitesettingseditor import SiteSettingsEditor
-from PySide2.QtWidgets import QVBoxLayout, QMainWindow, QWidget, QScrollArea, QDockWidget, QUndoStack, QApplication
-from PySide2.QtCore import Signal, Qt, QUrl, QRect, QCoreApplication, QDir, QSettings, QByteArray, QEvent, QPoint, QAbstractAnimation, QPropertyAnimation
+from PyQt5.QtWidgets import QVBoxLayout, QMainWindow, QWidget, QScrollArea, QDockWidget, QUndoStack, QApplication
+from PyQt5.QtCore import pyqtSignal, Qt, QUrl, QRect, QCoreApplication, QDir, QSettings, QByteArray, QEvent, QPoint, QAbstractAnimation, QPropertyAnimation
+from PyQt5.QtQml import QQmlEngine, QQmlComponent
 
 
 class MainWindow(QMainWindow):
-    siteLoaded = Signal(object)
+    siteLoaded = pyqtSignal(object)
 
     def __init__(self, install_directory):
         QMainWindow.__init__(self)
-
+        #self.engine = QQmlEngine()
         self.site = None
         self.editor = ""
         self.install_directory = install_directory
@@ -61,7 +63,7 @@ class MainWindow(QMainWindow):
         self.loadPlugins()
 
         if self.default_path:
-            self.loadProject(self.default_path + "/Site.xml")
+            self.loadProject(self.default_path + "/Site.qml")
 
             # if site has never been generated (after install)
             # generate the site
@@ -73,6 +75,17 @@ class MainWindow(QMainWindow):
         self.dashboard.setExpanded(True)
         self.showDashboard()
         self.statusBar().showMessage("Ready")
+
+    def loadProject(self, filename):
+        self.reloadProject(filename)
+
+        # create temp dir for undo redo
+        tempPath = self.site.source_path[self.site.source_path.rfind("/") + 1:]
+        temp = QDir(QDir.tempPath() + "/FlatSiteBuilder")
+        temp.mkdir(tempPath)
+        temp.cd(tempPath)
+        temp.mkdir("pages")
+        temp.mkdir("posts")
 
     def initUndoRedo(self):
         self.undoStack = QUndoStack()
@@ -173,18 +186,6 @@ class MainWindow(QMainWindow):
         self.siteLoaded.connect(db.siteLoaded)
         self.setCentralWidget(db)
 
-    def loadProject(self, filename):
-        self.site = Site(self, filename)
-        self.reloadProject()
-
-        # create temp dir for undo redo
-        tempPath = self.site.source_path[self.site.source_path.rfind("/") + 1:]
-        temp = QDir(QDir.tempPath() + "/FlatSiteBuilder")
-        temp.mkdir(tempPath)
-        temp.cd(tempPath)
-        temp.mkdir("pages")
-        temp.mkdir("posts")
-
     def closeEvent(self, event):
         self.writeSettings()
         event.accept()
@@ -201,15 +202,26 @@ class MainWindow(QMainWindow):
         geometry = settings.value("geometry", QByteArray())
         if geometry.isEmpty():
             availableGeometry = QApplication.desktop().availableGeometry(self)
+            print(availableGeometry)
             self.resize(availableGeometry.width() / 3, availableGeometry.height() / 2)
-            self.move((availableGeometry.width() - self.width() / 2, (availableGeometry.height() - self.height()) / 2))
+            self.move(int((availableGeometry.width() - self.width() / 2)), int((availableGeometry.height() - self.height()) / 2))
         else:
             self.restoreGeometry(geometry)
             self.restoreState(settings.value("state"))
         self.default_path = settings.value("lastSite")
 
-    def reloadProject(self):
-        self.site.load()
+    def reloadProject(self, filename):
+        engine = QQmlEngine()
+        component = QQmlComponent(engine)
+        component.loadUrl(QUrl(filename))
+        self.site = component.create()
+        if self.site is not None:
+            self.site.setFilename(filename)
+            self.site.setWindow(self)
+        else:
+            for error in component.errors():
+                print(error.toString())
+
         self.site.loadMenus()
         self.site.loadPages()
         self.site.loadPosts()

@@ -21,15 +21,15 @@
 
 import os
 import datetime
-from lxml.etree import Element, CDATA, SubElement, ElementTree
-from PySide2.QtWidgets import QWizard, QWizardPage, QLabel, QLineEdit, QComboBox, QGridLayout, QVBoxLayout
-from PySide2.QtCore import Signal, QDir
-from PySide2.QtGui import QPixmap
+#from lxml.etree import Element, CDATA, SubElement, ElementTree
+from PyQt5.QtWidgets import QWizard, QWizardPage, QLabel, QLineEdit, QComboBox, QGridLayout, QVBoxLayout
+from PyQt5.QtCore import pyqtSignal, QDir
+from PyQt5.QtGui import QPixmap
 
 
 class SiteWizard(QWizard):
-    loadSite = Signal(object)
-    buildSite = Signal()
+    loadSite = pyqtSignal(object)
+    buildSite = pyqtSignal()
 
     def __init__(self, install_directory, parent = None):
         super(SiteWizard, self).__init__(parent)

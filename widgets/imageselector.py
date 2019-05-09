@@ -18,14 +18,14 @@
 #
 #############################################################################
 
-from PySide2.QtWidgets import QWidget
-from PySide2.QtGui import QPainter
-from PySide2.QtCore import Signal, Qt
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import QPainter
+from PyQt5.QtCore import pyqtSignal, Qt
 
 
 class ImageSelector(QWidget):
-    clickedSelector = Signal(object, int)
-    clicked = Signal()
+    clickedSelector = pyqtSignal(object, int)
+    clicked = pyqtSignal()
 
     def __init__(self):
         QWidget.__init__(self)

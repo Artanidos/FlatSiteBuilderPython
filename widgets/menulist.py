@@ -21,13 +21,13 @@
 from widgets.undoableeditor import UndoableEditor
 from widgets.tablecellbuttons import TableCellButtons
 from widgets.menu import Menu
-from PySide2.QtWidgets import QPushButton, QTableWidget, QAbstractItemView, QHeaderView, QTableWidgetItem
-from PySide2.QtCore import Signal, Qt
+from PyQt5.QtWidgets import QPushButton, QTableWidget, QAbstractItemView, QHeaderView, QTableWidgetItem
+from PyQt5.QtCore import pyqtSignal, Qt
 
 
 class MenuList(UndoableEditor):
-    editContent = Signal(object)
-    editedItemChanged = Signal(object)
+    editContent = pyqtSignal(object)
+    editedItemChanged = pyqtSignal(object)
 
     def __init__(self, win, site):
         UndoableEditor.__init__(self)

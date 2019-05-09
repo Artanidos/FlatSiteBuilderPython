@@ -22,18 +22,18 @@ from widgets.animateableeditor import AnimateableEditor
 from widgets.flatbutton import FlatButton
 from widgets.menuitem import MenuItem
 from widgets.imageselector import ImageSelector
-from PySide2.QtWidgets import QFileDialog, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLineEdit, QTreeWidgetItem, QPushButton, QTreeWidget, QHeaderView, QAbstractItemView
-from PySide2.QtCore import Signal, Qt, QFileInfo, QFile
-from PySide2.QtGui import QImage
+from PyQt5.QtWidgets import QFileDialog, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLineEdit, QTreeWidgetItem, QPushButton, QTreeWidget, QHeaderView, QAbstractItemView
+from PyQt5.QtCore import pyqtSignal, Qt, QFileInfo, QFile
+from PyQt5.QtGui import QImage
 
 
 class MenuEditorTableCellButtons(QWidget):
-    deleteItem = Signal(object)
-    editItem = Signal(object)
-    itemLeft = Signal(object)
-    itemRight = Signal(object)
-    itemUp = Signal(object)
-    itemDown = Signal(object)
+    deleteItem = pyqtSignal(object)
+    editItem = pyqtSignal(object)
+    itemLeft = pyqtSignal(object)
+    itemRight = pyqtSignal(object)
+    itemUp = pyqtSignal(object)
+    itemDown = pyqtSignal(object)
 
     def __init__(self):
         QWidget.__init__(self)
@@ -106,8 +106,8 @@ class MenuEditorTableCellButtons(QWidget):
 
 
 class MenuEditor(AnimateableEditor):
-    contentChanged = Signal(object)
-    menuChanged = Signal(str)
+    contentChanged = pyqtSignal(object)
+    menuChanged = pyqtSignal(str)
 
     def __init__(self, win, menu, site):
         AnimateableEditor.__init__(self)

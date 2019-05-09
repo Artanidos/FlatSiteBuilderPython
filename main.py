@@ -23,9 +23,11 @@
 import sys
 from widgets.installdialog import InstallDialog
 from widgets.mainwindow import MainWindow
-from PySide2.QtWidgets import QApplication, QStyleFactory
-from PySide2.QtCore import Qt, QCoreApplication, QSettings
-from PySide2.QtGui import QPalette, QColor, QIcon, QFont
+from widgets.site import Site
+from PyQt5.QtWidgets import QApplication, QStyleFactory
+from PyQt5.QtCore import Qt, QCoreApplication, QSettings
+from PyQt5.QtGui import QPalette, QColor, QIcon, QFont
+from PyQt5.QtQml import qmlRegisterType
 
 
 if __name__ == "__main__":
@@ -36,6 +38,8 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create("Fusion"))
     app.setStyleSheet("QPushButton:hover { color: #45bbe6 }")
+
+    qmlRegisterType(Site, 'FlatSiteBuilder', 2, 0, 'Site')
 
     font = QFont("Sans Serif", 10)
     app.setFont(font)
@@ -72,5 +76,4 @@ if __name__ == "__main__":
 
     win = MainWindow(install_directory)
     win.show()
-
     sys.exit(app.exec_())

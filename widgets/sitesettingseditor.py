@@ -22,7 +22,7 @@ import os
 from widgets.undoableeditor import UndoableEditor
 from widgets.plugins import Plugins
 from widgets.generator import Generator
-from PySide2.QtWidgets import QLineEdit, QComboBox, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QLineEdit, QComboBox, QVBoxLayout, QLabel
 
 
 class SiteSettingsEditor(UndoableEditor):
@@ -73,7 +73,6 @@ class SiteSettingsEditor(UndoableEditor):
 
     def load(self):
         oldTitle = self.site.title
-        self.site.load()
         self.title.setText(self.site.title)
         self.description.setText(self.site.description)
         self.copyright.setText(self.site.copyright)
@@ -95,10 +94,10 @@ class SiteSettingsEditor(UndoableEditor):
             print("renaming2: " + Generator.sitesPath() + "/" + oldTitle)
             self.win.statusBar().showMessage("Site settings have been saved. Site should be rebuilded. Output path has been renamed to " + self.title.text())
         else:
-            self.site.setAuthor(self.author.text())
-            self.site.setCopyright(self.copyright.text())
-            self.site.setDescription(self.description.text())
-            self.site.setKeywords(self.keywords.text())
+            self.site.author = self.author.text()
+            self.site.copyright = self.copyright.text()
+            self.site.description = self.description.text()
+            self.site.keywords = self.keywords.text()
             #self.site.setPublisher(self.publisher.currentData().toString())
             self.site.save()
             self.win.statusBar().showMessage("Site settings have been saved. Site should be rebuilded on the dashboard.")
