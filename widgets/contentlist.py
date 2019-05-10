@@ -165,10 +165,11 @@ class ContentList(QWidget):
         self.undoStack.redo()
 
     def buttonClicked(self):
-        self.addedContentName = self.site.createTemporaryContent(self.type)
-        info = QFileInfo(self.addedContentName)
-        self.addedContentName = info.fileName()
-        reload()
+        pass
+        #self.addedContentName = self.site.createTemporaryContent(self.type)
+        #info = QFileInfo(self.addedContentName)
+        #self.addedContentName = info.fileName()
+        #reload()
 
     def tableDoubleClicked(self, r, i):
         item = self.list.item(r, 1)

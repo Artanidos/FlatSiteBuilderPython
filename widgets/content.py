@@ -18,7 +18,9 @@
 #
 #############################################################################
 
-from PyQt5.QtCore import QObject, pyqtProperty
+from PyQt5.QtCore import pyqtProperty
+from PyQt5.QtGui import QPainter, QColor
+from PyQt5.QtQuick import QQuickPaintedItem
 from enum import Enum
 
 
@@ -27,10 +29,9 @@ class ContentType(Enum):
     POST = 2
 
 
-class Content(QObject):
-
+class Content(QQuickPaintedItem):
     def __init__(self, parent=None):
-        super().__init__(parent)
+        QQuickPaintedItem.__init__(self, parent)
         self._title = ""
         self._menu = ""
         self._author = ""
@@ -42,6 +43,10 @@ class Content(QObject):
         self.source = ""
         self.content_type = None
         self.attributes = {}
+
+    def paint(self, painter):
+        painter.setRenderHints(QPainter.Antialiasing, True)
+        painter.fillRect(self.x(), self.y(), self.width(), self.height(), QColor(53, 53, 53))
 
     @pyqtProperty('QString')
     def title(self):

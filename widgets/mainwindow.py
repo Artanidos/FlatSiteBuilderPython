@@ -18,11 +18,9 @@
 #
 #############################################################################
 
-import os
 from widgets.flatbutton import FlatButton
 from widgets.expander import Expander
 from widgets.generator import Generator
-from widgets.site import Site
 from widgets.hyperlink import HyperLink
 from widgets.dashboard import Dashboard
 from widgets.contentlist import ContentList
@@ -46,7 +44,6 @@ class MainWindow(QMainWindow):
 
     def __init__(self, install_directory):
         QMainWindow.__init__(self)
-        #self.engine = QQmlEngine()
         self.site = None
         self.editor = ""
         self.install_directory = install_directory
@@ -66,7 +63,7 @@ class MainWindow(QMainWindow):
             self.loadProject(self.default_path + "/Site.qml")
 
             # if site has never been generated (after install)
-            # generate the site
+            # then generate the site
             site = QDir(Generator.sitesPath() + "/" + self.site.title)
             if site.exists():
                 gen = Generator()

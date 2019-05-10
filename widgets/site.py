@@ -181,7 +181,7 @@ class Site(QObject):
         component = QQmlComponent(engine)
         component.loadUrl(QUrl(os.path.join(self.source_path, "pages", source)))
         page = component.create()
-        if self.menus is not None:
+        if page is not None:
             page.source = source
             page.content_type = ContentType.PAGE
             self.pages.append(page)
