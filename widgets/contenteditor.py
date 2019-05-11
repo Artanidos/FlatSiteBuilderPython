@@ -22,9 +22,9 @@ from widgets.hyperlink import HyperLink
 from widgets.flatbutton import FlatButton
 from widgets.animateableeditor import AnimateableEditor
 from widgets.content import ContentType
-from PyQt5.QtWidgets import QWidget, QUndoStack, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
+from PyQt5.QtWidgets import QUndoStack, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtQuick import QQuickView
+from PyQt5.QtQuickWidgets import QQuickWidget
 
 
 class ContentEditor(AnimateableEditor):
@@ -89,14 +89,14 @@ class ContentEditor(AnimateableEditor):
         hbox.addWidget(self.undo)
         hbox.addWidget(self.redo)
         hbox.addWidget(self.close)
-        self.view = QQuickView()
+        self.view = QQuickWidget()
+        self.view.setResizeMode(QQuickWidget.SizeRootObjectToView)
         self.scroll = QScrollArea()
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll.setWidgetResizable(True)
         self.scroll.installEventFilter(self)
-        self.scroll.setWidget(QWidget.createWindowContainer(self.view))
-
+        self.scroll.setWidget(self.view)
         self.layout.addWidget(self.titleLabel, 0, 0)
         self.layout.addWidget(self.previewLink, 0, 1)
         self.layout.addLayout(hbox, 0, 3)
