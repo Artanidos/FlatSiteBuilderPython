@@ -35,7 +35,6 @@ class Content(QQuickPaintedItem):
         self._title = ""
         self._menu = ""
         self._author = ""
-        self._text = ""
         self._excerpt = ""
         self._keywords = ""
         self._script = ""
@@ -71,14 +70,6 @@ class Content(QQuickPaintedItem):
     @author.setter
     def author(self, author):
         self._author = author
-
-    @pyqtProperty('QString')
-    def text(self):
-        return self._text
-
-    @text.setter
-    def text(self, text):
-        self._text = text
 
     @pyqtProperty('QString')
     def excerpt(self):

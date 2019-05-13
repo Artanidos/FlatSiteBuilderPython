@@ -1,4 +1,3 @@
-
 #############################################################################
 # Copyright (C) 2019 Olaf Japp
 #
@@ -21,13 +20,12 @@
 
 from django.template import Context, Engine
 from django.utils.safestring import mark_safe
-from xml.sax import make_parser, handler
 from widgets.content import ContentType
 import os
 import shutil
 
 
-class Generator(handler.ContentHandler):
+class Generator:
     install_directory = ""
 
     def __init__(self):
