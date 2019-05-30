@@ -18,19 +18,13 @@
 #
 #############################################################################
 
-from PyQt5.QtGui import QPainter
-from PyQt5.QtCore import pyqtProperty, Qt
-from PyQt5.QtQuick import QQuickPaintedItem
+from PyQt5.QtCore import pyqtProperty
+from widgets.item import Item
 
-
-class Text(QQuickPaintedItem):
+class Text(Item):
     def __init__(self, parent = None):
-        QQuickPaintedItem.__init__(self, parent)
+        super().__init__(parent)
         self._text = ""
-
-    def paint(self, painter):
-        painter.setRenderHints(QPainter.Antialiasing, True)
-        painter.fillRect(self.y(), self.x(), self.width(), self.height(), Qt.black)
 
     @pyqtProperty('QString')
     def text(self):

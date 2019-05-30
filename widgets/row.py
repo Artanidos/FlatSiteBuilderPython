@@ -18,15 +18,19 @@
 #
 #############################################################################
 
-from PyQt5.QtGui import QPainter
-from PyQt5.QtCore import pyqtProperty, Qt
-from PyQt5.QtQuick import QQuickPaintedItem
+from PyQt5.QtCore import pyqtProperty, QObject, Q_CLASSINFO
+from PyQt5.QtQml import QQmlListProperty
+from widgets.column import Column
+from widgets.item import Item
 
 
-class Row(QQuickPaintedItem):
+class Row(Item):
+    Q_CLASSINFO('DefaultProperty', 'columns')
+
     def __init__(self, parent = None):
-        QQuickPaintedItem.__init__(self, parent)
+        super().__init__(parent)
+        self._columns = []
 
-    def paint(self, painter):
-        painter.setRenderHints(QPainter.Antialiasing, True)
-        painter.fillRect(self.y(), self.x(), self.width(), self.height(), Qt.green)
+    @pyqtProperty(QQmlListProperty)
+    def columns(self):
+        return QQmlListProperty(Column, self, self._columns)

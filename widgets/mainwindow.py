@@ -414,6 +414,7 @@ class MainWindow(QMainWindow):
 
         # create a cell widget to get the right position in the table
         self.cellWidget = QWidget()
+        self.cellWidget.setMaximumHeight(0)
         self.list.setCellWidget(self.row, 1, self.cellWidget)
         pos = self.cellWidget.mapTo(panel, QPoint(0, 0))
 

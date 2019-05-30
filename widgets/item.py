@@ -18,27 +18,10 @@
 #
 #############################################################################
 
-from PyQt5.QtCore import pyqtProperty, QObject, Q_CLASSINFO
-from PyQt5.QtQml import QQmlListProperty
-from widgets.row import Row
-from widgets.item import Item
+from PyQt5.QtCore import pyqtProperty, QObject
 
-class Section(Item):
-    Q_CLASSINFO('DefaultProperty', 'items')
+class Item(QObject):
 
     def __init__(self, parent = None):
         super().__init__(parent)
-        self._fullwidth = False
-        self._items = []
 
-    @pyqtProperty(QQmlListProperty)
-    def items(self):
-        return QQmlListProperty(Item, self, self._items)
-
-    @pyqtProperty('bool')
-    def fullwidth(self):
-        return self._fullwidth
-
-    @fullwidth.setter
-    def fullwidth(self, fullwidth):
-        self._fullwidth = fullwidth

@@ -18,10 +18,12 @@
 #
 #############################################################################
 
-from PyQt5.QtCore import pyqtProperty
+from PyQt5.QtCore import pyqtProperty, QObject, Q_CLASSINFO
 from PyQt5.QtGui import QPainter, QColor
-from PyQt5.QtQuick import QQuickPaintedItem
+from PyQt5.QtQml import QQmlListProperty
 from enum import Enum
+from widgets.section import Section
+from widgets.item import Item
 
 
 class ContentType(Enum):
@@ -29,9 +31,11 @@ class ContentType(Enum):
     POST = 2
 
 
-class Content(QQuickPaintedItem):
-    def __init__(self, parent=None):
-        QQuickPaintedItem.__init__(self, parent)
+class Content(QObject):
+    Q_CLASSINFO('DefaultProperty', 'items')
+
+    def __init__(self, parent = None):
+        super().__init__(parent)
         self._title = ""
         self._menu = ""
         self._author = ""
@@ -42,10 +46,11 @@ class Content(QQuickPaintedItem):
         self.source = ""
         self.content_type = None
         self.attributes = {}
+        self._items = []
 
-    def paint(self, painter):
-        painter.setRenderHints(QPainter.Antialiasing, True)
-        painter.fillRect(self.x(), self.y(), self.width(), self.height(), QColor(53, 53, 53))
+    @pyqtProperty(QQmlListProperty)
+    def items(self):
+        return QQmlListProperty(Item, self, self._items)
 
     @pyqtProperty('QString')
     def title(self):

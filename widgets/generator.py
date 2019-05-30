@@ -235,7 +235,6 @@ class Generator:
         try:
             with open(outputfile, 'w') as f:
                 f.write(eng.render_to_string(layout, context=context))
-            print("Created file " + outputfile)
         except:
             msg = "Generate content failed: Unable to create file " + outputfile
             print(msg)

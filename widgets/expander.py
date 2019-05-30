@@ -150,3 +150,21 @@ class Expander(QWidget):
         self.setExpanded(not self.is_expanded)
         if self.is_expanded:
             self.clicked.emit()
+
+    def enterEvent(self, event):
+        if not self.is_expanded:
+            pal = self.palette()
+            pal.setColor(QPalette.Background, QColor(self.hovered_color))
+            self.setPalette(pal)
+            self.icon.setPixmap(QPixmap.fromImage(self.hovered_icon))
+            self.hyper.setText("<a style=\"color: " + self.label_hovered_color + "; text-decoration: none;\" href=\"#\">" + self.text + "</a>")
+        QWidget.enterEvent(self, event)
+
+    def leaveEvent(self, event):
+        if not self.is_expanded:
+            pal = self.palette()
+            pal.setColor(QPalette.Background, QColor(self.normal_color))
+            self.setPalette(pal)
+            self.icon.setPixmap(QPixmap.fromImage(self.normal_icon))
+            self.hyper.setText("<a style=\"color: " + self.label_normal_color + "; text-decoration: none;\" href=\"#\">" + self.text + "</a>")
+        QWidget.leaveEvent(self, event)

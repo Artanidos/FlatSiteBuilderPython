@@ -27,10 +27,7 @@ from PyQt5.QtGui import QPixmap
 class InstallDialog(QDialog):
     def __init__(self):
         QDialog.__init__(self)
-
-        #self.install_directory = "/home/art/FlatSiteBuilder"
-        self.setWindowTitle("Install FlatSiteBuilder")
-
+        self.setWindowTitle("Init FlatSiteBuilder")
         hbox = QHBoxLayout()
         vbox = QVBoxLayout()
         pathBox = QHBoxLayout()
@@ -49,7 +46,7 @@ class InstallDialog(QDialog):
         hbox.addStretch()
         hbox.addWidget(cancel)
         hbox.addWidget(install)
-        vbox.addWidget(QLabel("FlatSiteBuilder is about to be installed onto your computer."))
+        vbox.addWidget(QLabel("FlatSiteBuilder is about to be set the working directory onto your computer."))
         vbox.addWidget(QLabel("Please choose a directory where the files should be stored."))
         vbox.addLayout(pathBox)
         vbox.addStretch()
@@ -63,10 +60,10 @@ class InstallDialog(QDialog):
         choose.clicked.connect(self.chooseClicked)
 
     @pyqtSlot()
-    def installClicked(self, clicked):
+    def installClicked(self):
         install_dir = QDir(self.path.text())
         if install_dir.exists() and install_dir:
-            rc = QMessageBox.question(self, "Warning", "The folder already exists and is not empty. Do you really want to use this directory to install FlatSiteBuilder?")
+            rc = QMessageBox.question(self, "Warning", "The folder already exists and is not empty. Do you really want to use this directory for FlatSiteBuilder?")
             if rc != QMessageBox.Yes:
                 return
 
@@ -74,15 +71,15 @@ class InstallDialog(QDialog):
         self.close()
 
     @pyqtSlot()
-    def cancelClicked(self, clicked):
+    def cancelClicked(self):
         self.install_directory = ""
         self.close()
 
     @pyqtSlot()
-    def chooseClicked(self, clicked):
+    def chooseClicked(self):
         dialog = QFileDialog()
         dialog.setFileMode(QFileDialog.DirectoryOnly)
-        dialog.setWindowTitle("Install FlatSiteBuilder to ...")
+        dialog.setWindowTitle("Init FlatSiteBuilder to ...")
         dialog.setOption(QFileDialog.DontUseNativeDialog, True)
         dialog.setAcceptMode(QFileDialog.AcceptOpen)
         dialog.setDirectory(self.path.text())

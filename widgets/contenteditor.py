@@ -21,10 +21,16 @@
 from widgets.hyperlink import HyperLink
 from widgets.flatbutton import FlatButton
 from widgets.animateableeditor import AnimateableEditor
+from widgets.section import Section
+from widgets.text import Text
+from widgets.pageeditor import PageEditor
+from widgets.sectioneditor import SectionEditor
+from widgets.roweditor import RowEditor
+from widgets.columneditor import ColumnEditor
+from widgets.elementeditor import ElementEditor, Mode
 from widgets.content import ContentType
 from PyQt5.QtWidgets import QUndoStack, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtQuickWidgets import QQuickWidget
 
 
 class ContentEditor(AnimateableEditor):
@@ -89,14 +95,16 @@ class ContentEditor(AnimateableEditor):
         hbox.addWidget(self.undo)
         hbox.addWidget(self.redo)
         hbox.addWidget(self.close)
-        self.view = QQuickWidget()
-        self.view.setResizeMode(QQuickWidget.SizeRootObjectToView)
+
+        # self.view = QQuickWidget()
+        # self.view.setResizeMode(QQuickWidget.SizeRootObjectToView)
+
         self.scroll = QScrollArea()
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll.setWidgetResizable(True)
         self.scroll.installEventFilter(self)
-        self.scroll.setWidget(self.view)
+        # self.scroll.setWidget(self.view)
         self.layout.addWidget(self.titleLabel, 0, 0)
         self.layout.addWidget(self.previewLink, 0, 1)
         self.layout.addLayout(hbox, 0, 3)
@@ -133,7 +141,7 @@ class ContentEditor(AnimateableEditor):
         self.load()
 
         self.close.clicked.connect(self.closeEditor)
-        #connect(self.close, SIGNAL(clicked()), self, SLOT(closeEditor()))
+
         #connect(self.undo, SIGNAL(clicked()), self, SLOT(undo()))
         #connect(self.redo, SIGNAL(clicked()), self, SLOT(redo()))
         #connect(self.title, SIGNAL(editingFinished()), self, SLOT(titleChanged()))
@@ -153,7 +161,17 @@ class ContentEditor(AnimateableEditor):
         #connect(self.script, SIGNAL(clicked()), self, SLOT(script()))
 
     def load(self):
-        self.view.setSource(QUrl("/home/art/FlatSiteBuilder/sources/Test/pages/index.qml"))
+        pe = PageEditor()
+        self.scroll.setWidget(pe)
+        for item in self.content.items:
+            if isinstance(item, Section):
+                se = SectionEditor(item)
+                #se.setCssClass(stream.attributes().value("cssclass").toString())
+                #se.setStyle(stream.attributes().value("style").toString())
+                #se.setAttributes(stream.attributes().value("attributes").toString())
+                #se.setId(stream.attributes().value("id").toString())
+                pe.addSection(se)
+            # todo other types
 
     def siteLoaded(self, site):
         self.site = site
