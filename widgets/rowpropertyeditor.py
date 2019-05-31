@@ -1,7 +1,7 @@
 #############################################################################
 # Copyright (C) 2019 Olaf Japp
 #
-# self file is part of FlatSiteBuilder.
+# This file is part of FlatSiteBuilder.
 #
 #  FlatSiteBuilder is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,28 +18,23 @@
 #
 #############################################################################
 
-from PyQt5.QtCore import pyqtProperty, QObject
+from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtWidgets import (QComboBox, QGridLayout, QHBoxLayout, QLabel,
+                             QLineEdit, QPushButton, QScrollArea, QUndoStack,
+                             QVBoxLayout, QWidget)
 
-class Item(QObject):
+from widgets.content import ContentType
+from widgets.elementeditor import ElementEditor, Mode
+from widgets.flatbutton import FlatButton
+from widgets.hyperlink import HyperLink
+from widgets.pageeditor import PageEditor
+from widgets.roweditor import RowEditor
+from widgets.section import Section
+from widgets.sectioneditor import SectionEditor
 
-    def __init__(self, parent = None):
-        super().__init__(parent)
-        self._adminlabel = ""
-        self._text = ""
 
-    @pyqtProperty('QString')
-    def text(self):
-        return self._text
+class RowPropertyEditor(QWidget):
 
-    @text.setter
-    def text(self, text):
-        self._text = text
-
-    @pyqtProperty('QString')
-    def adminlabel(self):
-        return self._adminlabel
-
-    @adminlabel.setter
-    def adminlabel(self, adminlabel):
-        self._adminlabel = adminlabel
-
+    def __init__(self, column):
+        QWidget.__init__(self)

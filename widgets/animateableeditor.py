@@ -27,35 +27,47 @@ class AnimateableEditor(QWidget):
 
     def __init__(self):
         QWidget.__init__(self)
+        self._changed = False
+
+    def contentChanged(self):
+        self._changed = True
+
+    @pyqtProperty('bool')
+    def changed(self):
+        return self._changed
+
+    @changed.setter
+    def changed(self, value):
+        self._changed = value
 
     @pyqtProperty('int')
     def x(self):
-        return super.x()
+        return super().x()
 
     @x.setter
     def x(self, value):
-        self.move(value, super.y())
+        self.move(value, super().y())
 
     @pyqtProperty('int')
     def y(self):
-        return super.y()
+        return super().y()
 
     @y.setter
     def y(self, value):
-        self.move(super.x(), value)
+        self.move(super().x(), value)
 
     @pyqtProperty('int')
     def width(self):
-        return super.width()
+        return super().width()
 
     @width.setter
     def width(self, value):
-        self.resize(value, super.height())
+        self.resize(value, super().height())
 
     @pyqtProperty('int')
     def height(self):
-        return super.height()
+        return super().height()
 
     @height.setter
     def height(self, value):
-        self.resize(super.width(), value)
+        self.resize(super().width(), value)

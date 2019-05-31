@@ -27,10 +27,11 @@ from widgets.pageeditor import PageEditor
 from widgets.sectioneditor import SectionEditor
 from widgets.roweditor import RowEditor
 from widgets.columneditor import ColumnEditor
+from widgets.texteditor import TextEditor
 from widgets.elementeditor import ElementEditor, Mode
 from widgets.content import ContentType
 from PyQt5.QtWidgets import QUndoStack, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtCore import Qt, QUrl, QPoint, QParallelAnimationGroup, QPropertyAnimation, QAbstractAnimation
 
 
 class ContentEditor(AnimateableEditor):
@@ -96,15 +97,11 @@ class ContentEditor(AnimateableEditor):
         hbox.addWidget(self.redo)
         hbox.addWidget(self.close)
 
-        # self.view = QQuickWidget()
-        # self.view.setResizeMode(QQuickWidget.SizeRootObjectToView)
-
         self.scroll = QScrollArea()
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll.setWidgetResizable(True)
         self.scroll.installEventFilter(self)
-        # self.scroll.setWidget(self.view)
         self.layout.addWidget(self.titleLabel, 0, 0)
         self.layout.addWidget(self.previewLink, 0, 1)
         self.layout.addLayout(hbox, 0, 3)
@@ -189,3 +186,133 @@ class ContentEditor(AnimateableEditor):
         if self.editor:
             self.editor.closeEditor()
         self.closes.emit()
+
+    def elementEdit(self, ee):
+        self.element_editor = ee
+        #if Plugins.hasElementPlugin(ee.type()))
+        #    self.editor = dynamic_cast<AnimateableEditor*>(Plugins.getElementPlugin(ee.type()))
+        #else
+        #    self.editor = dynamic_cast<AnimateableEditor*>(Plugins.getElementPlugin("TextEditor"))
+        #    qDebug() << "Plugin for type " + ee.type() + " not loaded."
+        self.editor = TextEditor()
+        self.editor.setSite(self.site)
+        self.editor.setContent(ee.content())
+        self.editor.close.connect(self.editorClose)
+        self.animate(ee)
+
+    def animate(self, widget):
+        self.sourcewidget = widget
+        pos = widget.mapTo(self.scroll, QPoint(0,0))
+
+        self.editor.setParent(self.scroll)
+        self.editor.move(pos)
+        self.editor.resize(widget.size())
+        self.editor.show()
+
+        self.animationgroup = QParallelAnimationGroup()
+        self.animx = QPropertyAnimation()
+        self.animx.setDuration(300)
+        self.animx.setStartValue(pos.x())
+        self.animx.setEndValue(0)
+        self.animx.setTargetObject(self.editor)
+        self.animx.setPropertyName("x".encode("utf-8"))
+        self.animationgroup.addAnimation(self.animx)
+        self.animy = QPropertyAnimation()
+        self.animy.setDuration(300)
+        self.animy.setStartValue(pos.y())
+        self.animy.setEndValue(0)
+        self.animy.setTargetObject(self.editor)
+        self.animy.setPropertyName("y".encode("utf-8"))
+        self.animationgroup.addAnimation(self.animy)
+        self.animw = QPropertyAnimation()
+        self.animw.setDuration(300)
+        self.animw.setStartValue(widget.size().width())
+        self.animw.setEndValue(self.scroll.size().width())
+        self.animw.setTargetObject(self.editor)
+        self.animw.setPropertyName("width".encode("utf-8"))
+        self.animationgroup.addAnimation(self.animw)
+        self.animh = QPropertyAnimation()
+        self.animh.setDuration(300)
+        self.animh.setStartValue(widget.size().height())
+        self.animh.setEndValue(self.scroll.size().height())
+        self.animh.setTargetObject(self.editor)
+        self.animh.setPropertyName("height".encode("utf-8"))
+        self.animationgroup.addAnimation(self.animh)
+        self.animationgroup.finished.connect(self.animationFineshedZoomIn)
+        self.animationgroup.start()
+    
+    def animationFineshedZoomIn(self):
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        self.title.setEnabled(False)
+        self.author.setEnabled(False)
+        self.keywords.setEnabled(False)
+        self.menus.setEnabled(False)
+        self.layouts.setEnabled(False)
+        self.labelAuthor.setEnabled(False)
+        self.labelKeyword.setEnabled(False)
+        self.labelMenu.setEnabled(False)
+        self.labelLayout.setEnabled(False)
+        self.labelTitle.setEnabled(False)
+        self.labelPermalink.setEnabled(False)
+        self.previewLink.hide()
+        self.undo.hide()
+        self.redo.hide()
+        self.close.hide()
+        self.source.setEnabled(False)
+        if self.content.content_type == ContentType.POST:
+            self.excerpt.setEnabled(False)
+            self.excerptLabel.setEnabled(False)
+        
+    def editorClose(self):
+        #if self.editor.changed:
+            #self.element_editor.setContent(self.editor.content())
+            #self.editChanged("Update Element")
+        self.editorClosed()
+
+    def editorClosed(self):
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        pos = self.sourcewidget.mapTo(self.scroll, QPoint(0,0))
+        # correct end values in case of resizing the window
+        self.animx.setStartValue(pos.x())
+        self.animy.setStartValue(pos.y())
+        self.animw.setStartValue(self.sourcewidget.size().width())
+        self.animh.setStartValue(self.sourcewidget.size().height())
+        self.animationgroup.setDirection(QAbstractAnimation.Backward)
+        self.animationgroup.finished.disconnect(self.animationFineshedZoomIn)
+        self.animationgroup.finished.connect(self.animationFineshedZoomOut)
+        self.animationgroup.start()
+
+    def animationFineshedZoomOut(self):
+        from widgets.rowpropertyeditor import RowPropertyEditor
+        from widgets.sectionpropertyeditor import SectionPropertyEditor
+        self.title.setEnabled(True)
+        self.source.setEnabled(True)
+        self.author.setEnabled(True)
+        self.keywords.setEnabled(True)
+        self.menus.setEnabled(True)
+        self.layouts.setEnabled(True)
+        self.labelAuthor.setEnabled(True)
+        self.labelKeyword.setEnabled(True)
+        self.labelMenu.setEnabled(True)
+        self.labelLayout.setEnabled(True)
+        self.labelTitle.setEnabled(True)
+        self.labelPermalink.setEnabled(True)
+        self.previewLink.show()
+        self.undo.show()
+        self.redo.show()
+        self.close.show()
+        if self.content.content_type == ContentType.POST:
+            self.excerpt.setEnabled(True)
+            self.excerptLabel.setEnabled(True)
+        del self.animationgroup
+        self.editor.hide()
+        # parent has to be set to NULL, otherwise the plugin will be dropped by parent
+        self.editor.setParent(None)
+        self.editor.close.disconnect(self.editorClose)
+        # only delete Row- and SectionPropertyEditor the other editor are plugins
+        if isinstance(self.editor, RowPropertyEditor) or isinstance(self.editor, SectionPropertyEditor) or isinstance(self.editor, TextEditor):
+            del self.editor
+        self.editor = None

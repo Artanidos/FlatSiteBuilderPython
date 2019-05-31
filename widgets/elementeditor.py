@@ -21,7 +21,9 @@
 from widgets.flatbutton import FlatButton
 from widgets.hyperlink import HyperLink
 from widgets.section import Section
+from widgets.sectioneditor import SectionEditor
 from widgets.content import ContentType
+from widgets.text import Text
 from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QColor, QPalette
@@ -71,6 +73,7 @@ class ElementEditor(QWidget):
         layout.addWidget(self.closeButton)
         self.setLayout(layout)
 
+        self.editButton.clicked.connect(self.edit)
         # connect(self.link, SIGNAL(clicked()), this, SLOT(enable()))
         # connect(self.editButton, SIGNAL(clicked()), this, SLOT(edit()))
         # connect(self.copyButton, SIGNAL(clicked()), this, SLOT(copy()))
@@ -78,13 +81,27 @@ class ElementEditor(QWidget):
 
         self.load()
 
+    def edit(self):
+        ce = self.getContentEditor()
+        if ce:
+            ce.elementEdit(self)
+
     def setColor(self, name):
         pal = self.palette()
         pal.setColor(QPalette.Background, QColor(name))
         self.setPalette(pal)
 
     def load(self):
-        print("impl load")
+        print("Todo: ElementEditor.load()")
+        #self.type = stream->name() + "Editor";
+        #QString label = stream->attributes().value("adminlabel").toString();
+        #if(label.isEmpty())
+        #    m_text->setText(stream->name().toString());
+        #else
+        #    m_text->setText(label);
+        #ElementEditorInterface * editor = Plugins::getElementPlugin(m_type);
+        #if(editor)
+        #    m_content = editor->load(stream);
 
     def setMode(self, mode):
         self.mode = mode
@@ -111,3 +128,32 @@ class ElementEditor(QWidget):
             self.text.setText("Drop Here")
             self.setColor(self.dropColor)
         
+    def getContentEditor(self):
+        se = self.getSectionEditor()
+        if se:
+            pe = se.parentWidget()
+            if pe:
+                sa = pe.parentWidget()
+                if sa:
+                    vp = sa.parentWidget()
+                    if vp:
+                        cee = vp.parentWidget()
+                        if cee:
+                            return cee
+        return None
+
+    def getSectionEditor(self):
+        from widgets.columneditor import ColumnEditor
+        se = self.parentWidget()
+        if isinstance(se, SectionEditor):
+            return se
+        elif isinstance(se, ColumnEditor):
+            re = se.parentWidget()
+            if re:
+                se = re.parentWidget()
+                if se:
+                    return se
+        return None
+
+    def content(self):
+        return self.element

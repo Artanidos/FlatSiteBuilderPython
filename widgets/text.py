@@ -24,12 +24,3 @@ from widgets.item import Item
 class Text(Item):
     def __init__(self, parent = None):
         super().__init__(parent)
-        self._text = ""
-
-    @pyqtProperty('QString')
-    def text(self):
-        return self._text
-
-    @text.setter
-    def text(self, text):
-        self._text = text
