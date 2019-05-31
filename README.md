@@ -7,7 +7,7 @@ Have a look at our web site: https://artanidos.github.io/FlatSiteBuilder
 !(flatsitebuilder.png)
 
 # Syntax
-The syntax for the templates is based on Django.
+The syntax for the templates is based on [Django](https://www.djangoproject.com/start/). That also means that we render the HTML using [Django](https://www.djangoproject.com/start/).
 
 ## Variable
 {{ varname }}
