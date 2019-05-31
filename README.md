@@ -1,8 +1,10 @@
 # FlatSiteBuilder
 
-This desktop app is working as a content mangement system and is producing a flat file web content to use with github pages.
+This desktop app is working as a content mangement system and is producing a flat file web content to use with github pages or any other service provider.
 
 Have a look at our web site: https://artanidos.github.io/FlatSiteBuilder
+
+!(flatsitebuilder.png)
 
 # Syntax
 The syntax for the templates is based on Django.
