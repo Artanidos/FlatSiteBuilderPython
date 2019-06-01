@@ -22,6 +22,7 @@ from widgets.hyperlink import HyperLink
 from widgets.flatbutton import FlatButton
 from widgets.hyperlink import HyperLink
 from widgets.section import Section
+from widgets.sectioneditor import SectionEditor
 from widgets.content import ContentType
 from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
 from PyQt5.QtCore import Qt, QUrl
@@ -49,3 +50,11 @@ class PageEditor(QWidget):
     def addSection(self, se):
         #connect(se, SIGNAL(sectionEditorCopied(SectionEditor*)), this, SLOT(copySection(SectionEditor*)));
         self.layout.insertWidget(self.layout.count() - 2, se)
+
+    def sections(self):
+        list = []
+        for i in range(self.layout.count()):
+            se = self.layout.itemAt(i).widget()
+            if isinstance(se, SectionEditor):
+                list.append(se)
+        return list

@@ -24,3 +24,11 @@ from widgets.item import Item
 class Text(Item):
     def __init__(self, parent = None):
         super().__init__(parent)
+
+    def save(self, f, indent):
+        f.write("\n")
+        f.write(" " * indent + "Text {\n")
+        self.writeAttribute(f, indent + 4, "id", self._id)
+        self.writeAttribute(f, indent + 4, "text", self._text.replace("\n", "\\n"))
+        self.writeAttribute(f, indent + 4, "adminlabel", self._adminlabel)
+        f.write(" " * indent + "}\n")

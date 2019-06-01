@@ -38,9 +38,9 @@ class Mode(Enum):
 
 class ElementEditor(QWidget):
 
-    def __init__(self, element):
+    def __init__(self, content):
         QWidget.__init__(self)
-        self.element = element
+        self.content = content
         self.setAutoFillBackground(True)
         self.setMinimumWidth(120)
         self.setMinimumHeight(50)
@@ -155,5 +155,15 @@ class ElementEditor(QWidget):
                     return se
         return None
 
-    def content(self):
-        return self.element
+    def getContent(self):
+        return self.content
+
+    def setContent(self, content):
+        self.content = content
+        if content.adminlabel:
+            self.text.setText(content.adminlabel)
+        else:
+            self.text.setText("Text")
+
+    def save(self, f, indent):
+        pass

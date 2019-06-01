@@ -107,3 +107,6 @@ class RowEditor(QWidget):
             ce = ColumnEditor(column)
             self.addColumn(ce, i)
             i = i + 1
+
+    def save(self, f, indent):
+        pass

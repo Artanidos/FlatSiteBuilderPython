@@ -29,6 +29,9 @@ class Section(Item):
     def __init__(self, parent = None):
         super().__init__(parent)
         self._fullwidth = False
+        self._cssclass = ""
+        self._style = ""
+        self._attributes = ""
         self._items = []
 
     @pyqtProperty(QQmlListProperty)
@@ -42,3 +45,15 @@ class Section(Item):
     @fullwidth.setter
     def fullwidth(self, fullwidth):
         self._fullwidth = fullwidth
+
+    def save(self, f, indent):
+        f.write("\n")
+        f.write(" " * indent + "Section {\n")
+        self.writeAttribute(f, indent + 4, "id", self._id)
+        self.writeAttribute(f, indent + 4, "cssclass", self._cssclass)
+        self.writeAttribute(f, indent + 4, "style", self._style)
+        self.writeAttribute(f, indent + 4, "attributes", self._attributes)
+        self.writeAttribute(f, indent + 4, "fullwidth", self._fullwidth)
+        for item in self._items:
+            item.save(f, indent + 4)
+        f.write(" " * indent + "}\n")

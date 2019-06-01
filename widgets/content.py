@@ -119,3 +119,29 @@ class Content(QObject):
     def url(self):
         url = self.source
         return url.replace(".qml", ".html")
+
+    def writeAttribute(self, f, indent, att, value):
+        if value: 
+            if isinstance(value, str):
+                f.write(" " * indent + att + ": \"" + value + "\"\n")
+            elif isinstance(value, bool):
+                f.write(" " * indent + att + ": true\n")
+
+    def save(self, f):
+        f.write("Content {\n")
+        self.writeAttribute(f, 4, "title", self.title)
+        self.writeAttribute(f, 4, "menu", self.menu)
+        self.writeAttribute(f, 4, "author", self.author)
+        self.writeAttribute(f, 4, "keywords", self.keywords)
+        self.writeAttribute(f, 4, "script", self.script)
+        self.writeAttribute(f, 4, "layout", self.layout)
+        self.writeAttribute(f, 4, "date", self.date)
+        self.writeAttribute(f, 4, "excerpt", self.excerpt)
+
+        for att, value in self.attributes:
+            f.writeAttribute(f, 4, att, value) 
+            
+        for item in self._items:
+            item.save(f, 4)
+
+        f.write("}\n")

@@ -18,11 +18,14 @@
 #
 #############################################################################
 
+import os
+from pathlib import Path
 from widgets.hyperlink import HyperLink
 from widgets.flatbutton import FlatButton
 from widgets.animateableeditor import AnimateableEditor
 from widgets.section import Section
 from widgets.text import Text
+from widgets.generator import Generator
 from widgets.pageeditor import PageEditor
 from widgets.sectioneditor import SectionEditor
 from widgets.roweditor import RowEditor
@@ -30,6 +33,7 @@ from widgets.columneditor import ColumnEditor
 from widgets.texteditor import TextEditor
 from widgets.elementeditor import ElementEditor, Mode
 from widgets.content import ContentType
+from widgets.commands import ChangeContentCommand
 from PyQt5.QtWidgets import QUndoStack, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
 from PyQt5.QtCore import Qt, QUrl, QPoint, QParallelAnimationGroup, QPropertyAnimation, QAbstractAnimation
 
@@ -73,16 +77,16 @@ class ContentEditor(AnimateableEditor):
         self.layouts = QComboBox()
         self.layouts.setMaximumWidth(100)
 
-        #foreach(Menu *menu, self.site.menus())
-        #    self.menus.addItem(menu.name())
-        #QDir layouts(self.site.sourcePath() + "/layouts")
-        #foreach(QString file, layouts.entryList(QDir.Files))
-        #    self.layouts.addItem(file.mid(0, file.indexOf(".html")))
-        #QDir themelayouts(Generator.themesPath() + "/" + self.site.theme() + "/layouts")
-        #foreach(QString file, themelayouts.entryList(QDir.Files))
-        #    QString layout = file.mid(0, file.indexOf(".html"))
-        #    if(self.layouts.findText(layout) < 0)
-        #        self.layouts.addItem(layout)
+        for menu in self.site.menus.menus:
+            self.menus.addItem(menu.name)
+
+        for root, dirs, files in os.walk(os.path.join(self.site.source_path, "layouts")):
+            for file in files:
+                self.layouts.addItem(Path(file).stem)
+        
+        for root, dirs, files in os.walk(os.path.join(Generator.themesPath(), self.site.theme, "layouts")):
+            for file in files:
+                self.layouts.addItem(Path(file).stem)
 
         self.close = FlatButton("./images/close_normal.png", "./images/close_hover.png")
         self.close.setToolTip("Close Content Editor")
@@ -196,7 +200,7 @@ class ContentEditor(AnimateableEditor):
         #    qDebug() << "Plugin for type " + ee.type() + " not loaded."
         self.editor = TextEditor()
         self.editor.setSite(self.site)
-        self.editor.setContent(ee.content())
+        self.editor.setContent(ee.getContent())
         self.editor.close.connect(self.editorClose)
         self.animate(ee)
 
@@ -266,9 +270,9 @@ class ContentEditor(AnimateableEditor):
             self.excerptLabel.setEnabled(False)
         
     def editorClose(self):
-        #if self.editor.changed:
-            #self.element_editor.setContent(self.editor.content())
-            #self.editChanged("Update Element")
+        if self.editor.changed:
+            self.element_editor.setContent(self.editor.getContent())
+            self.editChanged("Update Element")
         self.editorClosed()
 
     def editorClosed(self):
@@ -316,3 +320,12 @@ class ContentEditor(AnimateableEditor):
         if isinstance(self.editor, RowPropertyEditor) or isinstance(self.editor, SectionPropertyEditor) or isinstance(self.editor, TextEditor):
             del self.editor
         self.editor = None
+
+    def editChanged(self, text):
+        changeCommand = ChangeContentCommand(self.win, self, text)
+        self.undoStack.push(changeCommand)
+
+    def save(self):
+        with open(self.filename, "w") as f:
+            f.write("import FlatSiteBuilder 2.0\n\n")
+            self.content.save(f)

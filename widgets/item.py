@@ -26,6 +26,7 @@ class Item(QObject):
         super().__init__(parent)
         self._adminlabel = ""
         self._text = ""
+        self._id = ""
 
     @pyqtProperty('QString')
     def text(self):
@@ -42,4 +43,11 @@ class Item(QObject):
     @adminlabel.setter
     def adminlabel(self, adminlabel):
         self._adminlabel = adminlabel
+
+    def writeAttribute(self, f, indent, att, value):
+        if value: 
+            if isinstance(value, str):
+                f.write(" " * indent + att + ": \"" + value + "\"\n")
+            elif isinstance(value, bool):
+                f.write(" " * indent + att + ": true\n")
 

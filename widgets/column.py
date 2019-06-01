@@ -32,3 +32,10 @@ class Column(QObject):
     @pyqtProperty(QQmlListProperty)
     def items(self):
         return QQmlListProperty(Item, self, self._items)
+
+    def save(self, f, indent):
+        f.write("\n")
+        f.write(" " * indent + "Column {\n")
+        for item in self._items:
+            item.save(f, indent + 4)
+        f.write(" " * indent + "}\n")

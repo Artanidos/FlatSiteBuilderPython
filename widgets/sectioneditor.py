@@ -36,6 +36,10 @@ class SectionEditor(QWidget):
         from widgets.elementeditor import ElementEditor, Mode
 
         self.section = section
+        self.id = None
+        self.cssclass = None
+        self.style = None
+        self.attributes = None
         self.setAutoFillBackground(True)
         self.setAcceptDrops(True)
         self.setBGColor()

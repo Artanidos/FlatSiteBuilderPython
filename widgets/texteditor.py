@@ -91,15 +91,14 @@ class TextEditor(AnimateableEditor):
             self.adminlabel.setText(content.adminlabel)
         self.changed = False
 
+    def getContent(self):
+        return self.content
+
     def setSite(self, site):
         self.site = site
 
     def closeEditor(self):
         if self.changed:
-            self.content = None
-            #QXmlStreamWriter stream(&m_content);
-            #stream.writeStartElement("Text");
-            #stream.writeAttribute("adminlabel", m_adminlabel->text());
-            #stream.writeCDATA(m_html->toPlainText());
-            #stream.writeEndElement();
+            self.content.adminlabel = self.adminlabel.text()
+            self.content.text = self.html.toPlainText() 
         self.close.emit()
