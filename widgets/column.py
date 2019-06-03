@@ -22,7 +22,7 @@ from PyQt5.QtCore import pyqtProperty, QObject, Q_CLASSINFO
 from PyQt5.QtQml import QQmlListProperty
 from widgets.item import Item
 
-class Column(QObject):
+class Column(Item):
     Q_CLASSINFO('DefaultProperty', 'items')
 
     def __init__(self, parent = None):
@@ -41,6 +41,13 @@ class Column(QObject):
     @span.setter
     def span(self, span):
         self._span = span
+
+    def clone(self):
+        col = Column()
+        col.span = self._span
+        for item in self._items:
+            col._items.append(item.clone())
+        return col
 
     def save(self, f, indent):
         f.write("\n")

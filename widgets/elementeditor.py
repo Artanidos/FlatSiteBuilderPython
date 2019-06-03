@@ -25,7 +25,7 @@ from widgets.sectioneditor import SectionEditor
 from widgets.content import ContentType
 from widgets.text import Text
 from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QColor, QPalette
 from enum import Enum
 
@@ -37,10 +37,11 @@ class Mode(Enum):
 
 
 class ElementEditor(QWidget):
+    elementCopied = pyqtSignal(object)
 
-    def __init__(self, content):
+    def __init__(self):
         QWidget.__init__(self)
-        self.content = content
+        self.content = None
         self.setAutoFillBackground(True)
         self.setMinimumWidth(120)
         self.setMinimumHeight(50)
@@ -56,12 +57,12 @@ class ElementEditor(QWidget):
 
         self.editButton = FlatButton("./images/edit_normal.png", "./images/edit_hover.png")
         self.copyButton = FlatButton("./images/copy_normal.png", "./images/copy_hover.png")
-        self.closeButton = FlatButton("./images/trash_normal.png", "./images/trash_hover.png")
+        self.deleteButton = FlatButton("./images/trash_normal.png", "./images/trash_hover.png")
         self.editButton.setVisible(False)
         self.copyButton.setVisible(False)
-        self.closeButton.setVisible(False)
+        self.deleteButton.setVisible(False)
         self.editButton.setToolTip("Edit Element")
-        self.closeButton.setToolTip("Delete Element")
+        self.deleteButton.setToolTip("Delete Element")
         self.copyButton.setToolTip("Copy Element")
         self.text = QLabel("Text")
         self.text.setVisible(False)
@@ -70,16 +71,40 @@ class ElementEditor(QWidget):
         layout.addWidget(self.editButton)
         layout.addWidget(self.copyButton)
         layout.addWidget(self.text, 1, Qt.AlignCenter)
-        layout.addWidget(self.closeButton)
+        layout.addWidget(self.deleteButton)
         self.setLayout(layout)
 
         self.editButton.clicked.connect(self.edit)
-        # connect(self.link, SIGNAL(clicked()), this, SLOT(enable()))
-        # connect(self.editButton, SIGNAL(clicked()), this, SLOT(edit()))
-        # connect(self.copyButton, SIGNAL(clicked()), this, SLOT(copy()))
-        # connect(self.closeButton, SIGNAL(clicked()), this, SLOT(close()))
+        self.deleteButton.clicked.connect(self.delete)
+        self.copyButton.clicked.connect(self.copy)
+        self.link.clicked.connect(self.enable)
 
-        self.load()
+    def enable(self):
+        pass
+        #dlg = ModulDialog()
+        #dlg.exec()
+
+        #if not dlg.result():
+        #    return
+
+        #ElementEditorInterface *editor = Plugins::getElementPlugin(dlg->result());
+        #m_text->setText(editor->displayName());
+        #m_content = "<" + editor->tagName() + "/>";
+        #m_type = editor->className();
+
+        #self.setMode(Mode.Enabled)
+        #self.elementEnabled.emit()
+        #self.edit();
+        
+    def copy(self):
+        self.elementCopied.emit(self)
+
+    def delete(self):
+        self.parentWidget().layout.removeWidget(self)
+
+        ce = self.getContentEditor()
+        if ce:
+            ce.editChanged("Delete Element")
 
     def edit(self):
         ce = self.getContentEditor()
@@ -91,17 +116,8 @@ class ElementEditor(QWidget):
         pal.setColor(QPalette.Background, QColor(name))
         self.setPalette(pal)
 
-    def load(self):
-        print("Todo: ElementEditor.load()")
-        #self.type = stream->name() + "Editor";
-        #QString label = stream->attributes().value("adminlabel").toString();
-        #if(label.isEmpty())
-        #    m_text->setText(stream->name().toString());
-        #else
-        #    m_text->setText(label);
-        #ElementEditorInterface * editor = Plugins::getElementPlugin(m_type);
-        #if(editor)
-        #    m_content = editor->load(stream);
+    def load(self, content):
+        self.content = content
 
     def setMode(self, mode):
         self.mode = mode
@@ -109,21 +125,21 @@ class ElementEditor(QWidget):
             self.link.setVisible(True)
             self.editButton.setVisible(False)
             self.copyButton.setVisible(False)
-            self.closeButton.setVisible(False)
+            self.deleteButton.setVisible(False)
             self.text.setVisible(False)
             self.setColor(self.normalColor)
         elif mode == Mode.ENABLED:
             self.link.setVisible(False)
             self.editButton.setVisible(True)
             self.copyButton.setVisible(True)
-            self.closeButton.setVisible(True)
+            self.deleteButton.setVisible(True)
             self.text.setVisible(True)
             self.setColor(self.enabledColor)
         elif mode == Mode.DROPZONE:
             self.link.setVisible(False)
             self.editButton.setVisible(False)
             self.copyButton.setVisible(False)
-            self.closeButton.setVisible(False)
+            self.deleteButton.setVisible(False)
             self.text.setVisible(True)
             self.text.setText("Drop Here")
             self.setColor(self.dropColor)

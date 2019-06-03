@@ -46,6 +46,31 @@ class Section(Item):
     def fullwidth(self, fullwidth):
         self._fullwidth = fullwidth
 
+    @pyqtProperty('QString')
+    def cssclass(self):
+        return self._cssclass
+
+    @cssclass.setter
+    def cssclass(self, cssclass):
+        self._cssclass = cssclass
+
+    @pyqtProperty('QString')
+    def style(self):
+        return self._style
+
+    @style.setter
+    def style(self, style):
+        self._style = style    
+
+    def clone(self):
+        sec = Section()
+        sec.fullwidth = self._fullwidth
+        sec.cssclass = self._cssclass
+        sec.style = self._style
+        for item in self._items:
+            sec._items.append(item.clone())
+        return sec
+
     def save(self, f, indent):
         f.write("\n")
         f.write(" " * indent + "Section {\n")

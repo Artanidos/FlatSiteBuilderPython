@@ -145,3 +145,9 @@ class Content(QObject):
             item.save(f, 4)
 
         f.write("}\n")
+
+    def appendSection(self, sec):
+        self._items.append(sec)
+
+    def removeSection(self, sec):
+        self._items.remove(sec)

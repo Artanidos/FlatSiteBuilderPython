@@ -19,15 +19,16 @@
 #############################################################################
 
 from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QPalette, QColor
 from widgets.row import Row
 from widgets.text import Text
 
 
 class SectionEditor(QWidget):
+    sectionEditorCopied = pyqtSignal(object)
 
-    def __init__(self, section):
+    def __init__(self, fullwidth):
         QWidget.__init__(self)
         from widgets.hyperlink import HyperLink
         from widgets.flatbutton import FlatButton
@@ -35,7 +36,8 @@ class SectionEditor(QWidget):
         from widgets.content import ContentType
         from widgets.elementeditor import ElementEditor, Mode
 
-        self.section = section
+        self.fullwidth = fullwidth
+        self.section = None
         self.id = None
         self.cssclass = None
         self.style = None
@@ -48,13 +50,13 @@ class SectionEditor(QWidget):
         vbox.setSpacing(5)
         self.edit_button = FlatButton("./images/edit_normal.png", "./images/edit_hover.png")
         self.copyButton = FlatButton("./images/copy_normal.png", "./images/copy_hover.png")
-        self.closeButton = FlatButton("./images/trash_normal.png", "./images/trash_hover.png")
+        self.deleteButton = FlatButton("./images/trash_normal.png", "./images/trash_hover.png")
         self.edit_button.setToolTip("Edit Section")
-        self.closeButton.setToolTip("Delete Section")
+        self.deleteButton.setToolTip("Delete Section")
         self.copyButton.setToolTip("Copy Section")
         vbox.addWidget(self.edit_button)
         vbox.addWidget(self.copyButton)
-        vbox.addWidget(self.closeButton)
+        vbox.addWidget(self.deleteButton)
 
         vboxRight = QVBoxLayout()
         vboxRight.setAlignment(Qt.AlignLeft)
@@ -64,8 +66,8 @@ class SectionEditor(QWidget):
         addRow = HyperLink("(+) Add Row")
         vboxRight.addLayout(self.layout)
 
-        if self.section.fullwidth:
-            ee = ElementEditor(section.items[0])
+        if self.fullwidth:
+            ee = ElementEditor()
             # connect(ee, SIGNAL(elementEnabled()), this, SLOT(addElement()))
             # connect(ee, SIGNAL(elementDragged()), this, SLOT(addElement()))
             # connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)))
@@ -76,17 +78,23 @@ class SectionEditor(QWidget):
         layout.addLayout(vboxRight)
         self.setLayout(layout)
 
+        self.deleteButton.clicked.connect(self.delete)
+        self.copyButton.clicked.connect(self.copy)
+
         # connect(addRow, SIGNAL(clicked()), this, SLOT(addRow()))
-        # connect(self.closeButton, SIGNAL(clicked()), this, SLOT(close()))
-        # connect(self.copyButton, SIGNAL(clicked()), this, SLOT(copy()))
         # connect(self.edit_button, SIGNAL(clicked()), this, SLOT(edit()))
 
-        self.load()
+    def copy(self):
+        self.sectionEditorCopied.emit(self)
 
+    def delete(self):
+        pe = self.parentWidget()
+        if pe:
+            pe.removeSection(self)
 
     def setBGColor(self):
         pal = self.palette()
-        if self.section.fullwidth:
+        if self.fullwidth:
             pal.setColor(QPalette.Background, QColor("#800080"))
         else:
             pal.setColor(QPalette.Background, QColor(self.palette().base().color().name()))
@@ -102,15 +110,30 @@ class SectionEditor(QWidget):
         # connect(re, SIGNAL(rowEditorCopied(RowEditor*)), this, SLOT(copyRowEditor(RowEditor *)));
         self.layout.addWidget(re)
 
-    def load(self):
+    def load(self, section):
         from widgets.elementeditor import ElementEditor, Mode
         from widgets.roweditor import RowEditor
 
+        self.section = section
         for item in self.section.items:
             if isinstance(item, Row):
                 re = RowEditor(item)
                 self.addRow(re)
             elif isinstance(item, Text):
-                ee = ElementEditor(item)
+                ee = ElementEditor()
+                ee.load(item)
                 ee.setMode(Mode.ENABLED)
                 self.addElement(ee)
+
+    def getContentEditor(self):
+        pe = self.parentWidget()
+        if pe:
+            sa = pe.parentWidget()
+            if sa:
+                vp = sa.parentWidget()
+                if vp:
+                    cee = vp.parentWidget()
+                    if cee:
+                        return cee
+
+        return None

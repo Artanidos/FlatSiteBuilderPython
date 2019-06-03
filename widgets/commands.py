@@ -63,7 +63,7 @@ class ChangeContentCommand(QUndoCommand):
     def undo(self):
 
         if os.path.exists(self.content_editor.filename):
-            os.path.remove(self.content_editor.filename)
+            os.remove(self.content_editor.filename)
         shutil.copy(self.temp_filename, self.content_editor.filename)
         self.contentEditor.load()
 
@@ -73,7 +73,8 @@ class ChangeContentCommand(QUndoCommand):
     def redo(self):
         if os.path.exists(self.redo_filename):
             if os.path.exists(self.content_editor.filename):
-                os.path.remove(self.content_editor.filename)
+                os.remove(self.content_editor.filename)
+            shutil.copy(self.redo_filename, self.content_editor.filename)
             self.content_editor.load()
         else:
             shutil.copy(self.content_editor.filename, self.temp_filename)

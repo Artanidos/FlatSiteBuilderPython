@@ -36,6 +36,21 @@ class Row(Item):
     def columns(self):
         return QQmlListProperty(Column, self, self._columns)
 
+    @pyqtProperty('QString')
+    def cssclass(self):
+        return self._cssclass
+
+    @cssclass.setter
+    def cssclass(self, cssclass):
+        self._cssclass = cssclass
+
+    def clone(self):
+        row = Row()
+        row.cssclass = self._cssclass
+        for column in self._columns:
+            row._columns.append(column.clone())
+        return row
+
     def save(self, f, indent):
         f.write("\n")
         f.write(" " * indent + "Row {\n")

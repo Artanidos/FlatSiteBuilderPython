@@ -166,7 +166,8 @@ class ContentEditor(AnimateableEditor):
         self.scroll.setWidget(pe)
         for item in self.content.items:
             if isinstance(item, Section):
-                se = SectionEditor(item)
+                se = SectionEditor(item.fullwidth)
+                se.load(item)
                 #se.setCssClass(stream.attributes().value("cssclass").toString())
                 #se.setStyle(stream.attributes().value("style").toString())
                 #se.setAttributes(stream.attributes().value("attributes").toString())

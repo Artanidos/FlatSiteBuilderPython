@@ -44,11 +44,33 @@ class PageEditor(QWidget):
         self.layout.addStretch()
         self.setLayout(self.layout)
         self.setAcceptDrops(True)
-        # connect(addSection, SIGNAL(clicked()), this, SLOT(addSection()))
-        # connect(addFullSection, SIGNAL(clicked()), this, SLOT(addFullSection()))
+        addSection.clicked.connect(self.addNormalSection)
+        addFullSection.clicked.connect(self.addFullSection)
+
+    def addFullSection(self):
+        se = SectionEditor(True)
+        self.addSection(se)
+        ce = self.getContentEditor()
+        if ce:
+            sec = Section()
+            sec.fullwidth = True
+            se.load(sec)
+            ce.content.appendSection(sec)
+            ce.editChanged("Add Section")
+
+    def addNormalSection(self):
+        se = SectionEditor(False)
+        self.addSection(se)
+        ce = self.getContentEditor()
+        if ce:
+            sec = Section()
+            sec.fullwidth = False
+            se.load(sec)
+            ce.content.appendSection(sec)
+            ce.editChanged("Add Section")
 
     def addSection(self, se):
-        #connect(se, SIGNAL(sectionEditorCopied(SectionEditor*)), this, SLOT(copySection(SectionEditor*)));
+        se.sectionEditorCopied.connect(self.copySection)
         self.layout.insertWidget(self.layout.count() - 2, se)
 
     def sections(self):
@@ -58,3 +80,32 @@ class PageEditor(QWidget):
             if isinstance(se, SectionEditor):
                 list.append(se)
         return list
+
+    def removeSection(self, se):
+        sec = se.section
+        se.setVisible(False)
+        self.layout.removeWidget(se)
+        ce = self.getContentEditor()
+        if ce:
+            ce.content.removeSection(sec)
+            ce.editChanged("Delete Section")
+
+    def copySection(self, se):
+        see = SectionEditor(se.fullwidth)
+        self.addSection(see)
+        ce = self.getContentEditor()
+        if ce:
+            sec = se.section.clone()
+            see.load(sec)
+            ce.content.appendSection(sec)
+            ce.editChanged("Copy Section")
+
+    def getContentEditor(self):
+        sa = self.parentWidget()
+        if sa:
+            vp = sa.parentWidget()
+            if vp:
+                cee = vp.parentWidget()
+                if cee:
+                    return cee
+        return None

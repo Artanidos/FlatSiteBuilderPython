@@ -25,6 +25,13 @@ class Text(Item):
     def __init__(self, parent = None):
         super().__init__(parent)
 
+    def clone(self):
+        txt = Text()
+        txt.id = self._id
+        txt.text = self._text
+        txt.adminlabel = self._adminlabel
+        return txt
+
     def save(self, f, indent):
         f.write("\n")
         f.write(" " * indent + "Text {\n")

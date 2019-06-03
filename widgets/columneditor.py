@@ -95,6 +95,7 @@ class ColumnEditor(QWidget):
 
     def load(self):
         for item in self.column.items:
-            ee = ElementEditor(item)
+            ee = ElementEditor()
             ee.setMode(Mode.ENABLED)
+            ee.load(item)
             self.layout.addWidget(ee, 0, Qt.AlignTop)
