@@ -57,3 +57,26 @@ class Section(Item):
         for item in self._items:
             item.save(f, indent + 4)
         f.write(" " * indent + "}\n")
+
+    def getHtml(self):
+        html = ""
+        if self.fullwidth:
+            for item in self._items:
+                html += item.getHtml() + "\n"
+        else:
+            html += "<section"
+            if self._cssclass:
+                cssclass = self._cssclass
+            else:
+                cssclass = "container"
+            html += " class=\"" + cssclass + "\""
+            if self._id:
+                html += " id=\"" + self._id +"\""
+            if self._style:
+                html += " style=\"" + self._style + "\""
+            if self._attributes:
+                html += " " + self._attributes
+            html += ">\n"
+            for item in self._items:
+                html += item.getHtml()
+        return html

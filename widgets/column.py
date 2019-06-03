@@ -28,14 +28,30 @@ class Column(QObject):
     def __init__(self, parent = None):
         super().__init__(parent)
         self._items = []
+        self.span = 0
 
     @pyqtProperty(QQmlListProperty)
     def items(self):
         return QQmlListProperty(Item, self, self._items)
 
+    @pyqtProperty(int)
+    def span(self):
+        return self._span
+
+    @span.setter
+    def span(self, span):
+        self._span = span
+
     def save(self, f, indent):
         f.write("\n")
         f.write(" " * indent + "Column {\n")
+        self.writeAttribute(f, indent + 4, "span", self._span)
         for item in self._items:
             item.save(f, indent + 4)
         f.write(" " * indent + "}\n")
+
+    def getHtml(self):
+        html = "<div class=\"col-md-" + str(self._span) + "\">\n"
+        for item in self._items:
+            html += item.getHtml()
+        return html + "\n</div>\n"

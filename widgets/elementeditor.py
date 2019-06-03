@@ -164,6 +164,3 @@ class ElementEditor(QWidget):
             self.text.setText(content.adminlabel)
         else:
             self.text.setText("Text")
-
-    def save(self, f, indent):
-        pass

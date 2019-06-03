@@ -39,7 +39,7 @@ class Generator:
     def themesPath():
         return os.path.join(Generator.install_directory, "themes")
 
-    def generateSite(self, win, site, content_to_build=None):
+    def generateSite(self, win, site, content_to_build = None):
         self.site = site
         site_dir = os.path.join(Generator.install_directory, "sites", site.title)
         if not content_to_build:
@@ -204,6 +204,8 @@ class Generator:
             cm["script"] = content.script
 
         self.content = ""
+        for item in content.items:
+            self.content += item.getHtml()
         #parser = make_parser()
         #parser.setContentHandler(self)
         #parser.parse(os.path.join(self.site.source_path, subdir, content.source))

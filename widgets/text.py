@@ -32,3 +32,6 @@ class Text(Item):
         self.writeAttribute(f, indent + 4, "text", self._text.replace("\n", "\\n"))
         self.writeAttribute(f, indent + 4, "adminlabel", self._adminlabel)
         f.write(" " * indent + "}\n")
+
+    def getHtml(self):
+        return self.text

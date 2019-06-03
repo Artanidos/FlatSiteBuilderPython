@@ -30,6 +30,7 @@ class Row(Item):
     def __init__(self, parent = None):
         super().__init__(parent)
         self._columns = []
+        self._cssclass = ""
 
     @pyqtProperty(QQmlListProperty)
     def columns(self):
@@ -41,3 +42,12 @@ class Row(Item):
         for item in self._columns:
             item.save(f, indent + 4)
         f.write(" " * indent + "}\n")
+
+    def getHtml(self):
+        html = "<div class=\"row"
+        if self._cssclass:
+            html += " " + self._cssclass
+        html += "\">\n"
+        for item in self._columns:
+            html += item.getHtml()
+        return html + "</div>\n"
