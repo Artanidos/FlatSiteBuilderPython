@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import QApplication, QStyleFactory
 from PyQt5.QtCore import Qt, QCoreApplication, QSettings
 from PyQt5.QtGui import QPalette, QColor, QIcon, QFont
 from PyQt5.QtQml import qmlRegisterType
-import resources
+import main_rc
 
 
 if __name__ == "__main__":
