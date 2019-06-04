@@ -28,7 +28,7 @@ from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGrid
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QColor, QPalette
 from enum import Enum
-
+import resources
 
 class Mode(Enum):
     EMPTY = 1
@@ -55,9 +55,9 @@ class ElementEditor(QWidget):
         self.setColor(self.normalColor)
         self.link = HyperLink("(+) Insert Module")
 
-        self.editButton = FlatButton("./images/edit_normal.png", "./images/edit_hover.png")
-        self.copyButton = FlatButton("./images/copy_normal.png", "./images/copy_hover.png")
-        self.deleteButton = FlatButton("./images/trash_normal.png", "./images/trash_hover.png")
+        self.editButton = FlatButton(":/images/edit_normal.png", ":/images/edit_hover.png")
+        self.copyButton = FlatButton(":/images/copy_normal.png", ":/images/copy_hover.png")
+        self.deleteButton = FlatButton(":/images/trash_normal.png", ":/images/trash_hover.png")
         self.editButton.setVisible(False)
         self.copyButton.setVisible(False)
         self.deleteButton.setVisible(False)

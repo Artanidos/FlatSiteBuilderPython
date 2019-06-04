@@ -25,7 +25,7 @@ from widgets.imageselector import ImageSelector
 from PyQt5.QtWidgets import QFileDialog, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLineEdit, QTreeWidgetItem, QPushButton, QTreeWidget, QHeaderView, QAbstractItemView
 from PyQt5.QtCore import pyqtSignal, Qt, QFileInfo, QFile
 from PyQt5.QtGui import QImage
-
+import resources
 
 class MenuEditorTableCellButtons(QWidget):
     deleteItem = pyqtSignal(object)
@@ -37,12 +37,12 @@ class MenuEditorTableCellButtons(QWidget):
 
     def __init__(self):
         QWidget.__init__(self)
-        self.delete = FlatButton("./images/trash_normal.png", "./images/trash_hover.png")
-        self.edit = FlatButton("./images/edit_normal.png", "./images/edit_hover.png")
-        self.left = FlatButton("./images/left_normal.png", "./images/left_hover.png", "", "./images/left_disabled.png")
-        self.right = FlatButton("./images/right_normal.png", "./images/right_hover.png", "", "./images/right_disabled.png")
-        self.up = FlatButton("./images/up_normal.png", "./images/up_hover.png", "", "./images/up_disabled.png")
-        self.down = FlatButton("./images/down_normal.png", "./images/down_hover.png", "", "./images/down_disabled.png")
+        self.delete = FlatButton(":/images/trash_normal.png", ":/images/trash_hover.png")
+        self.edit = FlatButton(":/images/edit_normal.png", ":/images/edit_hover.png")
+        self.left = FlatButton(":/images/left_normal.png", ":/images/left_hover.png", "", ":/images/left_disabled.png")
+        self.right = FlatButton(":/images/right_normal.png", ":/images/right_hover.png", "", ":/images/right_disabled.png")
+        self.up = FlatButton(":/images/up_normal.png", ":/images/up_hover.png", "", ":/images/up_disabled.png")
+        self.down = FlatButton(":/images/down_normal.png", ":/images/down_hover.png", "", ":/images/down_disabled.png")
         self.edit.setToolTip("Edit Item")
         self.delete.setToolTip("Delete Item")
         self.left.setToolTip("Make Mainitem")
@@ -124,10 +124,10 @@ class MenuEditor(AnimateableEditor):
         fnt.setBold(True)
         titleLabel.setFont(fnt)
 
-        self.close = FlatButton("./images/close_normal.png", "./images/close_hover.png")
+        self.close = FlatButton(":/images/close_normal.png", ":/images/close_hover.png")
         self.close.setToolTip("Close Content Editor")
-        self.undo = FlatButton("./images/undo_normal.png", "./images/undo_hover.png", "", "./images/undo_disabled.png")
-        self.redo = FlatButton("./images/redo_normal.png", "./images/redo_hover.png", "", "./images/redo_disabled.png")
+        self.undo = FlatButton(":/images/undo_normal.png", ":/images/undo_hover.png", "", ":/images/undo_disabled.png")
+        self.redo = FlatButton(":/images/redo_normal.png", ":/images/redo_hover.png", "", ":/images/redo_disabled.png")
         self.undo.setToolTip("Undo")
         self.redo.setToolTip("Redo")
         self.undo.setEnabled(False)
@@ -236,7 +236,7 @@ class MenuEditor(AnimateableEditor):
         vbox.addWidget(imgs)
         isw.setLayout(vbox)
         if not item.icon:
-            imgs.setImage(QImage("./images/image_placeholder.png"))
+            imgs.setImage(QImage(":/images/image_placeholder.png"))
         else:
             imgs.setImage(QImage(self.site.source_path + "/" + item.icon))
         self.tree.setItemWidget(twi, 2, isw)
@@ -382,7 +382,7 @@ class MenuEditor(AnimateableEditor):
         elif button == Qt.RightButton:
             action = "icon removed"
             mi.setIcon("")
-            itemselector.setImage(QImage("./images/image_placeholder.png"))
+            itemselector.setImage(QImage(":/images/image_placeholder.png"))
 
         self.menuChanged.emit(self.getUndoRedoText(mi, action))
 

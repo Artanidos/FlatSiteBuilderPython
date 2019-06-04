@@ -21,7 +21,7 @@
 from widgets.flatbutton import FlatButton
 from PyQt5.QtWidgets import QWidget, QHBoxLayout
 from PyQt5.QtCore import pyqtSignal
-
+import resources
 
 class TableCellButtons(QWidget):
     deleteItem = pyqtSignal(object)
@@ -29,8 +29,8 @@ class TableCellButtons(QWidget):
 
     def __init__(self):
         QWidget.__init__(self)
-        self.delete = FlatButton("./images/trash_normal.png", "./images/trash_hover.png")
-        self.edit = FlatButton("./images/edit_normal.png", "./images/edit_hover.png")
+        self.delete = FlatButton(":/images/trash_normal.png", ":/images/trash_hover.png")
+        self.edit = FlatButton(":/images/edit_normal.png", ":/images/edit_hover.png")
         self.edit.setToolTip("Edit Item")
         self.delete.setToolTip("Delete Item")
         self.item = None

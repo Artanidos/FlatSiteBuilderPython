@@ -33,7 +33,7 @@ from widgets.xmlhighlighter import XmlHighlighter
 from PyQt5.QtWidgets import QUndoStack, QHBoxLayout, QTextEdit, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QFont, QFontMetrics
-
+import resources
 
 class TextEditor(AnimateableEditor):
     close = pyqtSignal()
@@ -50,7 +50,7 @@ class TextEditor(AnimateableEditor):
         grid = QGridLayout()
         #grid.setMargin(0)
 
-        close = FlatButton("./images/close_normal.png", "./images/close_hover.png")
+        close = FlatButton(":/images/close_normal.png", ":/images/close_hover.png")
         close.setToolTip("Close Editor")
         self.html = QTextEdit()
         self.html.setFont(font)

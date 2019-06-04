@@ -37,7 +37,7 @@ from widgets.commands import ChangeContentCommand, RenameContentCommand
 from widgets.sectionpropertyeditor import SectionPropertyEditor
 from PyQt5.QtWidgets import QUndoStack, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
 from PyQt5.QtCore import Qt, QUrl, QDate, QPoint, QParallelAnimationGroup, QPropertyAnimation, QAbstractAnimation, pyqtSignal
-
+import resources
 
 class ContentEditor(AnimateableEditor):
     contentChanged = pyqtSignal(object)
@@ -91,10 +91,10 @@ class ContentEditor(AnimateableEditor):
             for file in files:
                 self.layouts.addItem(Path(file).stem)
 
-        self.close = FlatButton("./images/close_normal.png", "./images/close_hover.png")
+        self.close = FlatButton(":/images/close_normal.png", ":/images/close_hover.png")
         self.close.setToolTip("Close Content Editor")
-        self.undo = FlatButton("./images/undo_normal.png", "./images/undo_hover.png", "", "./images/undo_disabled.png")
-        self.redo = FlatButton("./images/redo_normal.png", "./images/redo_hover.png", "", "./images/redo_disabled.png")
+        self.undo = FlatButton(":/images/undo_normal.png", ":/images/undo_hover.png", "", ":/images/undo_disabled.png")
+        self.redo = FlatButton(":/images/redo_normal.png", ":/images/redo_hover.png", "", ":/images/redo_disabled.png")
         self.undo.setToolTip("Undo")
         self.redo.setToolTip("Redo")
         self.undo.setEnabled(False)

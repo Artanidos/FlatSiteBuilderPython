@@ -24,7 +24,7 @@ from widgets.flatbutton import FlatButton
 from widgets.tablecellbuttons import TableCellButtons
 from PyQt5.QtWidgets import QWidget, QUndoStack, QTableWidgetItem, QVBoxLayout, QHBoxLayout, QGridLayout, QPushButton, QLabel, QTableWidget, QAbstractItemView, QHeaderView
 from PyQt5.QtCore import pyqtSignal, Qt, QFileInfo
-
+import resources
 
 class ContentList(QWidget):
     editContent = pyqtSignal(object)
@@ -53,8 +53,8 @@ class ContentList(QWidget):
         fnt.setBold(True)
         titleLabel.setFont(fnt)
 
-        self.undo = FlatButton("./images/undo_normal.png", "./images/undo_hover.png", "", "./images/undo_disabled.png")
-        self.redo = FlatButton("./images/redo_normal.png", "./images/redo_hover.png", "", "./images/redo_disabled.png")
+        self.undo = FlatButton(":/images/undo_normal.png", ":/images/undo_hover.png", "", ":/images/undo_disabled.png")
+        self.redo = FlatButton(":/images/redo_normal.png", ":/images/redo_hover.png", "", ":/images/redo_disabled.png")
         self.undo.setToolTip("Undo")
         self.redo.setToolTip("Redo")
         self.undo.setEnabled(False)

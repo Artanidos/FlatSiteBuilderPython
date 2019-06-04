@@ -25,7 +25,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QTextBrow
 from PyQt5.QtGui import QFont, QDesktopServices
 from PyQt5.QtCore import QUrl, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
-
+import resources
 
 class Dashboard(QWidget):
     loadSite = pyqtSignal(str)
@@ -55,19 +55,19 @@ class Dashboard(QWidget):
         self.browser = QTextBrowser()
         self.browser.setOpenLinks(False)
 
-        self.load_button = FlatButton("./images/load_normal.png", "./images/load_hover.png", "./images/load_pressed.png")
+        self.load_button = FlatButton(":/images/load_normal.png", ":/images/load_hover.png", ":/images/load_pressed.png")
         self.load_button.setToolTip("Load an existing website project")
 
-        self.create_button = FlatButton("./images/create_normal.png", "./images/create_hover.png", "./images/create_pressed.png")
+        self.create_button = FlatButton(":/images/create_normal.png", ":/images/create_hover.png", ":/images/create_pressed.png")
         self.create_button.setToolTip("Create a website project")
 
-        self.publish_button = FlatButton("./images/publish_normal.png", "./images/publish_hover.png", "./images/publish_pressed.png")
+        self.publish_button = FlatButton(":/images/publish_normal.png", ":/images/publish_hover.png", ":/images/publish_pressed.png")
         self.publish_button.setToolTip("Upload the website to your web space provider")
 
-        self.preview_button = FlatButton("./images/preview_normal.png", "./images/preview_hover.png", "./images/preview_pressed.png")
+        self.preview_button = FlatButton(":/images/preview_normal.png", ":/images/preview_hover.png", ":/images/preview_pressed.png")
         self.preview_button.setToolTip("Load the website in your browser locally")
 
-        self.build_button = FlatButton("./images/build_normal.png", "./images/build_hover.png", "./images/build_pressed.png")
+        self.build_button = FlatButton(":/images/build_normal.png", ":/images/build_hover.png", ":/images/build_pressed.png")
         self.build_button.setToolTip("Build the website")
 
         self.info = QLabel()

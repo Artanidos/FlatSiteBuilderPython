@@ -37,7 +37,7 @@ from widgets.sitesettingseditor import SiteSettingsEditor
 from PyQt5.QtWidgets import QVBoxLayout, QMainWindow, QWidget, QScrollArea, QDockWidget, QUndoStack, QApplication
 from PyQt5.QtCore import pyqtSignal, Qt, QUrl, QRect, QCoreApplication, QDir, QSettings, QByteArray, QEvent, QPoint, QAbstractAnimation, QPropertyAnimation
 from PyQt5.QtQml import QQmlEngine, QQmlComponent
-
+import resources
 
 class MainWindow(QMainWindow):
     siteLoaded = pyqtSignal(object)
@@ -94,10 +94,10 @@ class MainWindow(QMainWindow):
 
     def initGui(self):
         self.installEventFilter(self)
-        self.dashboard = Expander("Dashboard", "./images/dashboard_normal.png", "./images/dashboard_hover.png", "./images/dashboard_selected.png")
-        self.content = Expander("Content", "./images/pages_normal.png", "./images/pages_hover.png", "./images/pages_selected.png")
-        self.appearance = Expander("Appearance", "./images/appearance_normal.png", "./images/appearance_hover.png", "./images/appearance_selected.png")
-        self.settings = Expander("Settings", "./images/settings_normal.png", "./images/settings_hover.png", "./images/settings_selected.png")
+        self.dashboard = Expander("Dashboard", ":/images/dashboard_normal.png", ":/images/dashboard_hover.png", ":/images/dashboard_selected.png")
+        self.content = Expander("Content", ":/images/pages_normal.png", ":/images/pages_hover.png", ":/images/pages_selected.png")
+        self.appearance = Expander("Appearance", ":/images/appearance_normal.png", ":/images/appearance_hover.png", ":/images/appearance_selected.png")
+        self.settings = Expander("Settings", ":/images/settings_normal.png", ":/images/settings_hover.png", ":/images/settings_selected.png")
 
         self.setWindowTitle(QCoreApplication.applicationName() + " " + QCoreApplication.applicationVersion())
         vbox = QVBoxLayout()
@@ -142,7 +142,7 @@ class MainWindow(QMainWindow):
 
         self.addDockWidget(Qt.LeftDockWidgetArea, self.navigationdock)
 
-        self.showDock = FlatButton("./images/edit_normal.png", "./images/edit_hover.png")
+        self.showDock = FlatButton(":/images/edit_normal.png", ":/images/edit_hover.png")
         self.showDock.setToolTip("Show Navigation")
         self.statusBar().addPermanentWidget(self.showDock)
 

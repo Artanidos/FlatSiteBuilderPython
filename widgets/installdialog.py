@@ -22,7 +22,7 @@
 from PyQt5.QtWidgets import QLabel, QPushButton, QGridLayout, QHBoxLayout, QVBoxLayout, QDialog, QLineEdit, QMessageBox, QFileDialog
 from PyQt5.QtCore import QDir, pyqtSlot
 from PyQt5.QtGui import QPixmap
-
+import resources
 
 class InstallDialog(QDialog):
     def __init__(self):

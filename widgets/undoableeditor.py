@@ -21,7 +21,7 @@
 from widgets.flatbutton import FlatButton
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QGridLayout, QUndoStack, QUndoCommand
 from PyQt5.QtCore import QFileInfo, QDir, QFile
-
+import resources
 
 class UndoableEditor(QWidget):
 
@@ -29,8 +29,8 @@ class UndoableEditor(QWidget):
         QWidget.__init__(self)
         self.filename = ""
         self.undoStack = QUndoStack()
-        self.undo = FlatButton("./images/undo_normal.png", "./images/undo_hover.png", "", "./images/undo_disabled.png")
-        self.redo = FlatButton("./images/redo_normal.png", "./images/redo_hover.png", "", "./images/redo_disabled.png")
+        self.undo = FlatButton(":/images/undo_normal.png", ":/images/undo_hover.png", "", ":/images/undo_disabled.png")
+        self.redo = FlatButton(":/images/redo_normal.png", ":/images/redo_hover.png", "", ":/images/redo_disabled.png")
         self.undo.setToolTip("Undo")
         self.redo.setToolTip("Redo")
         self.undo.setEnabled(False)

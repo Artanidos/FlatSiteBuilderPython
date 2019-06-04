@@ -36,6 +36,7 @@ from PyQt5.QtWidgets import QApplication, QStyleFactory
 from PyQt5.QtCore import Qt, QCoreApplication, QSettings
 from PyQt5.QtGui import QPalette, QColor, QIcon, QFont
 from PyQt5.QtQml import qmlRegisterType
+import resources
 
 
 if __name__ == "__main__":
@@ -77,7 +78,7 @@ if __name__ == "__main__":
     p.setColor(QPalette.Disabled, QPalette.ButtonText, Qt.darkGray)
     p.setColor(QPalette.Link, QColor("#bbb"))
     app.setPalette(p)
-    app.setWindowIcon(QIcon("images/logo.svg"))
+    app.setWindowIcon(QIcon(":/images/logo.svg"))
 
     settings = QSettings(QSettings.IniFormat, QSettings.UserScope, QCoreApplication.organizationName(), QCoreApplication.applicationName())
     install_directory = settings.value("installDirectory")

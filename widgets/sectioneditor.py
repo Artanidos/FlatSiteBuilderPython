@@ -24,7 +24,7 @@ from PyQt5.QtGui import QPalette, QColor
 from widgets.row import Row
 from widgets.text import Text
 from widgets.roweditor import RowEditor
-
+import resources
 
 class SectionEditor(QWidget):
     sectionEditorCopied = pyqtSignal(object)
@@ -49,9 +49,9 @@ class SectionEditor(QWidget):
         vbox = QVBoxLayout()
         vbox.setAlignment(Qt.AlignTop)
         vbox.setSpacing(5)
-        self.edit_button = FlatButton("./images/edit_normal.png", "./images/edit_hover.png")
-        self.copyButton = FlatButton("./images/copy_normal.png", "./images/copy_hover.png")
-        self.deleteButton = FlatButton("./images/trash_normal.png", "./images/trash_hover.png")
+        self.edit_button = FlatButton(":/images/edit_normal.png", ":/images/edit_hover.png")
+        self.copyButton = FlatButton(":/images/copy_normal.png", ":/images/copy_hover.png")
+        self.deleteButton = FlatButton(":/images/trash_normal.png", ":/images/trash_hover.png")
         self.edit_button.setToolTip("Edit Section")
         self.deleteButton.setToolTip("Delete Section")
         self.copyButton.setToolTip("Copy Section")

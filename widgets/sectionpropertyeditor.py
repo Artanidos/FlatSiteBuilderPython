@@ -33,7 +33,7 @@ from widgets.roweditor import RowEditor
 from widgets.section import Section
 from widgets.sectioneditor import SectionEditor
 from widgets.animateableeditor import AnimateableEditor
-
+import resources
 
 class SectionPropertyEditor(AnimateableEditor):
     close = pyqtSignal()
@@ -48,7 +48,7 @@ class SectionPropertyEditor(AnimateableEditor):
         self.changed = False
         self.setAutoFillBackground(True)
 
-        close = FlatButton("./images/close_normal.png", "./images/close_hover.png")
+        close = FlatButton(":/images/close_normal.png", ":/images/close_hover.png")
         close.setToolTip("Close Editor")
 
         titleLabel = QLabel("Section Module Settings")

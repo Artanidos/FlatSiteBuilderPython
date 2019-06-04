@@ -25,7 +25,7 @@ import datetime
 from PyQt5.QtWidgets import QWizard, QWizardPage, QLabel, QLineEdit, QComboBox, QGridLayout, QVBoxLayout
 from PyQt5.QtCore import pyqtSignal, QDir
 from PyQt5.QtGui import QPixmap
-
+import resources
 
 class SiteWizard(QWizard):
     loadSite = pyqtSignal(object)
@@ -101,7 +101,7 @@ class IntroPage(QWizardPage):
     def __init__(self):
         QWizardPage.__init__(self)
         self.setTitle("Introduction")
-        self.setPixmap(QWizard.WatermarkPixmap, QPixmap("./images/wizard.png"))
+        self.setPixmap(QWizard.WatermarkPixmap, QPixmap(":/images/wizard.png"))
 
         label = QLabel("This wizard will generate a skeleton website. "
                        "You simply need to specify the site name and set a "
@@ -121,7 +121,7 @@ class SiteInfoPage(QWizardPage):
         self.setTitle("Site Information")
         self.setSubTitle("Specify basic information about the site for which you "
                          "want to generate site files.")
-        self.setPixmap(QWizard.LogoPixmap, QPixmap("./images/icon64.png"))
+        self.setPixmap(QWizard.LogoPixmap, QPixmap(":/images/icon64.png"))
 
         self.siteNameLabel = QLabel("&Site title:")
         self.siteNameLineEdit = QLineEdit()
@@ -179,7 +179,7 @@ class ConclusionPage(QWizardPage):
     def __init__(self):
         QWizardPage.__init__(self)
         self.setTitle("Conclusion")
-        self.setPixmap(QWizard.WatermarkPixmap, QPixmap("./images/wizard.png"))
+        self.setPixmap(QWizard.WatermarkPixmap, QPixmap(":/images/wizard.png"))
 
         self.label = QLabel("Click Finish to generate the site skeleton.")
         self.label.setWordWrap(True)

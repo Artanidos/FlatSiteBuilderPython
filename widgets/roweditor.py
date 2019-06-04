@@ -23,7 +23,7 @@ from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtWidgets import (QComboBox, QGridLayout, QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QScrollArea, QUndoStack,
                              QVBoxLayout, QWidget)
-
+import resources
 
 class RowEditor(QWidget):
     rowEditorCopied = pyqtSignal(object)
@@ -36,9 +36,9 @@ class RowEditor(QWidget):
         from widgets.hyperlink import HyperLink
         from widgets.section import Section
 
-        self.editButton = FlatButton("./images/edit_normal.png", "./images/edit_hover.png")
-        self.copyButton = FlatButton("./images/copy_normal.png", "./images/copy_hover.png")
-        self.deleteButton = FlatButton("./images/trash_normal.png", "./images/trash_hover.png")
+        self.editButton = FlatButton(":/images/edit_normal.png", ":/images/edit_hover.png")
+        self.copyButton = FlatButton(":/images/copy_normal.png", ":/images/copy_hover.png")
+        self.deleteButton = FlatButton(":/images/trash_normal.png", ":/images/trash_hover.png")
         self.addColumns = HyperLink("(+) Add Columns")
         self.editButton.setToolTip("Edit Row")
         self.deleteButton.setToolTip("Delete Row")
