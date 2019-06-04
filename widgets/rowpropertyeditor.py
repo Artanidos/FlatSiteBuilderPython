@@ -18,7 +18,7 @@
 #
 #############################################################################
 
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtWidgets import (QComboBox, QGridLayout, QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QScrollArea, QUndoStack,
@@ -32,9 +32,49 @@ from widgets.pageeditor import PageEditor
 from widgets.roweditor import RowEditor
 from widgets.section import Section
 from widgets.sectioneditor import SectionEditor
+from widgets.animateableeditor import AnimateableEditor
 
 
-class RowPropertyEditor(QWidget):
+class RowPropertyEditor(AnimateableEditor):
+    close = pyqtSignal()
 
-    def __init__(self, column):
+    def __init__(self):
         QWidget.__init__(self)
+        self.changed = False
+        self.grid = QGridLayout()
+        self.cssclass = QLineEdit()
+        self.setAutoFillBackground(True)
+
+        close = FlatButton(":/images/close_normal.png", ":/images/close_hover.png")
+        close.setToolTip("Close Editor")
+
+        titleLabel = QLabel("Row Module Settings")
+        fnt = titleLabel.font()
+        fnt.setPointSize(16)
+        fnt.setBold(True)
+        titleLabel.setFont(fnt)
+
+        vbox = QVBoxLayout()
+        vbox.addStretch()
+        self.grid.addWidget(titleLabel, 0, 0)
+        self.grid.addWidget(close, 0, 1, 1, 1, Qt.AlignRight)
+        self.grid.addWidget(QLabel("CSS Class"), 1, 0)
+        self.grid.addWidget(self.cssclass, 2, 0, 1, 2)
+        self.grid.addLayout(vbox, 3, 0)
+        self.setLayout(self.grid)
+
+        close.clicked.connect(self.closeEditor)
+        self.cssclass.textChanged.connect(self.contentChanged)
+
+    def setRow(self, row):
+        self.row = row
+        self.cssclass.setText(row.cssclass)
+        self.changed = False
+
+    def closeEditor(self):
+        if self.changed:
+            self.row.cssclass = self.cssclass.text()
+        self.close.emit()
+
+    def contentChanged(self):
+        self.changed = True

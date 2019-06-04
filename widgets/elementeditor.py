@@ -21,7 +21,6 @@
 from widgets.flatbutton import FlatButton
 from widgets.hyperlink import HyperLink
 from widgets.section import Section
-from widgets.sectioneditor import SectionEditor
 from widgets.content import ContentType
 from widgets.text import Text
 from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
@@ -159,6 +158,7 @@ class ElementEditor(QWidget):
         return None
 
     def getSectionEditor(self):
+        from widgets.sectioneditor import SectionEditor
         from widgets.columneditor import ColumnEditor
         se = self.parentWidget()
         if isinstance(se, SectionEditor):

@@ -28,18 +28,13 @@ from widgets.content import ContentType
 from widgets.elementeditor import ElementEditor, Mode
 from widgets.flatbutton import FlatButton
 from widgets.hyperlink import HyperLink
-from widgets.pageeditor import PageEditor
-from widgets.roweditor import RowEditor
 from widgets.section import Section
-from widgets.sectioneditor import SectionEditor
 
 
 class ColumnEditor(QWidget):
 
-    def __init__(self, column):
+    def __init__(self):
         QWidget.__init__(self)
-        self.column = column
-        self._span = 0
         pal = self.palette()
         pal.setColor(QPalette.Background, QColor(self.palette().base().color().name()).lighter())
         self.setPalette(pal)
@@ -50,20 +45,12 @@ class ColumnEditor(QWidget):
         self.setLayout(self.layout)
         self.setAcceptDrops(True)
 
-        #ee = ElementEditor()
-        #self.layout.addWidget(ee, 0, Qt.AlignTop)
+        ee = ElementEditor()
+        self.layout.addWidget(ee, 0, Qt.AlignTop)
 
         # connect(ee, SIGNAL(elementEnabled()), this, SLOT(addElement()));
         # connect(ee, SIGNAL(elementDragged()), this, SLOT(addElement()));
         # connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)));
-
-        self.load()
-
-    def setSpan(self, s):
-        self._span = s
-
-    def span(self):
-        return self._span
 
     def addElement(self, element):
         ee = ElementEditor(element)
@@ -77,6 +64,9 @@ class ColumnEditor(QWidget):
         # connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)));
 
     def getContentEditor(self):
+        from widgets.pageeditor import PageEditor
+        from widgets.roweditor import RowEditor
+        from widgets.sectioneditor import SectionEditor
         re = self.parentWidget()
         if isinstance(re, RowEditor):
             se = re.parentWidget()
@@ -93,9 +83,10 @@ class ColumnEditor(QWidget):
 
         return None
 
-    def load(self):
+    def load(self, column):
+        self.column = column
         for item in self.column.items:
             ee = ElementEditor()
             ee.setMode(Mode.ENABLED)
             ee.load(item)
-            self.layout.addWidget(ee, 0, Qt.AlignTop)
+            self.layout.insertWidget(self.layout.count() - 1, ee, 0, Qt.AlignTop)

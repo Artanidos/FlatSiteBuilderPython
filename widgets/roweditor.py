@@ -23,6 +23,10 @@ from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtWidgets import (QComboBox, QGridLayout, QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QScrollArea, QUndoStack,
                              QVBoxLayout, QWidget)
+                            
+from widgets.columnsdialog import ColumnsDialog
+from widgets.column import Column
+from widgets.columneditor import ColumnEditor
 import resources
 
 class RowEditor(QWidget):
@@ -43,7 +47,9 @@ class RowEditor(QWidget):
         self.editButton.setToolTip("Edit Row")
         self.deleteButton.setToolTip("Delete Row")
         self.copyButton.setToolTip("Copy Row")
-
+        self.editButton.setMaximumWidth(24)
+        self.copyButton.setMaximumWidth(24)
+        self.deleteButton.setMaximumWidth(24)
         vbox = QVBoxLayout()
         vbox.setAlignment(Qt.AlignTop)
         vbox.setSpacing(5)
@@ -59,13 +65,7 @@ class RowEditor(QWidget):
 
         self.highlightedRect = QRect()
         self.layout = QGridLayout()
-        s1 = QHBoxLayout()
-        s1.addStretch()
-        s2 = QHBoxLayout()
-        s2.addStretch()
-        self.layout.addLayout(s1, 0, 0)
-        self.layout.addWidget(self.addColumns, 0, 1, 1, 1, Qt.AlignCenter)
-        self.layout.addLayout(s2, 0, 2)
+        self.layout.addWidget(self.addColumns, 0, 0, 1, 1, Qt.AlignCenter)
         
         layout.addItem(vbox)
         layout.addLayout(self.layout)
@@ -73,10 +73,13 @@ class RowEditor(QWidget):
 
         self.deleteButton.clicked.connect(self.delete)
         self.copyButton.clicked.connect(self.copy)
-        
-        # connect(self.copyButton, SIGNAL(clicked()), this, SLOT(copy()))
-        # connect(self.editButton, SIGNAL(clicked()), this, SLOT(edit()))
-        # connect(self.addColumns, SIGNAL(clicked()), this, SLOT(addColumns()))
+        self.editButton.clicked.connect(self.edit)
+        self.addColumns.clicked.connect(self.insertColumns)
+
+    def edit(self):
+        ce = self.getContentEditor()
+        if ce:
+            ce.rowEdit(self)
 
     def copy(self):
         self.rowEditorCopied.emit(self)
@@ -87,18 +90,15 @@ class RowEditor(QWidget):
             se.removeRowEditor(self)
         ce = self.getContentEditor()
         if ce:
-            ce.editChanged("Delete Row");  
+            ce.editChanged("Delete Row")  
 
     def addColumn(self, ce, column):
-        if self.addColumns:
-            self.layout.removeItem(self.layout.itemAt(2))
-            self.layout.removeItem(self.layout.itemAt(0))
+        if self.addColumns.isVisible():
+            self.addColumns.setVisible(False)
             self.layout.removeWidget(self.addColumns)
-            del self.addColumns
-            self.addColumns = None
 
         self.layout.addWidget(ce, 0, column)
-        self.layout.setColumnStretch(column, ce.span())
+        self.layout.setColumnStretch(column, ce.column.span)
 
     def load(self, row):
         from widgets.columneditor import ColumnEditor
@@ -106,7 +106,8 @@ class RowEditor(QWidget):
         self.row = row
         i = 0
         for column in self.row.columns:
-            ce = ColumnEditor(column)
+            ce = ColumnEditor()
+            ce.load(column)
             self.addColumn(ce, i)
             i = i + 1
 
@@ -123,3 +124,164 @@ class RowEditor(QWidget):
                         if cee:
                             return cee
         return None
+
+    def insertColumns(self):
+        dlg = ColumnsDialog()
+        dlg.exec()
+        if dlg.result == 0:
+            return
+
+        if dlg.result == 1:  # 1/1
+            col = Column()
+            col.span = 12
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 0)
+
+        elif dlg.result == 2:  # 1/2 - 1/2
+            for i in range(2):
+                col = Column()
+                col.span = 6
+                self.row._columns.append(col)
+                ce = ColumnEditor()
+                ce.load(col)
+                self.addColumn(ce, i)
+
+        elif dlg.result == 3:   # 1/3 - 1/3 - 1/3
+            for i in range(3):
+                col = Column()
+                col.span = 4
+                self.row._columns.append(col)
+                ce = ColumnEditor()
+                ce.load(col)
+                self.addColumn(ce, i)
+
+        elif dlg.result == 4:   # 1/4 - 1/4 - 1/4 - 1/4
+            for i in range(4):
+                col = Column()
+                col.span = 3
+                self.row._columns.append(col)
+                ce = ColumnEditor()
+                ce.load(col)
+                self.addColumn(ce, i)
+
+        elif dlg.result == 5:  # 2/3 - 1/3
+            col = Column()
+            col.span = 8
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 0)
+            col = Column()
+            col.span = 4
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 1)
+
+        elif dlg.result == 6:  # 1/3 - 2/3
+            col = Column()
+            col.span = 4
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 0)
+            col = Column()
+            col.span = 8
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 1)
+
+        elif dlg.result == 7:  # 1/4 - 3/4
+            col = Column()
+            col.span = 2
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 0)
+            col = Column()
+            col.span = 9
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 1)
+
+        elif dlg.result == 8:  # 3/4 - 1/4
+            col = Column()
+            col.span = 9
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 0)
+            col = Column()
+            col.span = 3
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 1)
+
+        elif dlg.result == 9:  # 1/2 - 1/4 - 1/4
+            col = Column()
+            col.span = 6
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 0)
+            col = Column()
+            col.span = 3
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 1)
+            col = Column()
+            col.span = 3
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 2)
+
+        elif dlg.result == 10:  # 1/4 - 1/4 - 1/2
+            col = Column()
+            col.span = 3
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 0)
+            col = Column()
+            col.span = 3
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 1)
+            col = Column()
+            col.span = 6
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 2)
+        
+        elif dlg.result == 11:  # 1/4 - 1/2 - 1/4
+            col = Column()
+            col.span = 3
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 0)
+            col = Column()
+            col.span = 6
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 1)
+            col = Column()
+            col.span = 3
+            self.row._columns.append(col)
+            ce = ColumnEditor()
+            ce.load(col)
+            self.addColumn(ce, 2)
+            
+        ce = self.getContentEditor()
+        if ce:
+            ce.editChanged("Add Columns")

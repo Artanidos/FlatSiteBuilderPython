@@ -27,7 +27,6 @@ from widgets.section import Section
 from widgets.text import Text
 from widgets.generator import Generator
 from widgets.pageeditor import PageEditor
-from widgets.sectioneditor import SectionEditor
 from widgets.roweditor import RowEditor
 from widgets.columneditor import ColumnEditor
 from widgets.texteditor import TextEditor
@@ -44,6 +43,7 @@ class ContentEditor(AnimateableEditor):
 
     def __init__(self, win, site, content):
         AnimateableEditor.__init__(self)
+
         self.win = win
         self.site = site
         self.content = content
@@ -164,6 +164,20 @@ class ContentEditor(AnimateableEditor):
         #connect(self.previewLink, SIGNAL(clicked()), self, SLOT(preview()))
         #connect(self.script, SIGNAL(clicked()), self, SLOT(script()))
 
+    def rowEdit(self, re):
+        from widgets.rowpropertyeditor import RowPropertyEditor
+
+        self.row_editor = re
+        self.editor = RowPropertyEditor()
+        self.editor.setRow(re.row)
+        self.editor.close.connect(self.rowEditorClose)
+        self.animate(re)
+
+    def rowEditorClose(self):
+        if self.editor.changed:
+            self.row_editor.load(self.editor.row)
+            self.editChanged("Update Row")
+        self.editorClosed()
 
     def canUndoChanged(self, can):
         self.undo.setEnabled(can)
@@ -261,6 +275,7 @@ class ContentEditor(AnimateableEditor):
         self.editorClosed()
     
     def load(self):
+        from widgets.sectioneditor import SectionEditor
         self.content = self.site.loadContent(self.content.source, self.content.content_type)
         self.is_new = not self.content.title
         self.title.setText(self.content.title)
@@ -400,6 +415,7 @@ class ContentEditor(AnimateableEditor):
     def animationFineshedZoomOut(self):
         from widgets.rowpropertyeditor import RowPropertyEditor
         from widgets.sectionpropertyeditor import SectionPropertyEditor
+
         self.title.setEnabled(True)
         self.source.setEnabled(True)
         self.author.setEnabled(True)

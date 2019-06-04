@@ -54,6 +54,7 @@ class Row(Item):
     def save(self, f, indent):
         f.write("\n")
         f.write(" " * indent + "Row {\n")
+        self.writeAttribute(f, indent + 4, "cssclass", self.cssclass)
         for item in self._columns:
             item.save(f, indent + 4)
         f.write(" " * indent + "}\n")

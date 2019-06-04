@@ -53,4 +53,6 @@ class Item(QObject):
                     f.write(" " * indent + att + ": \"" + value + "\"\n")
             elif isinstance(value, bool):
                 f.write(" " * indent + att + ": true\n")
+            elif isinstance(value, int):
+                f.write(" " * indent + att + ": " + str(value) + "\n")
 

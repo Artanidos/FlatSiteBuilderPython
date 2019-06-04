@@ -28,7 +28,7 @@ class Column(Item):
     def __init__(self, parent = None):
         super().__init__(parent)
         self._items = []
-        self.span = 0
+        self._span = 0
 
     @pyqtProperty(QQmlListProperty)
     def items(self):
