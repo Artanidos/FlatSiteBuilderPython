@@ -176,7 +176,7 @@ class Generator:
             os.path.join(Generator.install_directory, "themes", self.site.theme, "layouts"),
             os.path.join(Generator.install_directory, "themes", self.site.theme, "includes")
         ]
-        eng = Engine(dirs=dirs, debug=True)
+        eng = Engine(dirs = dirs, debug=True)
         cm = {}
 
         if content.content_type == ContentType.PAGE:
@@ -227,7 +227,6 @@ class Generator:
         layout = content.layout
         if not layout:
             layout = "default"
-        layout = layout + ".html"
 
         context["page"] = cm
         context["content"] = mark_safe(self.content)
@@ -236,7 +235,7 @@ class Generator:
 
         try:
             with open(outputfile, 'w') as f:
-                f.write(eng.render_to_string(layout, context=context))
+                f.write(eng.render_to_string(layout + ".html", context = context))
         except:
             msg = "Generate content failed: Unable to create file " + outputfile
             print(msg)

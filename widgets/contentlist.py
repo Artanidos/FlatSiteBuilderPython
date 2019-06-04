@@ -97,7 +97,7 @@ class ContentList(QWidget):
         contentToEdit = None
         if self.type == ContentType.PAGE:
             self.site.loadPages()
-            for i in range(0, len(self.site.pages)):
+            for i in range(len(self.site.pages)):
                 content = self.site.pages[i]
                 if content.source == self.addedContentName:
                     contentToEdit = content
@@ -142,7 +142,7 @@ class ContentList(QWidget):
         authorItem = QTableWidgetItem(content.author)
         authorItem.setFlags(authorItem.flags() ^ Qt.ItemIsEditable)
         self.list.setItem(rows, 4, authorItem)
-        dateItem = QTableWidgetItem(content.date)
+        dateItem = QTableWidgetItem(content.date.toString("dd.MM.yyyy"))
         dateItem.setFlags(dateItem.flags() ^ Qt.ItemIsEditable)
         self.list.setItem(rows, 5, dateItem)
 

@@ -33,18 +33,21 @@ from widgets.columneditor import ColumnEditor
 from widgets.texteditor import TextEditor
 from widgets.elementeditor import ElementEditor, Mode
 from widgets.content import ContentType
-from widgets.commands import ChangeContentCommand
+from widgets.commands import ChangeContentCommand, RenameContentCommand
+from widgets.sectionpropertyeditor import SectionPropertyEditor
 from PyQt5.QtWidgets import QUndoStack, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
-from PyQt5.QtCore import Qt, QUrl, QPoint, QParallelAnimationGroup, QPropertyAnimation, QAbstractAnimation
+from PyQt5.QtCore import Qt, QUrl, QDate, QPoint, QParallelAnimationGroup, QPropertyAnimation, QAbstractAnimation, pyqtSignal
 
 
 class ContentEditor(AnimateableEditor):
+    contentChanged = pyqtSignal(object)
 
     def __init__(self, win, site, content):
         AnimateableEditor.__init__(self)
         self.win = win
         self.site = site
         self.content = content
+        self.is_new = False
         self.editor = None
         self.undoStack = QUndoStack()
         self.changed = False
@@ -132,7 +135,7 @@ class ContentEditor(AnimateableEditor):
             self.layout.addWidget(self.excerptLabel, 5, 0)
             self.layout.addWidget(self.excerpt, 6, 0, 1, 2)
             self.datelabel = QLabel("Date")
-            self.layout.addWidget(self.datelabel, 5, 2, 0)
+            self.layout.addWidget(self.datelabel, 5, 2)
             self.layout.addWidget(self.date, 6, 2, 1, 2)
             self.filename = self.site.source_path + "/posts/" + content.source
         else:
@@ -142,36 +145,140 @@ class ContentEditor(AnimateableEditor):
         self.load()
 
         self.close.clicked.connect(self.closeEditor)
-
-        #connect(self.undo, SIGNAL(clicked()), self, SLOT(undo()))
-        #connect(self.redo, SIGNAL(clicked()), self, SLOT(redo()))
-        #connect(self.title, SIGNAL(editingFinished()), self, SLOT(titleChanged()))
-        #connect(self.title, SIGNAL(textChanged(QString)), self, SLOT(titleChanged(QString)))
-        #connect(self.source, SIGNAL(editingFinished()), self, SLOT(sourceChanged()))
-        #connect(self.excerpt, SIGNAL(editingFinished()), self, SLOT(excerptChanged()))
-        #connect(self.date, SIGNAL(editingFinished()), self, SLOT(dateChanged()))
-        #connect(self.author, SIGNAL(editingFinished()), self, SLOT(authorChanged()))
-        #connect(self.keywords, SIGNAL(editingFinished()), self, SLOT(keywordsChanged()))
-        #connect(self.menus, SIGNAL(currentIndexChanged(QString)), self, SLOT(menuChanged(QString)))
-        #connect(self.layouts, SIGNAL(currentIndexChanged(QString)), self, SLOT(layoutChanged(QString)))
+        self.title.editingFinished.connect(self.titleFinished)
+        self.title.textChanged.connect(self.titleChanged)
+        self.source.editingFinished.connect(self.sourceChanged)
+        self.excerpt.editingFinished.connect(self.excerptChanged)
+        self.date.editingFinished.connect(self.dateChanged)
+        self.author.editingFinished.connect(self.authorChanged)
+        self.keywords.editingFinished.connect(self.keywordsChanged)
+        self.menus.currentTextChanged.connect(self.menuChanged)
+        self.layouts.currentTextChanged.connect(self.layoutChanged)
+        self.undoStack.canUndoChanged.connect(self.canUndoChanged)
+        self.undoStack.canRedoChanged.connect(self.canRedoChanged)
+        self.undoStack.undoTextChanged.connect(self.undoTextChanged)
+        self.undoStack.redoTextChanged.connect(self.redoTextChanged)
+        self.undo.clicked.connect(self.undoAction)
+        self.redo.clicked.connect(self.redoAction)
+        
         #connect(self.previewLink, SIGNAL(clicked()), self, SLOT(preview()))
-        #connect(self.undoStack, SIGNAL(canUndoChanged(bool)), self, SLOT(canUndoChanged(bool)))
-        #connect(self.undoStack, SIGNAL(canRedoChanged(bool)), self, SLOT(canRedoChanged(bool)))
-        #connect(self.undoStack, SIGNAL(undoTextChanged(QString)), self, SLOT(undoTextChanged(QString)))
-        #connect(self.undoStack, SIGNAL(redoTextChanged(QString)), self, SLOT(redoTextChanged(QString)))
         #connect(self.script, SIGNAL(clicked()), self, SLOT(script()))
 
+
+    def canUndoChanged(self, can):
+        self.undo.setEnabled(can)
+
+    def canRedoChanged(self, can):
+        self.redo.setEnabled(can)
+
+    def undoTextChanged(self, text):
+        self.undo.setToolTip("Undo " + text)
+
+    def redoTextChanged(self, text):
+        self.redo.setToolTip("Redo " + text)
+
+    def undoAction(self):
+        self.undoStack.undo()
+
+    def redoAction(self):
+        self.undoStack.redo()
+
+    def menuChanged(self, menu):
+        if menu != self.content.menu:
+            self.content.menu = menu
+            self.contentChanged.emit(self.content)
+            self.editChanged("Menu Changed")
+
+    def layoutChanged(self, layout):
+        if layout != self.content.layout:
+            self.content.layout = layout
+            self.contentChanged.emit(self.content)
+            self.editChanged("Layout Changed")
+
+    def keywordsChanged(self):
+        if self.keywords.text() != self.content.keywords:
+            self.content.keywords = self.keywords.text()
+            self.contentChanged.emit(self.content)
+            self.editChanged("Keywords Changed")
+
+    def authorChanged(self):
+        if self.author.text() != self.content.author:
+            self.content.author = self.author.text()
+            self.contentChanged.emit(self.content)
+            self.editChanged("Author Changed")
+
+    def excerptChanged(self):
+        if self.excerpt.text() != self.content.excerpt:
+            self.content.excerpt = self.excerpt.text()
+            self.contentChanged.emit(self.content)
+            self.editChanged("Excerpt Changed")
+
+    def dateChanged(self):
+        if self.date.text() != self.content.date.toString("dd.MM.yyyy"):
+            self.content.date = QDate.fromString(self.date.text(), "dd.MM.yyyy")
+            self.contentChanged.emit(self.content)
+            self.editChanged("Date Changed")
+
+    def sourceChanged(self):
+        if self.source.text() != self.content.source:
+            oldname = self.filename
+            self.content.source = self.source.text()
+            if self.content.content_type == ContentType.PAGE:
+                self.filename = self.site.source_path + "/pages/" + self.content.source
+            else:
+                self.filename = self.site.source_path + "/posts/" + self.content.source
+
+            self.contentChanged.emit(self.content)
+
+            renameCommand = RenameContentCommand(self, oldname, self.filename, "content file renamed")
+            self.undoStack.push(renameCommand)
+
+    def titleChanged(self, title):
+        if self.is_new:
+            source = title.lower().replace(" ", "_") + ".xml"
+            self.source.setText(source)
+
+    def titleFinished(self):
+        if self.title.text() != self.content.title:
+            if self.is_new:
+                self.sourceChanged()
+            self.content.title = self.title.text()
+            self.contentChanged.emit(self.content)
+            self.editChanged("Titel Changed")
+
+    def sectionEdit(self, se):
+        self.section_editor = se
+
+        self.editor = SectionPropertyEditor()
+        self.editor.setSection(se.section)
+        self.editor.close.connect(self.sectionEditorClose)
+        self.animate(se)
+
+    def sectionEditorClose(self):
+        if self.editor.changed:
+            self.section_editor.setSection(self.editor.section)
+            self.editChanged("Update Section")
+        self.editorClosed()
+    
     def load(self):
+        self.content = self.site.loadContent(self.content.source, self.content.content_type)
+        self.is_new = not self.content.title
+        self.title.setText(self.content.title)
+        self.source.setText(self.content.source)
+        self.author.setText(self.content.author)
+        self.keywords.setText(self.content.keywords)
+        self.menus.setCurrentText(self.content.menu)
+        self.layouts.setCurrentText(self.content.layout)
+        if self.content.content_type == ContentType.POST:
+            self.excerpt.setText(self.content.excerpt)
+            self.date.setText(self.content.date.toString("dd.MM.yyyy"))
+
         pe = PageEditor()
         self.scroll.setWidget(pe)
         for item in self.content.items:
             if isinstance(item, Section):
                 se = SectionEditor(item.fullwidth)
                 se.load(item)
-                #se.setCssClass(stream.attributes().value("cssclass").toString())
-                #se.setStyle(stream.attributes().value("style").toString())
-                #se.setAttributes(stream.attributes().value("attributes").toString())
-                #se.setId(stream.attributes().value("id").toString())
                 pe.addSection(se)
             # todo other types
 
@@ -316,9 +423,14 @@ class ContentEditor(AnimateableEditor):
         self.editor.hide()
         # parent has to be set to NULL, otherwise the plugin will be dropped by parent
         self.editor.setParent(None)
-        self.editor.close.disconnect(self.editorClose)
-        # only delete Row- and SectionPropertyEditor the other editor are plugins
-        if isinstance(self.editor, RowPropertyEditor) or isinstance(self.editor, SectionPropertyEditor) or isinstance(self.editor, TextEditor):
+        # only delete Row-, SectionPropertyEditor and TextEditor the other editors are plugins
+        if isinstance(self.editor, RowPropertyEditor):
+            del self.editor
+        elif isinstance(self.editor, SectionPropertyEditor):
+            self.editor.close.disconnect(self.sectionEditorClose)
+            del self.editor
+        elif isinstance(self.editor, TextEditor):
+            self.editor.close.disconnect(self.editorClose)
             del self.editor
         self.editor = None
 
@@ -330,3 +442,9 @@ class ContentEditor(AnimateableEditor):
         with open(self.filename, "w") as f:
             f.write("import FlatSiteBuilder 2.0\n\n")
             self.content.save(f)
+
+    def contentRenamed(self, name):
+        self.filename = name
+        base = os.path.basename(name)
+        self.source.setText(base)
+        self.content.source = base

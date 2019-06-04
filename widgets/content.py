@@ -18,7 +18,7 @@
 #
 #############################################################################
 
-from PyQt5.QtCore import pyqtProperty, QObject, Q_CLASSINFO
+from PyQt5.QtCore import pyqtProperty, QObject, Q_CLASSINFO, QDate
 from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtQml import QQmlListProperty
 from enum import Enum
@@ -42,6 +42,7 @@ class Content(QObject):
         self._excerpt = ""
         self._keywords = ""
         self._script = ""
+        self._layout = ""
         self._date = None
         self.source = ""
         self.content_type = None
@@ -59,6 +60,14 @@ class Content(QObject):
     @title.setter
     def title(self, title):
         self._title = title
+
+    @pyqtProperty('QString')
+    def layout(self):
+        return self._layout
+
+    @layout.setter
+    def layout(self, layout):
+        self._layout = layout
 
     @pyqtProperty('QString')
     def menu(self):
@@ -100,21 +109,13 @@ class Content(QObject):
     def script(self, script):
         self._script = script
 
-    @pyqtProperty('QString')
+    @pyqtProperty('QDate')
     def date(self):
         return self._date
 
     @date.setter
     def date(self, date):
         self._date = date
-
-    @pyqtProperty('QString')
-    def layout(self):
-        return self._layout
-
-    @layout.setter
-    def layout(self, layout):
-        self._layout = layout
 
     def url(self):
         url = self.source
@@ -126,6 +127,8 @@ class Content(QObject):
                 f.write(" " * indent + att + ": \"" + value + "\"\n")
             elif isinstance(value, bool):
                 f.write(" " * indent + att + ": true\n")
+            elif isinstance(value, QDate):
+                f.write(" " * indent + att + ": \"" + value.toString("yyyy-MM-dd") + "\"\n")
 
     def save(self, f):
         f.write("Content {\n")

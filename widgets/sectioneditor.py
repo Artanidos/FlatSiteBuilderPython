@@ -23,6 +23,7 @@ from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QPalette, QColor
 from widgets.row import Row
 from widgets.text import Text
+from widgets.roweditor import RowEditor
 
 
 class SectionEditor(QWidget):
@@ -80,9 +81,37 @@ class SectionEditor(QWidget):
 
         self.deleteButton.clicked.connect(self.delete)
         self.copyButton.clicked.connect(self.copy)
+        addRow.clicked.connect(self.addRow)
+        self.edit_button.clicked.connect(self.edit)
 
-        # connect(addRow, SIGNAL(clicked()), this, SLOT(addRow()))
-        # connect(self.edit_button, SIGNAL(clicked()), this, SLOT(edit()))
+    def edit(self):
+        ce = self.getContentEditor()
+        if ce:
+            ce.sectionEdit(self)
+
+    def addRow(self):
+        row = Row()
+        self.section._items.append(row)
+        re = RowEditor()
+        re.load(row)
+        self.addRowEditor(re)
+        ce = self.getContentEditor()
+        if ce:
+            ce.editChanged("Add Row")
+
+    def addRowEditor(self, re):
+        re.rowEditorCopied.connect(self.copyRowEditor)
+        self.layout.addWidget(re)
+
+    def copyRowEditor(self, re):
+        ren = RowEditor()
+        row = re.row.clone()
+        ren.load(row)
+        self.section._items.append(row)
+        self.addRowEditor(ren)
+        ce = self.getContentEditor()
+        if ce:
+            ce.editChanged("Copy Row")
 
     def copy(self):
         self.sectionEditorCopied.emit(self)
@@ -106,9 +135,13 @@ class SectionEditor(QWidget):
         # connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)));
         self.layout.insertWidget(self.layout.count() - 1, ee, 0, Qt.AlignTop)
 
-    def addRow(self, re):
-        # connect(re, SIGNAL(rowEditorCopied(RowEditor*)), this, SLOT(copyRowEditor(RowEditor *)));
-        self.layout.addWidget(re)
+    def setSection(self, section):
+        self.section = section
+
+    def removeRowEditor(self, re):
+        re.setVisible(False)
+        self.section._items.remove(re.row)
+        self.layout.removeWidget(re)
 
     def load(self, section):
         from widgets.elementeditor import ElementEditor, Mode
@@ -117,8 +150,9 @@ class SectionEditor(QWidget):
         self.section = section
         for item in self.section.items:
             if isinstance(item, Row):
-                re = RowEditor(item)
-                self.addRow(re)
+                re = RowEditor()
+                re.load(item)
+                self.addRowEditor(re)
             elif isinstance(item, Text):
                 ee = ElementEditor()
                 ee.load(item)

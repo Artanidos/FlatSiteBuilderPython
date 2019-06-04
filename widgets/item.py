@@ -47,7 +47,10 @@ class Item(QObject):
     def writeAttribute(self, f, indent, att, value):
         if value: 
             if isinstance(value, str):
-                f.write(" " * indent + att + ": \"" + value + "\"\n")
+                if att == "id":
+                    f.write(" " * indent + att + ":  " + value + "\n")
+                else:
+                    f.write(" " * indent + att + ": \"" + value + "\"\n")
             elif isinstance(value, bool):
                 f.write(" " * indent + att + ": true\n")
 

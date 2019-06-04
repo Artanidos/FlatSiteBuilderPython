@@ -28,11 +28,6 @@ class FlatButton(QLabel):
     clickedWithReturn = pyqtSignal(object)
     clicked = pyqtSignal()
 
-    def __init__(self):
-        self.enabled = True
-        self.returncode = ""
-        self.setCursor(Qt.PointingHandCursor)
-
     def __init__(self, normal_icon, hover_icon, pressed_icon="", disabled_icon=""):
         QLabel.__init__(self)
 

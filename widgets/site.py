@@ -176,27 +176,33 @@ class Site(QObject):
 
     def loadPages(self):
         self.pages.clear()
-        source = "index.qml"
+        for root, dirs, files in os.walk(os.path.join(self.source_path, "pages")):
+            for file in files:
+                page = self.loadContent(file, ContentType.PAGE)
+                self.pages.append(page)
+        self.win.statusBar().showMessage("Pages have been loaded")
+
+    def loadContent(self, source, type):
+        if type == ContentType.PAGE:
+            sub = "pages"
+        else:
+            sub = "posts"
         engine = QQmlEngine()
         component = QQmlComponent(engine)
-        component.loadUrl(QUrl(os.path.join(self.source_path, "pages", source)))
-        page = component.create()
-        if page is not None:
-            page.source = source
-            page.content_type = ContentType.PAGE
-            self.pages.append(page)
-            self.win.statusBar().showMessage("Page has been loaded")
+        component.loadUrl(QUrl(os.path.join(self.source_path, sub, source)))
+        content = component.create()
+        if content is not None:
+            content.source = source
+            content.content_type = type
         else:
             for error in component.errors():
                 print(error.toString())
-        del engine
+        return content
 
     def loadPosts(self):
-        # self.posts.clear()
-        # for r, d, files in os.walk(os.path.join(self.source_path, "posts")):
-        #     for filename in files:
-        #         parser = make_parser()
-        #         parser.setContentHandler(ContentHandler(self, filename, ContentType.POST))
-        #         parser.parse(os.path.join(self.source_path, "posts", filename))
-
-        self.win.statusBar().showMessage("Pages have been loaded")
+        self.posts.clear()
+        for root, dirs, files in os.walk(os.path.join(self.source_path, "posts")):
+            for file in files:
+                post = self.loadContent(file, ContentType.POST)
+                self.posts.append(post)
+        self.win.statusBar().showMessage("Posts have been loaded")

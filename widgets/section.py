@@ -32,6 +32,7 @@ class Section(Item):
         self._cssclass = ""
         self._style = ""
         self._attributes = ""
+        self._id = ""
         self._items = []
 
     @pyqtProperty(QQmlListProperty)
@@ -47,6 +48,14 @@ class Section(Item):
         self._fullwidth = fullwidth
 
     @pyqtProperty('QString')
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, id):
+        self._id = id
+
+    @pyqtProperty('QString')
     def cssclass(self):
         return self._cssclass
 
@@ -60,7 +69,15 @@ class Section(Item):
 
     @style.setter
     def style(self, style):
-        self._style = style    
+        self._style = style
+
+    @pyqtProperty('QString')
+    def attributes(self):
+        return self._attributes
+
+    @attributes.setter
+    def attributes(self, attributes):
+        self._attributes = attributes
 
     def clone(self):
         sec = Section()

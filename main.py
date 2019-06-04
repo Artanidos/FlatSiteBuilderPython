@@ -40,7 +40,7 @@ from PyQt5.QtQml import qmlRegisterType
 
 if __name__ == "__main__":
     QCoreApplication.setApplicationName("FlatSiteBuilder")
-    QCoreApplication.setApplicationVersion("2.0.0 (Python)")
+    QCoreApplication.setApplicationVersion("2.0.0")
     QCoreApplication.setOrganizationName("Artanidos")
 
     app = QApplication(sys.argv)
