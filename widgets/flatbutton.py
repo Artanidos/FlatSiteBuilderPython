@@ -28,22 +28,16 @@ class FlatButton(QLabel):
     clickedWithReturn = pyqtSignal(object)
     clicked = pyqtSignal()
 
-    def __init__(self, normal_icon, hover_icon, pressed_icon="", disabled_icon=""):
+    def __init__(self, normal_icon = ":/images/edit_normal.png", hover_icon = ":/images/edit_normal.png", pressed_icon = "", disabled_icon = ""):
         QLabel.__init__(self)
 
         self.enabled = True
         self.returncode = ""
-        if not normal_icon:
-            self.normal_icon = QPixmap.fromImage(QImage())
-        else:
-            self.normal_icon = QPixmap.fromImage(QImage(normal_icon))
+        
+        self.normal_icon = QPixmap.fromImage(QImage(normal_icon))
+        self.hover_icon = QPixmap.fromImage(QImage(hover_icon))
 
-        if not hover_icon:
-            self.hover_icon = QPixmap.fromImage(QImage())
-        else:
-            self.hover_icon = QPixmap.fromImage(QImage(hover_icon))
-
-        if not pressed_icon:
+        if not pressed_icon :
             self.pressed_icon = QPixmap.fromImage(QImage(hover_icon))
         else:
             self.pressed_icon = QPixmap.fromImage(QImage(pressed_icon))
@@ -80,3 +74,18 @@ class FlatButton(QLabel):
         if self.enabled:
             self.setPixmap(self.normal_icon)
         QWidget.leaveEvent(self, event)
+
+    def setNormalPixmap(self, pm):
+        self.normal_icon = pm
+        if not self.disabled_icon:
+            self.disabled_icon = pm
+        if not self.pressed_icon:
+            self.pressed_icon = pm
+        if not self.hover_icon:
+            self.hover_icon = pm
+        self.setPixmap(self.normal_icon)
+
+    def setHoverPixmap(self, pm):
+        self.hover_icon = pm
+        if not self.pressed_icon:
+            self.pressed_icon = pm

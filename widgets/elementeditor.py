@@ -23,6 +23,7 @@ from widgets.hyperlink import HyperLink
 from widgets.section import Section
 from widgets.content import ContentType
 from widgets.text import Text
+from widgets.moduldialog import ModulDialog
 from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QColor, QPalette
@@ -79,12 +80,11 @@ class ElementEditor(QWidget):
         self.link.clicked.connect(self.enable)
 
     def enable(self):
-        pass
-        #dlg = ModulDialog()
-        #dlg.exec()
+        dlg = ModulDialog()
+        dlg.exec()
 
-        #if not dlg.result():
-        #    return
+        if not dlg.result:
+            return
 
         #ElementEditorInterface *editor = Plugins::getElementPlugin(dlg->result());
         #m_text->setText(editor->displayName());
