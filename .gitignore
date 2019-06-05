@@ -2,3 +2,5 @@ __pycache__/
 build/
 dist/
 main.spec
+imageeditor_rc.py
+texteditor_rc.py

@@ -180,9 +180,17 @@ class MainWindow(QMainWindow):
         self.siteLoaded.connect(db.siteLoaded)
         self.setCentralWidget(db)
 
-    def closeEvent(self, event):
-        self.writeSettings()
-        event.accept()
+    def setCentralWidget(self, widget):
+        # do not delete plugin editors
+        old_widget = self.takeCentralWidget()
+        if not isinstance(old_widget, PublisherInterface) and not isinstance(old_widget, ThemeEditorInterface):
+            del old_widget
+        super().setCentralWidget(widget)
+        widget.show()
+
+        def closeEvent(self, event):
+            self.writeSettings()
+            event.accept()
 
     def writeSettings(self):
         settings = QSettings(QSettings.IniFormat, QSettings.UserScope, QCoreApplication.organizationName(), QCoreApplication.applicationName())
@@ -367,10 +375,10 @@ class MainWindow(QMainWindow):
         pi = Plugins.getPublishPlugin(pluginName)
         if pi:
             self.setCentralWidget(pi)
-            pi.setSitePath(self.site.deployPath())
+            pi.setSitePath(self.site.deploy_path)
 
     def createSite(self):
-        wiz = SiteWizard(self.install_directory, parent=self)
+        wiz = SiteWizard(self.install_directory, parent = self)
         wiz.loadSite.connect(self.loadProject)
         wiz.buildSite.connect(self.buildSite)
         wiz.show()

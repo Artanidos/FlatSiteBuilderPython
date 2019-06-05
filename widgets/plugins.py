@@ -69,3 +69,11 @@ class Plugins:
             if plugin.tag_name == tag:
                 return name
         return ""
+
+    @staticmethod
+    def getPublishPlugin(key):
+        return Plugins.publish_plugins[key]
+
+    @staticmethod
+    def actualPublishPlugin():
+        return Plugins.actual_publish_plugin

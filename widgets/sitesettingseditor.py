@@ -43,7 +43,7 @@ class SiteSettingsEditor(UndoableEditor):
         for key in Plugins.publishPluginNames():
             pi = Plugins.getPublishPlugin(key)
             if pi:
-                self.publisher.addItem(pi.displayName(), key)
+                self.publisher.addItem(pi.display_name, key)
 
         vbox = QVBoxLayout()
         vbox.addStretch()
@@ -98,7 +98,7 @@ class SiteSettingsEditor(UndoableEditor):
             self.site.copyright = self.copyright.text()
             self.site.description = self.description.text()
             self.site.keywords = self.keywords.text()
-            #self.site.setPublisher(self.publisher.currentData().toString())
+            self.site.publisher = self.publisher.currentData()
             self.site.save()
             self.win.statusBar().showMessage("Site settings have been saved. Site should be rebuilded on the dashboard.")
 

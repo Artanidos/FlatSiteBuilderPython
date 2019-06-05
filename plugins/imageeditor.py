@@ -193,13 +193,8 @@ class Image(Item):
         html = "<img"
         classValue = "img-responsive pull-left inner"
         html += " src=\"" + self.src + "\""
-        #else if(attName == "class") // overrides class
-        #   classValue = value;
-        #else if(attName == "adminlabel")
-        #    ; // ignore
-        #else
-        #    html += " " + attName + "=\"" + value + "\"";
-
+        html += " alt=\"" + self.alt + "\""
+        html += " title=\"" + self.title + "\""
         html += " class=\"" + classValue + "\">\n"
         return html
 
