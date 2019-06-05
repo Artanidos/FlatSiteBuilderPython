@@ -154,3 +154,7 @@ class Content(QObject):
 
     def removeSection(self, sec):
         self._items.remove(sec)
+
+    def collectPluginNames(self, list):
+         for item in self._items:
+             item.collectPluginNames(list)

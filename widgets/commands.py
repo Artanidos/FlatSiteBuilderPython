@@ -39,7 +39,6 @@ from widgets.pageeditor import PageEditor
 from widgets.roweditor import RowEditor
 from widgets.section import Section
 from widgets.sectioneditor import SectionEditor
-from widgets.text import Text
 
 
 class ChangeContentCommand(QUndoCommand):

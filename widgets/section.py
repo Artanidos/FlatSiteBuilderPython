@@ -100,6 +100,14 @@ class Section(Item):
             item.save(f, indent + 4)
         f.write(" " * indent + "}\n")
 
+    def collectPluginNames(self, list):
+        for item in self._items:
+            if isinstance(item, Row):
+                item.collectPluginNames(list)
+            else:
+                if not item.tag_name in list:
+                    list.append(item.tag_name)
+
     def getHtml(self):
         html = ""
         if self.fullwidth:

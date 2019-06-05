@@ -22,7 +22,6 @@ from widgets.hyperlink import HyperLink
 from widgets.flatbutton import FlatButton
 from widgets.animateableeditor import AnimateableEditor
 from widgets.section import Section
-from widgets.text import Text
 from widgets.pageeditor import PageEditor
 from widgets.sectioneditor import SectionEditor
 from widgets.roweditor import RowEditor

@@ -35,6 +35,7 @@ class ColumnEditor(QWidget):
 
     def __init__(self):
         QWidget.__init__(self)
+        self.column = None
         pal = self.palette()
         pal.setColor(QPalette.Background, QColor(self.palette().base().color().name()).lighter())
         self.setPalette(pal)
@@ -52,17 +53,26 @@ class ColumnEditor(QWidget):
         # connect(ee, SIGNAL(elementDragged()), this, SLOT(addElement()));
         # connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)));
 
-    def addElement(self, element):
-        ee = ElementEditor(element)
+    def addElement(self):
+        ee = ElementEditor()
         self.layout.addWidget(ee, 0, Qt.AlignTop)
 
         ce = self.getContentEditor()
         if ce:
             ce.editChanged("Add Element")
+
+        ee.elementEnabled.connect(self.addElement)
         # connect(ee, SIGNAL(elementEnabled()), this, SLOT(addElement()));
         # connect(ee, SIGNAL(elementDragged()), this, SLOT(addElement()));
         # connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)));
 
+    def addElement(self, ee):
+        self.layout.insertWidget(self.layout.count() - 1, ee, 0, Qt.AlignTop)
+        ee.elementEnabled.connect(self.addElement)
+        #connect(ee, SIGNAL(elementEnabled()), this, SLOT(addElement()));
+        #connect(ee, SIGNAL(elementDragged()), this, SLOT(addElement()));
+        #connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)));
+        
     def getContentEditor(self):
         from widgets.pageeditor import PageEditor
         from widgets.roweditor import RowEditor
@@ -88,5 +98,5 @@ class ColumnEditor(QWidget):
         for item in self.column.items:
             ee = ElementEditor()
             ee.setMode(Mode.ENABLED)
-            ee.load(item)
+            ee.setContent(item)
             self.layout.insertWidget(self.layout.count() - 1, ee, 0, Qt.AlignTop)

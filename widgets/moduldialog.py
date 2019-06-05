@@ -34,8 +34,6 @@ class ModulDialog(QDialog):
         self.result = ""
         self.setWindowTitle("Insert Module")
         self.grid = QGridLayout()
-        textButton = self.createButton(QImage(":/images/text.png"), "Text")
-        self.grid.addWidget(textButton, 0, 0)
 
         cancelButton = QPushButton("Cancel")
         buttonsLayout = QHBoxLayout()
@@ -50,7 +48,7 @@ class ModulDialog(QDialog):
         self.setLayout(mainLayout)
 
         row = 0
-        col = 1
+        col = 0
 
         for name in Plugins.elementPluginNames():
             plugin = Plugins.element_plugins[name]
@@ -64,7 +62,6 @@ class ModulDialog(QDialog):
                 col = 0
             
         cancelButton.clicked.connect(self.close)
-        textButton.clicked.connect(self.close1)
 
     def close1(self):
         self.result = "TextEditor"

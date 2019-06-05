@@ -22,7 +22,6 @@ from widgets.flatbutton import FlatButton
 from widgets.hyperlink import HyperLink
 from widgets.section import Section
 from widgets.content import ContentType
-from widgets.text import Text
 from widgets.plugins import Plugins
 from widgets.moduldialog import ModulDialog
 from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
@@ -83,16 +82,21 @@ class ElementEditor(QWidget):
         self.link.clicked.connect(self.enable)
 
     def enable(self):
+        from widgets.columneditor import ColumnEditor
+        from widgets.sectioneditor import SectionEditor
         dlg = ModulDialog()
         dlg.exec()
 
         if not dlg.result:
             return
-
         editor = Plugins.element_plugins[dlg.result]
-        self.text.setText(editor.display_name)
         self.content = editor.getDefaultContent()
-        self.type = editor.class_name
+        if isinstance(self.parentWidget(), ColumnEditor):
+            self.parentWidget().column._items.append(self.content)
+        elif isinstance(self.parentWidget(), SectionEditor):
+            self.parentWidget().section._items.append(self.content)
+        self.type = editor.tag_name
+        self.text.setText(editor.tag_name)
 
         self.setMode(Mode.ENABLED)
         self.elementEnabled.emit()
@@ -117,9 +121,6 @@ class ElementEditor(QWidget):
         pal = self.palette()
         pal.setColor(QPalette.Background, QColor(name))
         self.setPalette(pal)
-
-    def load(self, content):
-        self.content = content
 
     def setMode(self, mode):
         self.mode = mode
@@ -179,7 +180,8 @@ class ElementEditor(QWidget):
 
     def setContent(self, content):
         self.content = content
+        self.type = content.tag_name
         if content.adminlabel:
             self.text.setText(content.adminlabel)
         else:
-            self.text.setText("Text")
+            self.text.setText(content.tag_name)

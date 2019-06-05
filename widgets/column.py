@@ -62,3 +62,8 @@ class Column(Item):
         for item in self._items:
             html += item.getHtml()
         return html + "\n</div>\n"
+
+    def collectPluginNames(self, list):
+        for item in self._items:
+            if not item.tag_name in list:
+                list.append(item.tag_name)     

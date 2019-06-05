@@ -23,6 +23,7 @@ import os
 from widgets.content import ContentType, Content
 from widgets.menu import Menu
 from widgets.menuitem import Menuitem
+from widgets.generator import Generator
 from PyQt5.QtCore import QFileInfo, QObject, pyqtProperty, QUrl
 from PyQt5.QtQml import QQmlEngine, QQmlComponent
 
@@ -34,6 +35,7 @@ class Site(QObject):
         self.filename = ""
         self.win = None
         self.source_path = ""
+        self.deploy_path = ""
         self._publisher = ""
         self._copyright = ""
         self._keywords = ""
@@ -77,6 +79,7 @@ class Site(QObject):
     @title.setter
     def title(self, title):
         self._title = title
+        self.deploy_path = os.path.join(Generator.sitesPath(), title)
 
     @pyqtProperty('QString')
     def description(self):

@@ -22,7 +22,6 @@ from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGrid
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QPalette, QColor
 from widgets.row import Row
-from widgets.text import Text
 from widgets.roweditor import RowEditor
 import resources
 
@@ -69,7 +68,8 @@ class SectionEditor(QWidget):
 
         if self.fullwidth:
             ee = ElementEditor()
-            # connect(ee, SIGNAL(elementEnabled()), this, SLOT(addElement()))
+            ee.elementEnabled.connect(self.addElement)
+
             # connect(ee, SIGNAL(elementDragged()), this, SLOT(addElement()))
             # connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)))
 
@@ -130,7 +130,8 @@ class SectionEditor(QWidget):
         self.setPalette(pal)
 
     def addElement(self, ee):
-        # connect(ee, SIGNAL(elementEnabled()), this, SLOT(addElement()));
+        ee.elementEnabled.connect(self.addElement)
+        
         # connect(ee, SIGNAL(elementDragged()), this, SLOT(addElement()));
         # connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)));
         self.layout.insertWidget(self.layout.count() - 1, ee, 0, Qt.AlignTop)
@@ -153,9 +154,9 @@ class SectionEditor(QWidget):
                 re = RowEditor()
                 re.load(item)
                 self.addRowEditor(re)
-            elif isinstance(item, Text):
+            else:
                 ee = ElementEditor()
-                ee.load(item)
+                ee.setContent(item)
                 ee.setMode(Mode.ENABLED)
                 self.addElement(ee)
 

@@ -67,3 +67,7 @@ class Row(Item):
         for item in self._columns:
             html += item.getHtml()
         return html + "</div>\n"
+
+    def collectPluginNames(self, list):
+        for item in self._columns:
+            item.collectPluginNames(list)

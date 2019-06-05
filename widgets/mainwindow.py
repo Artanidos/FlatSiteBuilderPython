@@ -485,7 +485,7 @@ class MainWindow(QMainWindow):
         self.list.item(self.row, 1).setText(menu.name())
 
     def editedItemChanged(self, item):
-        # self will happen, if the MenuList.reloadMenu() has been called by the undo.command
+        # this will happen, if the MenuList.reloadMenu() has been called by the undo.command
         self.list = item.tableWidget()
         self.row = item.row()
         self.cellWidget = QWidget()
@@ -496,14 +496,16 @@ class MainWindow(QMainWindow):
         for root, dirs, files in os.walk(plugins_dir):
             for file in files:
                 modulename, ext = os.path.splitext(file)
-                module = import_module("plugins." + modulename)
-                for name, klass in inspect.getmembers(module, inspect.isclass):
-                    if klass.__module__ == "plugins." + modulename:
-                        instance = klass()
-                        if isinstance(instance, ElementEditorInterface):
-                            Plugins.addElementPlugin(name, instance)
-                        elif isinstance(instance, ThemeEditorInterface):
-                            Plugins.addThemePlugin(name, instance)
-                        elif isinstance(instance, PublisherInterface):
-                            Plugins.addPublishPlugin(name, instance)
+                if ext == ".py":
+                    module = import_module("plugins." + modulename)
+                    for name, klass in inspect.getmembers(module, inspect.isclass):
+                        if klass.__module__ == "plugins." + modulename:
+                            instance = klass()
+                            if isinstance(instance, ElementEditorInterface):
+                                Plugins.addElementPlugin(name, instance)
+                                instance.registerContenType()
+                            elif isinstance(instance, ThemeEditorInterface):
+                                Plugins.addThemePlugin(name, instance)
+                            elif isinstance(instance, PublisherInterface):
+                                Plugins.addPublishPlugin(name, instance)
             break # not to list __pycache__

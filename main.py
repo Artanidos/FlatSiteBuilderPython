@@ -31,7 +31,6 @@ from widgets.section import Section
 from widgets.row import Row
 from widgets.column import Column
 from widgets.menuitem import Menuitem
-from widgets.text import Text
 from PyQt5.QtWidgets import QApplication, QStyleFactory
 from PyQt5.QtCore import Qt, QCoreApplication, QSettings
 from PyQt5.QtGui import QPalette, QColor, QIcon, QFont
@@ -56,7 +55,6 @@ if __name__ == "__main__":
     qmlRegisterType(Section, 'FlatSiteBuilder', 2, 0, 'Section')
     qmlRegisterType(Row, 'FlatSiteBuilder', 2, 0, 'Row')
     qmlRegisterType(Column, 'FlatSiteBuilder', 2, 0, 'Column')
-    qmlRegisterType(Text, 'FlatSiteBuilder', 2, 0, 'Text')
 
     font = QFont("Sans Serif", 10)
     app.setFont(font)

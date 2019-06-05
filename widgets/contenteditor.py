@@ -24,12 +24,10 @@ from widgets.hyperlink import HyperLink
 from widgets.flatbutton import FlatButton
 from widgets.animateableeditor import AnimateableEditor
 from widgets.section import Section
-from widgets.text import Text
 from widgets.generator import Generator
 from widgets.pageeditor import PageEditor
 from widgets.roweditor import RowEditor
 from widgets.columneditor import ColumnEditor
-from widgets.texteditor import TextEditor
 from widgets.elementeditor import ElementEditor, Mode
 from widgets.content import ContentType
 from widgets.plugins import Plugins
@@ -319,12 +317,12 @@ class ContentEditor(AnimateableEditor):
         self.element_editor = ee
         plugin_name = ""
         if ee.type:
-            plugin_name = Plugins.getElementPluginByClass(ee.type)
+            plugin_name = Plugins.getElementPluginByTagname(ee.type)
         if plugin_name:
             self.editor = Plugins.element_plugins[plugin_name]
         else:
-            self.editor = TextEditor()
-        #self.editor.setSite(self.site)
+            self.editor = Plugins.element_plugins["TextEditor"]
+        self.editor.site = self.site
         self.editor.setContent(ee.getContent())
         self.editor.close.connect(self.editorClose)
         self.animate(ee)
@@ -441,14 +439,11 @@ class ContentEditor(AnimateableEditor):
         self.editor.hide()
         # parent has to be set to NULL, otherwise the plugin will be dropped by parent
         self.editor.setParent(None)
-        # only delete Row-, SectionPropertyEditor and TextEditor the other editors are plugins
+        # only delete Row- and SectionPropertyEditor the other editors are plugins
         if isinstance(self.editor, RowPropertyEditor):
             del self.editor
         elif isinstance(self.editor, SectionPropertyEditor):
             self.editor.close.disconnect(self.sectionEditorClose)
-            del self.editor
-        elif isinstance(self.editor, TextEditor):
-            self.editor.close.disconnect(self.editorClose)
             del self.editor
         self.editor = None
 
@@ -458,7 +453,16 @@ class ContentEditor(AnimateableEditor):
 
     def save(self):
         with open(self.filename, "w") as f:
-            f.write("import FlatSiteBuilder 2.0\n\n")
+            f.write("import FlatSiteBuilder 2.0\n")
+            
+            taglist = []
+            self.content.collectPluginNames(taglist)
+
+            for tag in taglist:
+                plugin_name = Plugins.getElementPluginByTagname(tag)
+                plugin = Plugins.element_plugins[plugin_name]
+                plugin.writeImportString(f)
+            f.write("\n")
             self.content.save(f)
 
     def contentRenamed(self, name):

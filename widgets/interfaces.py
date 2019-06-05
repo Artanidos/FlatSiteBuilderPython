@@ -36,9 +36,9 @@ class ElementEditorInterface(AnimateableEditor):
         self.version = ""
         self.content = None
     
-    def getHtml(self):
-        return ""
-    
+    def registerContenType(self):
+        pass
+
     def setContent(self, content):
         pass
     
@@ -53,6 +53,9 @@ class ElementEditorInterface(AnimateableEditor):
 
     def getDefaultContent(self):
         return Item()
+
+    def writeImportString(self, f):
+        pass
 
 
 class ThemeEditorInterface(UndoableEditor):

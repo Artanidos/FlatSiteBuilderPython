@@ -63,9 +63,9 @@ class Plugins:
         Plugins.publish_plugins[name] = plugin
 
     @staticmethod
-    def getElementPluginByClass(type):
+    def getElementPluginByTagname(tag):
         for name in Plugins.element_plugins.keys():
             plugin = Plugins.element_plugins[name]
-            if plugin.class_name == type:
+            if plugin.tag_name == tag:
                 return name
         return ""
