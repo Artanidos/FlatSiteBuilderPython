@@ -86,6 +86,7 @@ class ImageEditor(ElementEditorInterface):
         self.title.textChanged.connect(self.contentChanged)
         self.adminlabel.textChanged.connect(self.contentChanged)
         seek.clicked.connect(self.seek)
+        self.image.clicked.connect(self.seek)
 
     def closeEditor(self):
         if self.changed:
@@ -108,7 +109,8 @@ class ImageEditor(ElementEditorInterface):
         self.alt.setText(content.alt)
         self.title.setText(content.title)
         self.adminlabel.setText(content.adminlabel)
-        self.image.setImage(QImage(content.src))
+        if content.src:
+            self.image.setImage(QImage(content.src))
         self.changed = False
 
     def getContent(self):
