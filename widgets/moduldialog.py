@@ -23,6 +23,8 @@ from PyQt5.QtCore import Qt, QUrl, QDate, QPoint, QParallelAnimationGroup, QProp
 from PyQt5.QtGui import QImage, QPixmap, QPalette, QColor
 import resources
 from widgets.flatbutton import FlatButton
+from widgets.plugins import Plugins
+
 
 class ModulDialog(QDialog):
 
@@ -50,26 +52,26 @@ class ModulDialog(QDialog):
         row = 0
         col = 1
 
-        # foreach(QString name, Plugins::elementPluginNames())
-        
-        #     if(name != "RowPropertyEditor" and name != "SectionPropertyEditor" and name != "TextEditor")
-            
-        #         ElementEditorInterface *plugin = Plugins::getElementPlugin(name)
-        #         FlatButton *btn = createButton(plugin.icon(), plugin.displayName())
-        #         btn.setReturnCode(name)
-        #         self.grid.addWidget(btn, row, col++)
-        #         connect(btn, SIGNAL(clicked(QString)), this, SLOT(close2(QString)))
-        #         if(col == 4)
-                
-        #             row++
-        #             col = 0
-                
+        for name in Plugins.elementPluginNames():
+            plugin = Plugins.element_plugins[name]
+            btn = self.createButton(plugin.icon, plugin.display_name)
+            btn.returncode = name
+            self.grid.addWidget(btn, row, col)
+            col = col + 1
+            btn.clickedWithReturn.connect(self.close2)
+            if col == 4:
+                row = row + 1
+                col = 0
             
         cancelButton.clicked.connect(self.close)
         textButton.clicked.connect(self.close1)
 
     def close1(self):
         self.result = "TextEditor"
+        self.close()
+
+    def close2(self, result):
+        self.result = result
         self.close()
 
     def createButton(self, icon, text):

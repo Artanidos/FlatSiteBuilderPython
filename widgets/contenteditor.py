@@ -32,6 +32,7 @@ from widgets.columneditor import ColumnEditor
 from widgets.texteditor import TextEditor
 from widgets.elementeditor import ElementEditor, Mode
 from widgets.content import ContentType
+from widgets.plugins import Plugins
 from widgets.commands import ChangeContentCommand, RenameContentCommand
 from widgets.sectionpropertyeditor import SectionPropertyEditor
 from PyQt5.QtWidgets import QUndoStack, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
@@ -316,13 +317,14 @@ class ContentEditor(AnimateableEditor):
 
     def elementEdit(self, ee):
         self.element_editor = ee
-        #if Plugins.hasElementPlugin(ee.type()))
-        #    self.editor = dynamic_cast<AnimateableEditor*>(Plugins.getElementPlugin(ee.type()))
-        #else
-        #    self.editor = dynamic_cast<AnimateableEditor*>(Plugins.getElementPlugin("TextEditor"))
-        #    qDebug() << "Plugin for type " + ee.type() + " not loaded."
-        self.editor = TextEditor()
-        self.editor.setSite(self.site)
+        plugin_name = ""
+        if ee.type:
+            plugin_name = Plugins.getElementPluginByClass(ee.type)
+        if plugin_name:
+            self.editor = Plugins.element_plugins[plugin_name]
+        else:
+            self.editor = TextEditor()
+        #self.editor.setSite(self.site)
         self.editor.setContent(ee.getContent())
         self.editor.close.connect(self.editorClose)
         self.animate(ee)
@@ -391,6 +393,7 @@ class ContentEditor(AnimateableEditor):
         if self.content.content_type == ContentType.POST:
             self.excerpt.setEnabled(False)
             self.excerptLabel.setEnabled(False)
+        self.animationgroup.finished.disconnect(self.animationFineshedZoomIn)
         
     def editorClose(self):
         if self.editor.changed:
@@ -408,7 +411,6 @@ class ContentEditor(AnimateableEditor):
         self.animw.setStartValue(self.sourcewidget.size().width())
         self.animh.setStartValue(self.sourcewidget.size().height())
         self.animationgroup.setDirection(QAbstractAnimation.Backward)
-        self.animationgroup.finished.disconnect(self.animationFineshedZoomIn)
         self.animationgroup.finished.connect(self.animationFineshedZoomOut)
         self.animationgroup.start()
 

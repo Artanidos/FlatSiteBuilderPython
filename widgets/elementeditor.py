@@ -23,6 +23,7 @@ from widgets.hyperlink import HyperLink
 from widgets.section import Section
 from widgets.content import ContentType
 from widgets.text import Text
+from widgets.plugins import Plugins
 from widgets.moduldialog import ModulDialog
 from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal
@@ -38,10 +39,12 @@ class Mode(Enum):
 
 class ElementEditor(QWidget):
     elementCopied = pyqtSignal(object)
+    elementEnabled = pyqtSignal()
 
     def __init__(self):
         QWidget.__init__(self)
         self.content = None
+        self.type = ""
         self.setAutoFillBackground(True)
         self.setMinimumWidth(120)
         self.setMinimumHeight(50)
@@ -86,14 +89,14 @@ class ElementEditor(QWidget):
         if not dlg.result:
             return
 
-        #ElementEditorInterface *editor = Plugins::getElementPlugin(dlg->result());
-        #m_text->setText(editor->displayName());
-        #m_content = "<" + editor->tagName() + "/>";
-        #m_type = editor->className();
+        editor = Plugins.element_plugins[dlg.result]
+        self.text.setText(editor.display_name)
+        self.content = editor.getDefaultContent()
+        self.type = editor.class_name
 
-        #self.setMode(Mode.Enabled)
-        #self.elementEnabled.emit()
-        #self.edit();
+        self.setMode(Mode.ENABLED)
+        self.elementEnabled.emit()
+        self.edit()
         
     def copy(self):
         self.elementCopied.emit(self)

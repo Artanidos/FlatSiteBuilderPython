@@ -48,7 +48,6 @@ class TextEditor(AnimateableEditor):
         font.setPointSize(12)
 
         grid = QGridLayout()
-        #grid.setMargin(0)
 
         close = FlatButton(":/images/close_normal.png", ":/images/close_hover.png")
         close.setToolTip("Close Editor")

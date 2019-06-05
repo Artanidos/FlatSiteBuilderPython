@@ -20,28 +20,52 @@
 
 
 class Plugins:
-    actualThemeEditorPlugin = None
-    actualPublishPlugin = None
-    themePlugins = {}
-    publishPlugins = {}
-    elementPlugins = {}
-    usedPlugins = []
+    actual_theme_editor_plugin = None
+    actual_publish_plugin = None
+    theme_plugins = {}
+    publish_plugins = {}
+    element_plugins = {}
+    used_plugins = []
 
     def __init__(self):
         pass
 
     @staticmethod
     def setActualThemeEditorPlugin(tep):
-        Plugins.actualThemeEditorPlugin = tep
+        Plugins.actual_theme_editor_plugin = tep
 
     @staticmethod
     def themePluginNames():
-        return Plugins.themePlugins.keys()
+        return Plugins.theme_plugins.keys()
 
     @staticmethod
     def publishPluginNames():
-        return Plugins.publishPlugins.keys()
+        return Plugins.publish_plugins.keys()
+
+    @staticmethod
+    def elementPluginNames():
+        return Plugins.element_plugins.keys()
 
     @staticmethod
     def setActualPublishPlugin(ap):
-        Plugins.actualPublishPlugin = ap
+        Plugins.actual_publish_plugin = ap
+
+    @staticmethod
+    def addElementPlugin(name, plugin):
+        Plugins.element_plugins[name] = plugin
+
+    @staticmethod
+    def addThemePlugin(name, plugin):
+        Plugins.theme_plugins[name] = plugin
+
+    @staticmethod
+    def addPublishPlugin(name, plugin):
+        Plugins.publish_plugins[name] = plugin
+
+    @staticmethod
+    def getElementPluginByClass(type):
+        for name in Plugins.element_plugins.keys():
+            plugin = Plugins.element_plugins[name]
+            if plugin.class_name == type:
+                return name
+        return ""

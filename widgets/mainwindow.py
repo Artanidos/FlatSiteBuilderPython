@@ -18,6 +18,9 @@
 #
 #############################################################################
 
+import os
+import inspect
+from importlib import import_module
 from widgets.flatbutton import FlatButton
 from widgets.expander import Expander
 from widgets.generator import Generator
@@ -33,6 +36,7 @@ from widgets.plugins import Plugins
 from widgets.sitewizard import SiteWizard
 from widgets.contenteditor import ContentEditor
 from widgets.themechooser import ThemeChooser
+from widgets.interfaces import ElementEditorInterface, ThemeEditorInterface, PublisherInterface
 from widgets.sitesettingseditor import SiteSettingsEditor
 from PyQt5.QtWidgets import QVBoxLayout, QMainWindow, QWidget, QScrollArea, QDockWidget, QUndoStack, QApplication
 from PyQt5.QtCore import pyqtSignal, Qt, QUrl, QRect, QCoreApplication, QDir, QSettings, QByteArray, QEvent, QPoint, QAbstractAnimation, QPropertyAnimation
@@ -56,7 +60,6 @@ class MainWindow(QMainWindow):
         self.initUndoRedo()
         self.initGui()
         self.readSettings()
-        self.install()
         self.loadPlugins()
 
         if self.default_path:
@@ -161,12 +164,6 @@ class MainWindow(QMainWindow):
         self.theme_settings_button.clicked.connect(self.showThemesSettings)
         self.showDock.clicked.connect(self.showMenu)
         self.navigationdock.visibilityChanged.connect(self.dockVisibilityChanged)
-
-    def install(self):
-        pass
-
-    def loadPlugins(self):
-        pass
 
     def showDashboard(self):
         if self.editor:
@@ -493,3 +490,20 @@ class MainWindow(QMainWindow):
         self.row = item.row()
         self.cellWidget = QWidget()
         self.list.setCellWidget(self.row, 1, self.cellWidget)
+
+    def loadPlugins(self):
+        plugins_dir = os.path.join(os.getcwd(), "plugins")
+        for root, dirs, files in os.walk(plugins_dir):
+            for file in files:
+                modulename, ext = os.path.splitext(file)
+                module = import_module("plugins." + modulename)
+                for name, klass in inspect.getmembers(module, inspect.isclass):
+                    if klass.__module__ == "plugins." + modulename:
+                        instance = klass()
+                        if isinstance(instance, ElementEditorInterface):
+                            Plugins.addElementPlugin(name, instance)
+                        elif isinstance(instance, ThemeEditorInterface):
+                            Plugins.addThemePlugin(name, instance)
+                        elif isinstance(instance, PublisherInterface):
+                            Plugins.addPublishPlugin(name, instance)
+            break # not to list __pycache__
