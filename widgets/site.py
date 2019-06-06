@@ -43,6 +43,7 @@ class Site(QObject):
         self._author = ""
         self._theme = ""
         self._title = ""
+        self._logo = ""
         self.attributes = {}
         self.pages = []
         self.posts = []
@@ -105,6 +106,14 @@ class Site(QObject):
     def theme(self, theme):
         self._theme = theme
 
+    @pyqtProperty('QString')
+    def logo(self):
+        return self._logo
+
+    @logo.setter
+    def logo(self, logo):
+        self._logo = logo
+
     def setFilename(self, filename):
         info = QFileInfo(filename)
         self.filename = info.fileName()
@@ -126,6 +135,7 @@ class Site(QObject):
             f.write("   copyright: '" + self.copyright + "'\n")
             f.write("   keywords: '" + self.keywords + "'\n")
             f.write("   author: '" + self.author + "'\n")
+            f.write("   logo: '" + self.logo + "'\n")
             f.write("   publisher: '" + self.publisher + "'\n")
             f.write("}\n")
         self.win.statusBar().showMessage("Site has been saved")

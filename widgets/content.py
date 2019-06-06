@@ -44,6 +44,7 @@ class Content(QObject):
         self._script = ""
         self._layout = ""
         self._date = None
+        self._logo = ""
         self.source = ""
         self.content_type = None
         self.attributes = {}
@@ -60,6 +61,14 @@ class Content(QObject):
     @title.setter
     def title(self, title):
         self._title = title
+
+    @pyqtProperty('QString')
+    def logo(self):
+        return self._logo
+
+    @logo.setter
+    def logo(self, logo):
+        self._logo = logo
 
     @pyqtProperty('QString')
     def layout(self):
@@ -139,6 +148,7 @@ class Content(QObject):
         self.writeAttribute(f, 4, "script", self.script)
         self.writeAttribute(f, 4, "layout", self.layout)
         self.writeAttribute(f, 4, "date", self.date)
+        self.writeAttribute(f, 4, "logo", self.logo)
         self.writeAttribute(f, 4, "excerpt", self.excerpt)
 
         for att, value in self.attributes:

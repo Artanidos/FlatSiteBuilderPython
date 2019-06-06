@@ -19,10 +19,14 @@
 #############################################################################
 
 import os
+import shutil
 from widgets.undoableeditor import UndoableEditor
 from widgets.plugins import Plugins
 from widgets.generator import Generator
-from PyQt5.QtWidgets import QLineEdit, QComboBox, QVBoxLayout, QLabel
+from widgets.imageselector import ImageSelector
+from PyQt5.QtWidgets import QLineEdit, QComboBox, QVBoxLayout, QLabel, QPushButton, QFileDialog
+from PyQt5.QtGui import QImage
+import resources
 
 
 class SiteSettingsEditor(UndoableEditor):
@@ -37,7 +41,11 @@ class SiteSettingsEditor(UndoableEditor):
         self.copyright = QLineEdit()
         self.keywords = QLineEdit()
         self.author = QLineEdit()
-        self.copyright.setPlaceholderText("&copy 2019 Artanidos")
+        self.logo = QLineEdit()
+        seekButton = QPushButton("...")
+        self.image = ImageSelector()
+        self.image.setImage(QImage(":/images/image_placeholder.png"))
+        self.copyright.setPlaceholderText("&copy 2019 your name")
         self.publisher = QComboBox()
 
         for key in Plugins.publishPluginNames():
@@ -58,9 +66,14 @@ class SiteSettingsEditor(UndoableEditor):
         self.layout.addWidget(self.keywords, 8, 0, 1, 3)
         self.layout.addWidget(QLabel("Author"), 9, 0)
         self.layout.addWidget(self.author, 10, 0)
-        self.layout.addWidget(QLabel("Plugin to be used for publishing"), 11, 0)
-        self.layout.addWidget(self.publisher, 12, 0)
-        self.layout.addLayout(vbox, 13, 0)
+        self.layout.addWidget(QLabel("Logo"), 11, 0)
+        self.layout.addWidget(self.logo, 12, 0)
+        self.layout.addWidget(seekButton, 12, 1)
+        self.layout.addWidget(self.image, 13, 0, 1, 2)
+        self.layout.setRowStretch(13, 1)
+        self.layout.addWidget(QLabel("Plugin to be used for publishing"), 14, 0)
+        self.layout.addWidget(self.publisher, 15, 0)
+        self.layout.addLayout(vbox, 16, 0)
 
         self.load()
 
@@ -69,7 +82,36 @@ class SiteSettingsEditor(UndoableEditor):
         self.copyright.editingFinished.connect(self.copyrightChanged)
         self.keywords.editingFinished.connect(self.keywordsChanged)
         self.author.editingFinished.connect(self.authorChanged)
+        self.logo.editingFinished.connect(self.logoChanged)
         self.publisher.currentIndexChanged.connect(self.publisherChanged)
+        seekButton.clicked.connect(self.seek)
+
+    def seek(self):
+        fileName = ""
+        dialog = QFileDialog()
+        dialog.setFileMode(QFileDialog.AnyFile)
+        dialog.setNameFilter("Images (*.png *.gif *.jpg);;All (*)")
+        dialog.setWindowTitle("Load Image")
+        dialog.setOption(QFileDialog.DontUseNativeDialog, True)
+        dialog.setAcceptMode(QFileDialog.AcceptOpen)
+        if dialog.exec():
+            fileName = dialog.selectedFiles()[0]
+        del dialog
+        if not fileName:
+            return
+
+        # copy file to assets dir
+        name = os.path.basename(fileName).replace(" ", "_")
+        path = os.path.join(self.site.source_path, "assets", "images", name)
+        self.logo.setText(os.path.basename(path))
+        shutil.copy(fileName, path)
+
+        # also copy file to deploy dir for previews
+        dpath = os.path.join(self.site.deploy_path, "assets", "images", name)
+        shutil.copy(fileName, dpath)
+
+        self.image.setImage(QImage(path))
+        self.contentChanged("logo changed")
 
     def load(self):
         oldTitle = self.site.title
@@ -78,6 +120,9 @@ class SiteSettingsEditor(UndoableEditor):
         self.copyright.setText(self.site.copyright)
         self.keywords.setText(self.site.keywords)
         self.author.setText(self.site.author)
+        self.logo.setText(self.site.logo)
+        if self.site.logo:
+            self.image.setImage(QImage(os.path.join(self.site.source_path, "assets", "images", self.site.logo)))
         index = self.publisher.findData(self.site.publisher)
         self.publisher.setCurrentIndex(index)
         if oldTitle != self.site.title:
@@ -91,7 +136,6 @@ class SiteSettingsEditor(UndoableEditor):
             self.site.title = self.title.text()
             self.site.save()
             os.rename(Generator.sitesPath() + "/" + oldTitle, Generator.sitesPath() + "/" + self.site.title)
-            print("renaming2: " + Generator.sitesPath() + "/" + oldTitle)
             self.win.statusBar().showMessage("Site settings have been saved. Site should be rebuilded. Output path has been renamed to " + self.title.text())
         else:
             self.site.author = self.author.text()
@@ -99,6 +143,7 @@ class SiteSettingsEditor(UndoableEditor):
             self.site.description = self.description.text()
             self.site.keywords = self.keywords.text()
             self.site.publisher = self.publisher.currentData()
+            self.site.logo = self.logo.text()
             self.site.save()
             self.win.statusBar().showMessage("Site settings have been saved. Site should be rebuilded on the dashboard.")
 
@@ -113,6 +158,10 @@ class SiteSettingsEditor(UndoableEditor):
     def authorChanged(self):
         if self.site.author != self.author.text():
             self.contentChanged("author changed")
+
+    def logoChanged(self):
+        if self.site.logo != self.logo.text():
+            self.contentChanged("logo changed")
 
     def descriptionChanged(self):
         if self.site.description != self.description.text():
