@@ -285,3 +285,10 @@ class RowEditor(QWidget):
         ce = self.getContentEditor()
         if ce:
             ce.editChanged("Add Columns")
+
+    def enableColumnAcceptDrop(self, mode):
+        for i in range(self.layout.count()):
+            ce = self.layout.itemAt(i).widget()
+            if ce:
+                ce.setAcceptDrops(mode)
+        

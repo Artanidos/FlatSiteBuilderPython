@@ -24,6 +24,8 @@ from widgets.hyperlink import HyperLink
 from widgets.section import Section
 from widgets.sectioneditor import SectionEditor
 from widgets.content import ContentType
+from widgets.columneditor import ColumnEditor
+from widgets.dropzone import DropZone
 from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
 from PyQt5.QtCore import Qt, QUrl
 
@@ -46,6 +48,18 @@ class PageEditor(QWidget):
         self.setAcceptDrops(True)
         addSection.clicked.connect(self.addNormalSection)
         addFullSection.clicked.connect(self.addFullSection)
+
+    def enableColumnAcceptDrop(self, mode):
+        for i in range(self.layout.count()):
+            ce = self.layout.itemAt(i).widget()
+            if isinstance(ce, ColumnEditor):
+                ce.enableColumnAcceptDrop(mode)
+
+    def enableSectionAcceptDrop(self, mode):
+       for i in range(self.layout.count()):
+            se = self.layout.itemAt(i).widget()
+            if isinstance(se, SectionEditor):
+                se.enableColumnAcceptDrop(mode)
 
     def addFullSection(self):
         se = SectionEditor(True)
@@ -81,10 +95,14 @@ class PageEditor(QWidget):
                 list.append(se)
         return list
 
+    def removeSectionEditor(self, se):
+        self.layout.removeWidget(se)
+
     def removeSection(self, se):
         sec = se.section
-        se.setVisible(False)
+        se.hide()
         self.layout.removeWidget(se)
+        del se
         ce = self.getContentEditor()
         if ce:
             ce.content.removeSection(sec)
@@ -109,3 +127,85 @@ class PageEditor(QWidget):
                 if cee:
                     return cee
         return None
+
+    def dragEnterEvent(self, event):
+        myData = event.mimeData()
+        if myData:
+            se = myData.getData()
+            if isinstance(se, SectionEditor):
+                # insert a dropzone at the end
+                self.layout.addWidget(DropZone(myData.width, myData.height))
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.ignore()
+
+    def dragLeaveEvent(self, event):
+        # remove dropzones
+        for i in  range(self.layout.count()):
+            dz = self.layout.itemAt(i).widget()
+            if isinstance(dz, DropZone):
+                dz.hide()
+                self.layout.removeWidget(dz)
+                del dz
+                break
+        event.accept()
+
+    def dragMoveEvent(self, event):
+        myData = event.mimeData()
+        if myData:
+            se = myData.getData()
+            if isinstance(se, SectionEditor):
+                height = 0
+                row = 0
+
+                # evaluate position for the dropzone to be placed
+                for i in range(self.layout.count()):
+                    editor = self.layout.itemAt(i).widget()
+                    if isinstance(editor, SectionEditor):
+                        if event.pos().y() > height and event.pos().y() < height + editor.height():
+                            break
+                        height += editor.height();
+                        row = row + 1
+
+                # find dropzone and replace it to new location
+                for i in range(self.layout.count()):
+                    dz = self.layout.itemAt(i).widget()
+                    if isinstance(dz, DropZone):
+                        if i != row:
+                            self.layout.insertWidget(row, dz)
+                        break
+                event.setDropAction(Qt.MoveAction)
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        myData = event.mimeData()
+        if myData:
+            se = myData.getData()
+            if isinstance(se, SectionEditor):
+                # place the dragged SectionEditor to the place where DropZone is now
+                for i in range(self.layout.count()):
+                    dz = self.layout.itemAt(i).widget()
+                    if isinstance(dz, DropZone):
+                        dz.hide()
+                        self.layout.replaceWidget(dz, se)
+                        new_pos = i
+                        se.show()
+                        del dz
+                        break
+                ce = self.getContentEditor()
+                if ce:
+                    ce.content.changeSectionPos(se.section, new_pos)
+                    ce.editChanged("Move Section")
+                event.setDropAction(Qt.MoveAction)
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.ignore()
+

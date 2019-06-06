@@ -39,6 +39,7 @@ class Mode(Enum):
 class ElementEditor(QWidget):
     elementCopied = pyqtSignal(object)
     elementEnabled = pyqtSignal()
+    elementDragged = pyqtSignal()
 
     def __init__(self):
         QWidget.__init__(self)

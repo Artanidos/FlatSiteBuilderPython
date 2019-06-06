@@ -1,7 +1,7 @@
 #############################################################################
 # Copyright (C) 2019 Olaf Japp
 #
-# This file is part of FlatSiteBuilder.
+# self file is part of FlatSiteBuilder.
 #
 #  FlatSiteBuilder is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,9 +20,10 @@
 
 from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal
-from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtGui import QPalette, QColor, QPixmap, QDrag
 from widgets.row import Row
 from widgets.roweditor import RowEditor
+from widgets.widgetmimedata import WidgetMimeData
 import resources
 
 class SectionEditor(QWidget):
@@ -69,9 +70,9 @@ class SectionEditor(QWidget):
         if self.fullwidth:
             ee = ElementEditor()
             ee.elementEnabled.connect(self.addElement)
-
-            # connect(ee, SIGNAL(elementDragged()), this, SLOT(addElement()))
-            # connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)))
+            ee.elementDragged.connect(self.addElement)
+            
+            # connect(ee, SIGNAL(elementCopied(ElementEditor*)), self, SLOT(copyElement(ElementEditor*)))
 
             self.layout.addWidget(ee, 0, Qt.AlignTop)
         else:
@@ -131,9 +132,9 @@ class SectionEditor(QWidget):
 
     def addElement(self, ee):
         ee.elementEnabled.connect(self.addElement)
-        
-        # connect(ee, SIGNAL(elementDragged()), this, SLOT(addElement()));
-        # connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)));
+        ee.elementDragged.connect(self.addElement)
+
+        # connect(ee, SIGNAL(elementCopied(ElementEditor*)), self, SLOT(copyElement(ElementEditor*)))
         self.layout.insertWidget(self.layout.count() - 1, ee, 0, Qt.AlignTop)
 
     def setSection(self, section):
@@ -172,3 +173,175 @@ class SectionEditor(QWidget):
                         return cee
 
         return None
+
+    def dragEnterEvent(self, event):
+        myData = event.mimeData()
+        if myData:
+            if not self.section.fullwidth and isinstance(myData.getData(), RowEditor):
+                # insert a dropzone at the end
+                self.layout.addWidget(DropZone(myData.width(), myData.height()))
+                event.accept()
+            elif self.section.fullwidth and isinstance(myDate.getDate(), ElementEditor):
+                for i in range(self.layout.count()):
+                    editor = self.layout.itemAt(i).widget()
+                    if editor and editor.mode == ElementEditor.Mode.Empty:
+                        editor.setMode(ElementEditor.Mode.Dropzone)
+                        break
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.ignore()
+
+    def dragLeaveEvent(self, event):
+        # remove dropzones
+        for i in range(self.layout.count()):
+            dz = self.layout.itemAt(i).widget()
+            if isinstance(dz, DropZone):
+                dz.hide()
+                self.layout.removeWidget(dz)
+                del dz
+                break
+            
+            editor = self.layout.itemAt(i).widget()
+            if editor and editor.mode == ElementEditor.Mode.Dropzone:
+                # put editor to the end of the list
+                editor.setMode(ElementEditor.Mode.Empty)
+                self.layout.removeWidget(editor)
+                self.layout.addWidget(editor)
+                break
+        event.accept()
+    
+
+    def dragMoveEvent(self, event):
+        myData = event.mimeData()
+        if myData:
+            re = myData.getData()
+            if re:
+                height = 0
+                row = 0
+
+                # evaluate position for the dropzone to be placed
+                for i in range(self.layout.count()):
+                    editor = self.layout.itemAt(i).widget()
+                    if editor:
+                        if event.pos().y() > height and event.pos().y() < height + editor.height():
+                            break
+                        height += editor.height()
+                        row = row + 1
+
+                # find dropzone and replace it to location
+                for i in range(self.layout.count()):
+                    dz = self.layout.itemAt(i).widget()
+                    if dz:
+                        if i != row:
+                            self.layout.insertWidget(row, dz)
+                        break
+                
+                event.setDropAction(Qt.MoveAction)
+                event.accept()
+            else:
+                ee = myData.getData()
+                if ee:
+                    row = event.pos().y() / (50 + self.layout.margin())
+                    for i in range(self.layout.count()):
+                        editor = self.layout.itemAt(i).widget()
+                        if editor and editor.mode == ElementEditor.Mode.Dropzone:
+                            if i != row:
+                                # put dropzone under mouse pointer
+                                self.layout.insertWidget(row, editor)
+                            break
+                    event.setDropAction(Qt.MoveAction)
+                    event.accept()
+                else:
+                    event.ignore()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        myData = event.mimeData()
+        if myData:
+            re = myData.getData()
+            if re:
+                # place the dragged RowEditor to the place where DropZone is now
+                for i in range(self.layout.count()):
+                    dz = self.layout.itemAt(i).widget()
+                    if dz:
+                        dz.hide()
+                        self.layout.replaceWidget(dz, re)
+                        re.show()
+                        del dz
+                        break
+                
+                ce = self.getContentEditor()
+                if ce:
+                    ce.editChanged("Move Row")
+                event.setDropAction(Qt.MoveAction)
+                event.accept()
+            else:
+                ee = myData.getData()
+                if ee:
+                    for i in range(self.layout.count()):
+                        dz = self.layout.itemAt(i).widget()
+                        if dz and dz.mode == ElementEditor.Mode.Dropzone:
+                            # remove widget if it belongs to self layout
+                            self.layout.removeWidget(ee)
+
+                            # replace dropzone with dragged element
+                            self.layout.replaceWidget(dz, ee)
+
+                            # and put dropzone to the end of the list
+                            dz.setMode(ElementEditor.Mode.Empty)
+                            self.layout.removeWidget(dz)
+                            self.layout.addWidget(dz)
+                            break
+                    ee.dropped()
+                    ee.show()
+                    ee.elementEnabled.disconnect(self.addElement)
+                    ee.elementDragged.disconnect(self.addElement)
+                    # ee.elementCopied.disconnect(self.copyElement)
+                    ee.elementEndabled.connect(self.addElement)
+                    ee.elementDragged.conenct(self.addElement)
+                    # ee.elementCopied.connect(self.copyElement)
+
+                    ce = self.getContentEditor()
+                    if ce:
+                        ce.editChanged("Move Element")
+                    event.setDropAction(Qt.MoveAction)
+                    event.accept()
+                else:
+                    event.ignore()
+        else:
+            event.ignore()
+    
+    def enableColumnAcceptDrop(self, mode):
+        for i in range(self.layout.count()):
+            re = self.layout.itemAt(i).widget()
+            if isinstance(re, RowEditor):
+                re.enableColumnAcceptDrop(mode)
+
+    def mousePressEvent(self,event):
+        mimeData = WidgetMimeData()
+        mimeData.setSize(self.size().width(), self.size().height())
+        mimeData.setData(self)
+
+        pixmap = QPixmap(self.size())
+        self.render(pixmap)
+
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.setHotSpot(event.pos())
+        drag.setPixmap(pixmap)
+
+        pe = self.parentWidget()
+        pe.removeSectionEditor(self)
+        pe.enableColumnAcceptDrop(False)
+        pe.enableSectionAcceptDrop(False)
+        self.hide()
+
+        if drag.exec(Qt.MoveAction) == Qt.IgnoreAction:
+            pe.addSection(self)
+            self.show()
+        
+        pe.enableColumnAcceptDrop(True)
+        pe.enableSectionAcceptDrop(True)

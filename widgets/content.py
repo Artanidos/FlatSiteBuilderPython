@@ -159,6 +159,10 @@ class Content(QObject):
 
         f.write("}\n")
 
+    def changeSectionPos(self, sec, new_pos):
+        self._items.remove(sec)
+        self._items.insert(new_pos, sec)
+
     def appendSection(self, sec):
         self._items.append(sec)
 
