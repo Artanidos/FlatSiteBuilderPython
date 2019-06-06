@@ -146,7 +146,7 @@ class Dashboard(QWidget):
 
     @pyqtSlot()
     def previewClicked(self):
-        self.previewSite.emit(None)
+        self.previewSite.emit()
 
     @pyqtSlot()
     def siteLoaded(self, site):

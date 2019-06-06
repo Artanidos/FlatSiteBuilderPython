@@ -39,6 +39,7 @@ import resources
 
 class ContentEditor(AnimateableEditor):
     contentChanged = pyqtSignal(object)
+    preview = pyqtSignal(object)
 
     def __init__(self, win, site, content):
         AnimateableEditor.__init__(self)
@@ -159,9 +160,12 @@ class ContentEditor(AnimateableEditor):
         self.undoStack.redoTextChanged.connect(self.redoTextChanged)
         self.undo.clicked.connect(self.undoAction)
         self.redo.clicked.connect(self.redoAction)
-        
-        #connect(self.previewLink, SIGNAL(clicked()), self, SLOT(preview()))
+        self.previewLink.clicked.connect(self.previewPage)
+
         #connect(self.script, SIGNAL(clicked()), self, SLOT(script()))
+
+    def previewPage(self):
+        self.preview.emit(self.content)
 
     def rowEdit(self, re):
         from widgets.rowpropertyeditor import RowPropertyEditor
@@ -173,7 +177,7 @@ class ContentEditor(AnimateableEditor):
         self.animate(re)
 
     def rowEditorClose(self):
-        if self.editor.changed:
+        if self.editor and self.editor.changed:
             self.row_editor.load(self.editor.row)
             self.editChanged("Update Row")
         self.editorClosed()

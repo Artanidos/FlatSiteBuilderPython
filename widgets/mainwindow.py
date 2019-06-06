@@ -20,6 +20,7 @@
 
 import os
 import inspect
+import pathlib
 from importlib import import_module
 from widgets.flatbutton import FlatButton
 from widgets.expander import Expander
@@ -30,8 +31,6 @@ from widgets.contentlist import ContentList
 from widgets.menulist import MenuList
 from widgets.menueditor import MenuEditor
 from widgets.content import ContentType
-from widgets.webview import WebView
-from widgets.webpage import WebPage
 from widgets.plugins import Plugins
 from widgets.sitewizard import SiteWizard
 from widgets.contenteditor import ContentEditor
@@ -41,6 +40,7 @@ from widgets.sitesettingseditor import SiteSettingsEditor
 from PyQt5.QtWidgets import QVBoxLayout, QMainWindow, QWidget, QScrollArea, QDockWidget, QUndoStack, QApplication
 from PyQt5.QtCore import pyqtSignal, Qt, QUrl, QRect, QCoreApplication, QDir, QSettings, QByteArray, QEvent, QPoint, QAbstractAnimation, QPropertyAnimation
 from PyQt5.QtQml import QQmlEngine, QQmlComponent
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 import resources
 
 class MainWindow(QMainWindow):
@@ -338,37 +338,41 @@ class MainWindow(QMainWindow):
     def dockVisibilityChanged(self, visible):
         self.showDock.setVisible(not visible)
 
-    def previewSite(self, content):
+    def previewSite(self, content = None):
         if self.editor and content:
-            self.contentAfterAnimation = content
+            self.content_after_animation = content
             self.editor.closeEditor()
             return
 
-        dir = self.install_directory + "/sites"
-        path = QDir(dir + "/" + self.site.title())
+        dir = os.path.join(self.install_directory, "sites")
+        path = os.path.join(dir, self.site.title)
         if not content:
-            if self.site.pages().count() > 0:
-                content = self.site.pages()[0]
-                for c in self.site.pages():
+            if len(self.site.pages) > 0:
+                content = self.site.pages[0]
+                for c in self.site.pages:
                     if c.url() == "index.html":
                         content = c
                         break
-            elif self.site.posts().count() > 0:
+            elif len(self.site.posts) > 0:
                 content = self.site.posts()[0]
 
         if content:
             file = content.url()
-
-            QWebEngineSettings.defaultSettings().setAttribute(QWebEngineSettings.PluginsEnabled, True)
-
-            self.webView = WebView()
-            webPage = WebPage(QWebEngineProfile.defaultProfile(), self.webView)
-            self.webView.setPage(webPage)
+            self.webView = QWebEngineView()
             self.webView.loadFinished.connect(self.webViewLoadFinished)
-            self.webView.setUrl(QUrl("file:///" + path.absoluteFilePath(file)))
+            url = pathlib.Path(os.path.join(path, file)).as_uri()
+            self.webView.setUrl(QUrl(url))
             self.setCursor(Qt.WaitCursor)
         else:
             self.statusBar().showMessage("Site has no pages or posts to preview.")
+
+    def webViewLoadFinished(self, success):
+        if success:
+            self.setCentralWidget(self.webView)
+            self.webView.loadFinished.disconnect(self.webViewLoadFinished)
+        else:
+            QMessageBox.warning(this, "FlatSiteBuilder", "Unable to open webpage.")
+        self.setCursor(Qt.ArrowCursor)
 
     def publishSite(self):
         pluginName = Plugins.actualPublishPlugin()
@@ -410,6 +414,7 @@ class MainWindow(QMainWindow):
         self.editor = ContentEditor(self, self.site, content)
         self.siteLoaded.connect(self.editor.siteLoaded)
         self.editor.closes.connect(self.editorClosed)
+        self.editor.preview.connect(self.previewSite)
         self.animate(item)
 
     def animate(self, item):

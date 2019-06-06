@@ -32,7 +32,7 @@ class HyperLink(QLabel):
         self.text = text
         self.color = self.palette().link().color().name()
         self.hover = self.palette().highlight().color().name()
-        self.setText("<a style=\"color: " + self.color + "; text-decoration: none; cursor: pointer;\" href=\"#/\">" + self.text + "</a>")
+        super().setText("<a style=\"color: " + self.color + "; text-decoration: none; cursor: pointer;\" href=\"#/\">" + self.text + "</a>")
         self.setTextFormat(Qt.RichText)
         self.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.setCursor(Qt.PointingHandCursor)
@@ -40,8 +40,11 @@ class HyperLink(QLabel):
 
     @pyqtSlot(str)
     def linkActivated2(self, link):
-        print("Link")
         self.clicked.emit()
+
+    def setText(self, text):
+        self.text = text
+        super().setText("<a style=\"color: " + self.color + "; text-decoration: none; cursor: pointer;\" href=\"#/\">" + self.text + "</a>")
 
     def mousePressEvent(self, event):
         event.accept()
@@ -52,21 +55,21 @@ class HyperLink(QLabel):
 
     def enterEvent(self, event):
         if self.autohover:
-            self.setText("<a style=\"color: " + self.hover + "; text-decoration: none; cursor: pointer;\" href=\"#/\">" + self.text + "</a>")
+            super().setText("<a style=\"color: " + self.hover + "; text-decoration: none; cursor: pointer;\" href=\"#/\">" + self.text + "</a>")
 
     def leaveEvent(self, event):
         if self.autohover:
-            self.setText("<a style=\"color: " + self.color + "; text-decoration: none; cursor: pointer;\" href=\"#/\">" + self.text + "</a>")
+            super().setText("<a style=\"color: " + self.color + "; text-decoration: none; cursor: pointer;\" href=\"#/\">" + self.text + "</a>")
 
     def setColor(self, color):
         self.color = color
-        self.setText("<a style=\"color: " + self.color + " text-decoration: none cursor: pointer\" href=\"#/\">" + self.text + "</a>")
+        super().setText("<a style=\"color: " + self.color + " text-decoration: none cursor: pointer\" href=\"#/\">" + self.text + "</a>")
 
     def setHovered(self, hovered):
         if hovered:
-            self.setText("<a style=\"color: " + self.hover + " text-decoration: none cursor: pointer\" href=\"#/\">" + self.text + "</a>")
+            super().setText("<a style=\"color: " + self.hover + " text-decoration: none cursor: pointer\" href=\"#/\">" + self.text + "</a>")
         else:
-            self.setText("<a style=\"color: " + self.color + " text-decoration: none cursor: pointer\" href=\"#/\">" + self.text + "</a>")
+            super().setText("<a style=\"color: " + self.color + " text-decoration: none cursor: pointer\" href=\"#/\">" + self.text + "</a>")
 
     def setAutohover(self, value):
-        self.autohover = value
+        super().autohover = value
