@@ -110,7 +110,7 @@ class ImageEditor(ElementEditorInterface):
         self.title.setText(content.title)
         self.adminlabel.setText(content.adminlabel)
         if content.src:
-            self.image.setImage(QImage(content.src))
+            self.image.setImage(QImage(os.path.join(self.site.source_path, "assets", "images", content.src)))
         self.changed = False
 
     def getContent(self):
@@ -133,7 +133,7 @@ class ImageEditor(ElementEditorInterface):
         # copy file to assets dir
         name = os.path.basename(fileName).replace(" ", "_")
         path = os.path.join(self.site.source_path, "assets", "images", name)
-        self.source.setText(path)
+        self.source.setText(os.path.basename(path))
         shutil.copy(fileName, path)
 
         # also copy file to deploy dir for previews
@@ -194,7 +194,7 @@ class Image(Item):
     def getHtml(self):
         html = "<img"
         classValue = "img-responsive pull-left inner"
-        html += " src=\"" + self.src + "\""
+        html += " src=\"assets/images/" + self.src + "\""
         html += " alt=\"" + self.alt + "\""
         html += " title=\"" + self.title + "\""
         html += " class=\"" + classValue + "\">\n"

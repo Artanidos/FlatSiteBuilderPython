@@ -65,6 +65,7 @@ class Generator:
             cm["source"] = content.source
             cm["title"] = content.title
             cm["url"] = content.url
+            cm["logo"] = content.logo
             cm["keywords"] = content.keywords
             cm["script"] = content.script
 
@@ -83,6 +84,7 @@ class Generator:
             cm["source"] = content.source
             cm["title"] = content.title
             cm["url"] = content.url
+            cm["logo"] = content.logo
             cm["keywords"] = content.keywords
             cm["script"] = content.script
 
@@ -136,6 +138,7 @@ class Generator:
         sitevars["source"] = site.source_path
         sitevars["keywords"] = site.keywords
         sitevars["author"] = site.author
+        sitevars["logo"] = site.logo
         sitevars["pages"] = pages
         sitevars["posts"] = posts
 
@@ -179,29 +182,18 @@ class Generator:
         eng = Engine(dirs = dirs, debug=True)
         cm = {}
 
-        if content.content_type == ContentType.PAGE:
-            subdir = "pages"
-            cm["author"] = content.author
-            cm["date"] = content.date
-            cm["layout"] = content.layout
-            cm["menu"] = content.menu
-            cm["source"] = content.source
-            cm["title"] = content.title
-            cm["url"] = content.url
-            cm["keywords"] = content.keywords
-            cm["script"] = content.script
-        else:
-            subdir = "posts"
-            cm["author"] = content.author
-            cm["date"] = content.date
+        if content.content_type == ContentType.POST:
             cm["excerpt"] = content.excerpt
-            cm["layout"] = content.layout
-            cm["menu"] = content.menu
-            cm["source"] = content.source
-            cm["title"] = content.title
-            cm["url"] = content.url
-            cm["keywords"] = content.keywords
-            cm["script"] = content.script
+        cm["author"] = content.author
+        cm["date"] = content.date
+        cm["layout"] = content.layout
+        cm["menu"] = content.menu
+        cm["source"] = content.source
+        cm["title"] = content.title
+        cm["url"] = content.url
+        cm["logo"] = content.logo
+        cm["keywords"] = content.keywords
+        cm["script"] = content.script
 
         self.content = ""
         for item in content.items:
@@ -251,10 +243,3 @@ class Generator:
                 self.copytree(srcname, dstname)
             else:
                 shutil.copy2(srcname, dstname)
-
-    def startElement(self, name, attrs):
-        if name == "Content":
-            pass
-        elif name == "Section":
-            self.content += "<h2>Hello world</h2>"
-            #todo SectionPropertyEditor.getHtml(&xml, m_site->sourcePath()
