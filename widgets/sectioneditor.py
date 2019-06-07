@@ -163,7 +163,7 @@ class SectionEditor(QWidget):
                 ee = ElementEditor()
                 ee.setContent(item)
                 ee.setMode(Mode.ENABLED)
-                self.addElement(ee)
+                self.addElementEditor(ee)
 
     def getContentEditor(self):
         pe = self.parentWidget()
