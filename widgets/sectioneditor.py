@@ -23,6 +23,8 @@ from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QDrag
 from widgets.row import Row
 from widgets.roweditor import RowEditor
+from widgets.elementeditor import ElementEditor
+from widgets.dropzone import DropZone
 from widgets.widgetmimedata import WidgetMimeData
 import resources
 
@@ -142,7 +144,6 @@ class SectionEditor(QWidget):
 
     def removeRowEditor(self, re):
         re.setVisible(False)
-        self.section._items.remove(re.row)
         self.layout.removeWidget(re)
 
     def load(self, section):
@@ -179,7 +180,7 @@ class SectionEditor(QWidget):
         if myData:
             if not self.section.fullwidth and isinstance(myData.getData(), RowEditor):
                 # insert a dropzone at the end
-                self.layout.addWidget(DropZone(myData.width(), myData.height()))
+                self.layout.addWidget(DropZone(myData.width, myData.height))
                 event.accept()
             elif self.section.fullwidth and isinstance(myDate.getDate(), ElementEditor):
                 for i in range(self.layout.count()):
@@ -204,7 +205,7 @@ class SectionEditor(QWidget):
                 break
             
             editor = self.layout.itemAt(i).widget()
-            if editor and editor.mode == ElementEditor.Mode.Dropzone:
+            if isinstance(editor, ElementEditor) and editor.mode == ElementEditor.Mode.Dropzone:
                 # put editor to the end of the list
                 editor.setMode(ElementEditor.Mode.Empty)
                 self.layout.removeWidget(editor)
@@ -217,14 +218,14 @@ class SectionEditor(QWidget):
         myData = event.mimeData()
         if myData:
             re = myData.getData()
-            if re:
+            if isinstance(re, RowEditor):
                 height = 0
                 row = 0
 
                 # evaluate position for the dropzone to be placed
                 for i in range(self.layout.count()):
                     editor = self.layout.itemAt(i).widget()
-                    if editor:
+                    if isinstance(editor, RowEditor):
                         if event.pos().y() > height and event.pos().y() < height + editor.height():
                             break
                         height += editor.height()
@@ -233,7 +234,7 @@ class SectionEditor(QWidget):
                 # find dropzone and replace it to location
                 for i in range(self.layout.count()):
                     dz = self.layout.itemAt(i).widget()
-                    if dz:
+                    if isinstance(dz, DropZone):
                         if i != row:
                             self.layout.insertWidget(row, dz)
                         break
@@ -262,11 +263,11 @@ class SectionEditor(QWidget):
         myData = event.mimeData()
         if myData:
             re = myData.getData()
-            if re:
+            if isinstance(re, RowEditor):
                 # place the dragged RowEditor to the place where DropZone is now
                 for i in range(self.layout.count()):
                     dz = self.layout.itemAt(i).widget()
-                    if dz:
+                    if isinstance(dz, DropZone):
                         dz.hide()
                         self.layout.replaceWidget(dz, re)
                         re.show()
@@ -283,7 +284,7 @@ class SectionEditor(QWidget):
                 if ee:
                     for i in range(self.layout.count()):
                         dz = self.layout.itemAt(i).widget()
-                        if dz and dz.mode == ElementEditor.Mode.Dropzone:
+                        if isinstance(dz, DropZone) and dz.mode == ElementEditor.Mode.Dropzone:
                             # remove widget if it belongs to self layout
                             self.layout.removeWidget(ee)
 

@@ -19,7 +19,7 @@
 #############################################################################
 
 from PyQt5.QtCore import QRect, Qt, QUrl, pyqtSignal
-from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtGui import QColor, QPalette, QPixmap, QDrag
 from PyQt5.QtWidgets import (QComboBox, QGridLayout, QHBoxLayout, QLabel,
                              QLineEdit, QPushButton, QScrollArea, QUndoStack,
                              QVBoxLayout, QWidget)
@@ -27,6 +27,7 @@ from PyQt5.QtWidgets import (QComboBox, QGridLayout, QHBoxLayout, QLabel,
 from widgets.columnsdialog import ColumnsDialog
 from widgets.column import Column
 from widgets.columneditor import ColumnEditor
+from widgets.widgetmimedata import WidgetMimeData
 import resources
 
 class RowEditor(QWidget):
@@ -88,6 +89,7 @@ class RowEditor(QWidget):
         se = self.parentWidget()
         if se:
             se.removeRowEditor(self)
+            se.section._items.remove(self.row)
         ce = self.getContentEditor()
         if ce:
             ce.editChanged("Delete Row")  
@@ -292,3 +294,27 @@ class RowEditor(QWidget):
             if ce:
                 ce.setAcceptDrops(mode)
         
+    def mousePressEvent(self, event):
+        mimeData = WidgetMimeData()
+        mimeData.setSize(self.size().width(), self.size().height())
+        mimeData.setData(self)
+
+        pixmap = QPixmap(self.size())
+        self.render(pixmap)
+
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.setHotSpot(event.pos())
+        drag.setPixmap(pixmap)
+
+        se = self.parentWidget()
+        se.removeRowEditor(self)
+        pe = se.parentWidget()
+        pe.enableColumnAcceptDrop(False)
+        self.hide()
+
+        if drag.exec(Qt.MoveAction) == Qt.IgnoreAction:
+            se.addRowEditor(self)
+            self.show()
+        
+        pe.enableColumnAcceptDrop(True)
