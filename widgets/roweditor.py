@@ -67,6 +67,7 @@ class RowEditor(QWidget):
         self.highlightedRect = QRect()
         self.layout = QGridLayout()
         self.layout.addWidget(self.addColumns, 0, 0, 1, 1, Qt.AlignCenter)
+        self.layout.setColumnStretch(0, 1)
         
         layout.addItem(vbox)
         layout.addLayout(self.layout)
