@@ -24,6 +24,7 @@ from widgets.content import ContentType
 from widgets.plugins import Plugins
 import os
 import shutil
+import sys
 
 
 class Generator:
@@ -145,15 +146,15 @@ class Generator:
 
         for att, value in site.attributes.items():
             sitevars[att] = value
-        #tei = Plugins.getThemePlugin(Plugins.actualThemeEditorPlugin)
-        #if tei:
-        #    tei.setWindow(win)
-        #    tei.setSourcePath(site.source_path)
-        #    themevars = tei.themeVars()
+        tei = Plugins.getThemePlugin(Plugins.actualThemeEditorPlugin())
+        if tei:
+            tei.setWindow(win)
+            tei.setSourcePath(site.source_path)
+            themevars = tei.themeVars()
 
         context = Context()
         context["site"] = sitevars
-        #context["theme"] = themevars
+        context["theme"] = themevars
 
         copy_assets = False
         if not os.path.exists(site_dir):
@@ -212,7 +213,7 @@ class Generator:
         
         #context["plugin"] = {"styles": ""}
         context["plugin"] = pluginvars
-        context["theme"] = {"darkness": "dark"}
+        #context["theme"] = {"darkness": "dark"}
 
         layout = content.layout
         if not layout:
@@ -227,8 +228,9 @@ class Generator:
             with open(outputfile, 'w') as f:
                 f.write(eng.render_to_string(layout + ".html", context = context))
         except:
+            type, value, traceback = sys.exc_info()
             msg = "Generate content failed: Unable to create file " + outputfile
-            print(msg)
+            print(msg, type, value, traceback)
 
     def copytree(self, src, dst):
         names = os.listdir(src)

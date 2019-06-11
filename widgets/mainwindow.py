@@ -76,6 +76,15 @@ class MainWindow(QMainWindow):
         self.showDashboard()
         self.statusBar().showMessage("Ready")
 
+    def actualThemeChanged(self, themename):
+        self.theme_settings_button.setVisible(False)
+        for name in Plugins.themePluginNames():
+            tei = Plugins.getThemePlugin(name)
+            if tei:
+                if tei.theme_name == themename:
+                    self.theme_settings_button.setVisible(True)
+                    break
+
     def loadProject(self, filename):
         self.reloadProject(filename)
 
@@ -233,9 +242,9 @@ class MainWindow(QMainWindow):
         for key in Plugins.themePluginNames():
             tei = Plugins.getThemePlugin(key)
             if tei:
-                if tei.themeName() == self.site.theme():
-                    Plugins.setActualThemeEditorPlugin(tei.className())
-                    self.themeSettingsButton.setVisible(True)
+                if tei.theme_name == self.site.theme:
+                    Plugins.setActualThemeEditorPlugin(tei.class_name)
+                    self.theme_settings_button.setVisible(True)
                     break
 
         if not self.site.publisher:
@@ -316,7 +325,7 @@ class MainWindow(QMainWindow):
                 self.editor.closeEditor()
                 return
 
-            path = self.site.sourcePath()
+            path = self.site.source_path
             tei.setWindow(self)
             tei.setSourcePath(path)
             self.setCentralWidget(tei)
