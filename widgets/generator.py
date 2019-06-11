@@ -21,6 +21,7 @@
 from django.template import Context, Engine
 from django.utils.safestring import mark_safe
 from widgets.content import ContentType
+from widgets.plugins import Plugins
 import os
 import shutil
 
@@ -195,25 +196,22 @@ class Generator:
         cm["keywords"] = content.keywords
         cm["script"] = content.script
 
+        used_plugin_list = []
         self.content = ""
         for item in content.items:
             self.content += item.getHtml()
-        #parser = make_parser()
-        #parser.setContentHandler(self)
-        #parser.parse(os.path.join(self.site.source_path, subdir, content.source))
+            item.collectPluginNames(used_plugin_list)
 
-        # pluginvars.clear();
-        # foreach(QString key, Plugins::elementPluginNames())
-        # {
-        #     if(Plugins::isPluginUsed(key))
-        #     {
-        #         ElementEditorInterface *editor = Plugins::getElementPlugin(key);
-        #         pluginvars["styles"] = pluginvars["styles"].toString() + editor->pluginStyles();
-        #         pluginvars["scripts"] = pluginvars["scripts"].toString() + editor->pluginScripts();
-        #         editor->installAssets(m_sitesPath + "/" + m_site->title() + "/assets");
-        #     }
-        # }
-        context["plugin"] = {"styles": ""}
+        pluginvars = {}
+        for name in Plugins.elementPluginNames():
+            if name in used_plugin_list:
+                plugin = Plugins.element_plugins[name]
+                pluginvars["styles"] = pluginvars["styles"] + plugin.pluginStyles()
+                pluginvars["scripts"] = pluginvars["scripts"] + plugin.pluginScripts()
+                plugin.installAssets(os.path.join(self.site.source_path, self.site.title, "assets"))
+        
+        #context["plugin"] = {"styles": ""}
+        context["plugin"] = pluginvars
         context["theme"] = {"darkness": "dark"}
 
         layout = content.layout

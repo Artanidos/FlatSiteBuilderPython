@@ -25,7 +25,6 @@ class Plugins:
     theme_plugins = {}
     publish_plugins = {}
     element_plugins = {}
-    used_plugins = []
 
     def __init__(self):
         pass
