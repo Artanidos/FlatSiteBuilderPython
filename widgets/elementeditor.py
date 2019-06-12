@@ -24,9 +24,10 @@ from widgets.section import Section
 from widgets.content import ContentType
 from widgets.plugins import Plugins
 from widgets.moduldialog import ModulDialog
+from widgets.widgetmimedata import WidgetMimeData
 from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal
-from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtGui import QColor, QPalette, QPixmap, QDrag
 from enum import Enum
 import resources
 
@@ -107,8 +108,9 @@ class ElementEditor(QWidget):
         self.elementCopied.emit(self)
 
     def delete(self):
+        self.parentWidget().removeElement(self.content)
         self.parentWidget().layout.removeWidget(self)
-
+        self.hide()
         ce = self.getContentEditor()
         if ce:
             ce.editChanged("Delete Element")
@@ -186,3 +188,36 @@ class ElementEditor(QWidget):
             self.text.setText(content.adminlabel)
         else:
             self.text.setText(content.tag_name)
+
+    def mousePressEvent(self, event):
+        from widgets.columneditor import ColumnEditor
+        from widgets.sectioneditor import SectionEditor
+        if self.mode != Mode.ENABLED or event.button() != Qt.LeftButton:
+            return
+
+        if self.parentWidget().layout.count() == 1:
+            self.elementDragged.emit()
+
+        mimeData = WidgetMimeData()
+        mimeData.setData(self)
+        parent = self.parentWidget()
+        if isinstance(parent, ColumnEditor):
+            mimeData.source_list = parent.column._items
+        elif isinstance(parent, SectionEditor):
+            mimeData.source_list = parent.section._items
+
+        pixmap = QPixmap(self.size())
+        self.render(pixmap)
+
+        drag = QDrag(self)
+        drag.setMimeData(mimeData)
+        drag.setHotSpot(event.pos())
+        drag.setPixmap(pixmap)
+        self.hide()
+
+        if drag.exec(Qt.MoveAction) == Qt.IgnoreAction:
+            self.show()
+
+    def dropped(self):
+        #seems to be a bug that after dropping the item the bgcolor changes
+        self.setColor(self.enabledColor)

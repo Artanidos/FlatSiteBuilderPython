@@ -130,3 +130,6 @@ class Section(Item):
             for item in self._items:
                 html += item.getHtml()
         return html
+
+    def insertElement(self, sec, new_pos):
+        self._items.insert(new_pos, sec)

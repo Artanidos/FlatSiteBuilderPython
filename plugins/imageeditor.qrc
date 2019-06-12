@@ -1,5 +1,6 @@
 <RCC>
     <qresource>
         <file>imageeditor.png</file>
+        <file>animate.css</file>
     </qresource>
 </RCC>

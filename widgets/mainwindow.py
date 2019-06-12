@@ -21,6 +21,8 @@
 import os
 import inspect
 import pathlib
+import sys
+import shutil
 from importlib import import_module
 from widgets.flatbutton import FlatButton
 from widgets.expander import Expander
@@ -31,6 +33,7 @@ from widgets.contentlist import ContentList
 from widgets.menulist import MenuList
 from widgets.menueditor import MenuEditor
 from widgets.content import ContentType
+from widgets.xmlhighlighter import XmlHighlighter
 from widgets.plugins import Plugins
 from widgets.sitewizard import SiteWizard
 from widgets.contenteditor import ContentEditor
@@ -75,6 +78,15 @@ class MainWindow(QMainWindow):
         self.dashboard.setExpanded(True)
         self.showDashboard()
         self.statusBar().showMessage("Ready")
+
+    def actualThemeChanged(self, themename):
+        self.theme_settings_button.setVisible(False)
+        for name in Plugins.themePluginNames():
+            tei = Plugins.getThemePlugin(name)
+            if tei:
+                if tei.theme_name == themename:
+                    self.theme_settings_button.setVisible(True)
+                    break
 
     def loadProject(self, filename):
         self.reloadProject(filename)
@@ -233,9 +245,9 @@ class MainWindow(QMainWindow):
         for key in Plugins.themePluginNames():
             tei = Plugins.getThemePlugin(key)
             if tei:
-                if tei.themeName() == self.site.theme():
-                    Plugins.setActualThemeEditorPlugin(tei.className())
-                    self.themeSettingsButton.setVisible(True)
+                if tei.theme_name == self.site.theme:
+                    Plugins.setActualThemeEditorPlugin(tei.class_name)
+                    self.theme_settings_button.setVisible(True)
                     break
 
         if not self.site.publisher:
@@ -316,7 +328,7 @@ class MainWindow(QMainWindow):
                 self.editor.closeEditor()
                 return
 
-            path = self.site.sourcePath()
+            path = self.site.source_path
             tei.setWindow(self)
             tei.setSourcePath(path)
             self.setCentralWidget(tei)
@@ -505,7 +517,21 @@ class MainWindow(QMainWindow):
         self.list.setCellWidget(self.row, 1, self.cellWidget)
 
     def loadPlugins(self):
-        plugins_dir = os.path.join(os.getcwd(), "plugins")
+        # check if we are running in a frozen environment (pyinstaller --onefile)
+        if getattr(sys, "frozen", False):
+            bundle_dir = sys._MEIPASS
+            # if we are running in a onefile environment, then copy all plugin to /tmp/...
+            if bundle_dir != os.getcwd():
+                os.mkdir(os.path.join(bundle_dir, "plugins"))
+                for root, dirs, files in os.walk(os.path.join(os.getcwd(), "plugins")):
+                    for file in files:
+                        shutil.copy(os.path.join(root, file), os.path.join(bundle_dir, "plugins"))
+                        print("copy", file)
+                    break # do not copy __pycache__
+        else:
+            bundle_dir = os.getcwd() # os.path.dirname(os.path.abspath(__file__))
+        
+        plugins_dir = os.path.join(bundle_dir, "plugins")
         for root, dirs, files in os.walk(plugins_dir):
             for file in files:
                 modulename, ext = os.path.splitext(file)

@@ -25,7 +25,6 @@ class Plugins:
     theme_plugins = {}
     publish_plugins = {}
     element_plugins = {}
-    used_plugins = []
 
     def __init__(self):
         pass
@@ -71,9 +70,17 @@ class Plugins:
         return ""
 
     @staticmethod
-    def getPublishPlugin(key):
-        return Plugins.publish_plugins[key]
+    def getPublishPlugin(name):
+        return Plugins.publish_plugins[name]
 
     @staticmethod
     def actualPublishPlugin():
         return Plugins.actual_publish_plugin
+
+    @staticmethod
+    def actualThemeEditorPlugin():
+        return Plugins.actual_theme_editor_plugin
+
+    @staticmethod
+    def getThemePlugin(name):
+        return Plugins.theme_plugins[name]

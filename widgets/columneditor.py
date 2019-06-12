@@ -25,6 +25,7 @@ from PyQt5.QtWidgets import (QComboBox, QGridLayout, QHBoxLayout, QLabel,
                              QVBoxLayout, QWidget)
 
 from widgets.content import ContentType
+from widgets.dropzone import DropZone
 from widgets.elementeditor import ElementEditor, Mode
 from widgets.flatbutton import FlatButton
 from widgets.hyperlink import HyperLink
@@ -48,9 +49,8 @@ class ColumnEditor(QWidget):
 
         ee = ElementEditor()
         self.layout.addWidget(ee, 0, Qt.AlignTop)
-
-        # connect(ee, SIGNAL(elementEnabled()), this, SLOT(addElement()));
-        # connect(ee, SIGNAL(elementDragged()), this, SLOT(addElement()));
+        ee.elementEnabled.connect(self.addElement)
+        ee.elementDragged.connect(self.addElement)
         # connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)));
 
     def addElement(self):
@@ -62,15 +62,15 @@ class ColumnEditor(QWidget):
             ce.editChanged("Add Element")
 
         ee.elementEnabled.connect(self.addElement)
-        # connect(ee, SIGNAL(elementEnabled()), this, SLOT(addElement()));
-        # connect(ee, SIGNAL(elementDragged()), this, SLOT(addElement()));
+        ee.elementDragged.connect(self.addElement)
+        
         # connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)));
 
-    def addElement(self, ee):
+    def addElementEditor(self, ee):
         self.layout.insertWidget(self.layout.count() - 1, ee, 0, Qt.AlignTop)
         ee.elementEnabled.connect(self.addElement)
-        #connect(ee, SIGNAL(elementEnabled()), this, SLOT(addElement()));
-        #connect(ee, SIGNAL(elementDragged()), this, SLOT(addElement()));
+        ee.elementDragged.connect(self.addElement)
+        
         #connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)));
         
     def getContentEditor(self):
@@ -99,4 +99,97 @@ class ColumnEditor(QWidget):
             ee = ElementEditor()
             ee.setMode(Mode.ENABLED)
             ee.setContent(item)
+            ee.elementEnabled.connect(self.addElement)
+            ee.elementDragged.connect(self.addElement)
+        
+            #connect(ee, SIGNAL(elementCopied(ElementEditor*)), this, SLOT(copyElement(ElementEditor*)));
             self.layout.insertWidget(self.layout.count() - 1, ee, 0, Qt.AlignTop)
+
+    def dragEnterEvent(self, event):
+        myData = event.mimeData()
+        if myData:
+            ee = myData.getData()
+            if isinstance(ee, ElementEditor):
+                for  i in range(self.layout.count()):
+                    editor = self.layout.itemAt(i).widget()
+                    if isinstance(editor, ElementEditor) and editor.mode == Mode.EMPTY:
+                        editor.setMode(Mode.DROPZONE)
+                        break
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.ignore()
+
+    def dragLeaveEvent(self, event):
+        for i in range(self.layout.count()):
+            editor = self.layout.itemAt(i).widget()
+            if isinstance(editor, ElementEditor) and editor.mode == Mode.DROPZONE:
+                # put editor to the end of the list
+                editor.setMode(Mode.EMPTY)
+                self.layout.removeWidget(editor)
+                self.layout.addWidget(editor)
+                break
+        event.accept()
+
+    def dragMoveEvent(self, event):
+        myData = event.mimeData()
+        if myData:
+            ee = myData.getData()
+            if isinstance(ee, ElementEditor):
+                row = event.pos().y() / 50 #+ self.layout.margin())
+                for i in range(self.layout.count()):
+                    editor = self.layout.itemAt(i).widget()
+                    if isinstance(editor, ElementEditor) and editor.mode == Mode.DROPZONE:
+                        if i != row:
+                            # put dropzone under mouse pointer
+                            self.layout.insertWidget(row, editor)
+                        break
+                event.setDropAction(Qt.MoveAction)
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        myData = event.mimeData()
+        if myData:
+            ee = myData.getData()
+            if isinstance(ee, ElementEditor):
+                for i in range(self.layout.count()):
+                    dz = self.layout.itemAt(i).widget()
+                    if isinstance(dz, ElementEditor) and dz.mode == Mode.DROPZONE:
+                        # remove widget if it belongs to this layout
+                        self.layout.removeWidget(ee)
+
+                        # replace dropzone with dragged element
+                        self.layout.replaceWidget(dz, ee)
+                        new_pos = i
+                        # and put dropzone to the end of the list
+                        dz.setMode(Mode.EMPTY)
+                        self.layout.removeWidget(dz)
+                        self.layout.addWidget(dz)
+                        break
+                ee.dropped()
+                ee.show()
+                ee.elementEnabled.disconnect()
+                ee.elementDragged.disconnect()
+                # ee.copied.disconnect(self.copyElement)
+                ce = self.getContentEditor()
+                if ce:
+                    myData.source_list.remove(ee.content)
+                    self.column.insertElement(ee.content, new_pos)
+                    ce.editChanged("Move Element")
+                ee.elementEnabled.connect(self.addElement)
+                ee.elementDragged.connect(self.addElement)
+                # ee.elementCopied.connectself.copyElement)
+                event.setDropAction(Qt.MoveAction)
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.ignore()
+
+    def removeElement(self, content):
+        self.column._items.remove(content)

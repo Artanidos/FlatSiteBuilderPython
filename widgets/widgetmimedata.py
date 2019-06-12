@@ -25,6 +25,7 @@ class WidgetMimeData(QMimeData):
         QMimeData.__init__(self)
         self.width = 0
         self.height = 0
+        self.source_list = None
 
     def setData(self, ce):
         self.data = ce

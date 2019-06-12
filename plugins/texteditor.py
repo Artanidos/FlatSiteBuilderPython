@@ -18,6 +18,7 @@
 #
 #############################################################################
 
+import html
 from widgets.hyperlink import HyperLink
 from widgets.flatbutton import FlatButton
 from widgets.animateableeditor import AnimateableEditor
@@ -88,13 +89,19 @@ class TextEditor(ElementEditorInterface):
         self.html.textChanged.connect(self.contentChanged)
         self.adminlabel.textChanged.connect(self.contentChanged)
 
+    def setText(self, text):
+        self.html.setPlainText(html.unescape(text))
+
+    def getText(self):
+        return html.escape(self.html.toPlainText())
+
     def setContent(self, content):
         self.content = content
         if isinstance(content, Text):
             self.adminlabel.setText(content.adminlabel)
-            self.html.setPlainText(content.text)
+            self.html.setPlainText(html.unescape(content.text))
         else:
-            self.html.setPlainText(content.text)
+            self.html.setPlainText(html.unescape(content.text))
             self.adminlabel.setText(content.adminlabel)
         self.changed = False
 
@@ -109,8 +116,9 @@ class TextEditor(ElementEditorInterface):
 
     def closeEditor(self):
         if self.changed:
-            self.content.adminlabel = self.adminlabel.text()
-            self.content.text = self.html.toPlainText() 
+            if self.content:
+                self.content.adminlabel = self.adminlabel.text()
+                self.content.text = self.html.toPlainText()
         self.close.emit()
 
     def registerContenType(self):
@@ -136,12 +144,12 @@ class Text(Item):
         f.write("\n")
         f.write(" " * indent + "Text {\n")
         self.writeAttribute(f, indent + 4, "id", self._id)
-        self.writeAttribute(f, indent + 4, "text", self._text.replace("\n", "\\n"))
+        self.writeAttribute(f, indent + 4, "text", html.escape(self._text))
         self.writeAttribute(f, indent + 4, "adminlabel", self._adminlabel)
         f.write(" " * indent + "}\n")
 
     def getHtml(self):
-        return self.text
+        return html.unescape(self.text)
 
 
 qt_resource_data = b"\

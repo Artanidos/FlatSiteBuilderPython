@@ -66,4 +66,7 @@ class Column(Item):
     def collectPluginNames(self, list):
         for item in self._items:
             if not item.tag_name in list:
-                list.append(item.tag_name)     
+                list.append(item.tag_name)
+    
+    def insertElement(self, content, new_pos):
+        self._items.insert(new_pos, content)

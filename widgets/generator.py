@@ -21,8 +21,11 @@
 from django.template import Context, Engine
 from django.utils.safestring import mark_safe
 from widgets.content import ContentType
+from widgets.plugins import Plugins
 import os
 import shutil
+import sys
+import html
 
 
 class Generator:
@@ -144,15 +147,15 @@ class Generator:
 
         for att, value in site.attributes.items():
             sitevars[att] = value
-        #tei = Plugins.getThemePlugin(Plugins.actualThemeEditorPlugin)
-        #if tei:
-        #    tei.setWindow(win)
-        #    tei.setSourcePath(site.source_path)
-        #    themevars = tei.themeVars()
+        tei = Plugins.getThemePlugin(Plugins.actualThemeEditorPlugin())
+        if tei:
+            tei.setWindow(win)
+            tei.setSourcePath(site.source_path)
+            themevars = tei.themeVars()
 
         context = Context()
         context["site"] = sitevars
-        #context["theme"] = themevars
+        context["theme"] = themevars
 
         copy_assets = False
         if not os.path.exists(site_dir):
@@ -193,28 +196,25 @@ class Generator:
         cm["url"] = content.url
         cm["logo"] = content.logo
         cm["keywords"] = content.keywords
-        cm["script"] = content.script
+        cm["script"] = html.unescape(content.script)
 
+        used_plugin_list = []
         self.content = ""
         for item in content.items:
             self.content += item.getHtml()
-        #parser = make_parser()
-        #parser.setContentHandler(self)
-        #parser.parse(os.path.join(self.site.source_path, subdir, content.source))
+            item.collectPluginNames(used_plugin_list)
 
-        # pluginvars.clear();
-        # foreach(QString key, Plugins::elementPluginNames())
-        # {
-        #     if(Plugins::isPluginUsed(key))
-        #     {
-        #         ElementEditorInterface *editor = Plugins::getElementPlugin(key);
-        #         pluginvars["styles"] = pluginvars["styles"].toString() + editor->pluginStyles();
-        #         pluginvars["scripts"] = pluginvars["scripts"].toString() + editor->pluginScripts();
-        #         editor->installAssets(m_sitesPath + "/" + m_site->title() + "/assets");
-        #     }
-        # }
-        context["plugin"] = {"styles": ""}
-        context["theme"] = {"darkness": "dark"}
+        pluginvars = {}
+        for name in Plugins.elementPluginNames():
+            if name in used_plugin_list:
+                plugin = Plugins.element_plugins[name]
+                pluginvars["styles"] = pluginvars["styles"] + plugin.pluginStyles()
+                pluginvars["scripts"] = pluginvars["scripts"] + plugin.pluginScripts()
+                plugin.installAssets(os.path.join(self.site.source_path, self.site.title, "assets"))
+        
+        #context["plugin"] = {"styles": ""}
+        context["plugin"] = pluginvars
+        #context["theme"] = {"darkness": "dark"}
 
         layout = content.layout
         if not layout:
@@ -229,8 +229,9 @@ class Generator:
             with open(outputfile, 'w') as f:
                 f.write(eng.render_to_string(layout + ".html", context = context))
         except:
+            type, value, traceback = sys.exc_info()
             msg = "Generate content failed: Unable to create file " + outputfile
-            print(msg)
+            print(msg, type, value, traceback)
 
     def copytree(self, src, dst):
         names = os.listdir(src)

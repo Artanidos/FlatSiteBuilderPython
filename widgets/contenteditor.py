@@ -33,7 +33,7 @@ from widgets.content import ContentType
 from widgets.plugins import Plugins
 from widgets.commands import ChangeContentCommand, RenameContentCommand
 from widgets.sectionpropertyeditor import SectionPropertyEditor
-from PyQt5.QtWidgets import QUndoStack, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
+from PyQt5.QtWidgets import QUndoStack, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QPushButton, QLineEdit, QComboBox, QScrollArea
 from PyQt5.QtCore import Qt, QUrl, QDate, QPoint, QParallelAnimationGroup, QPropertyAnimation, QAbstractAnimation, pyqtSignal
 import resources
 
@@ -161,8 +161,19 @@ class ContentEditor(AnimateableEditor):
         self.undo.clicked.connect(self.undoAction)
         self.redo.clicked.connect(self.redoAction)
         self.previewLink.clicked.connect(self.previewPage)
+        self.script.clicked.connect(self.scriptClicked)
 
-        #connect(self.script, SIGNAL(clicked()), self, SLOT(script()))
+    def scriptClicked(self):
+        self.editor = Plugins.element_plugins["TextEditor"]
+        self.editor.setText(self.content.script)
+        self.editor.close.connect(self.scriptEditorClose)
+        self.animate(self.scroll.widget().placeholder)
+
+    def scriptEditorClose(self):
+        if self.editor and self.editor.changed:
+            self.content.script = self.editor.getText()
+            self.editChanged("Update Script")
+        self.editorClosed()
 
     def previewPage(self):
         self.preview.emit(self.content)

@@ -23,7 +23,7 @@ from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QPalette, QColor, QPixmap, QDrag
 from widgets.row import Row
 from widgets.roweditor import RowEditor
-from widgets.elementeditor import ElementEditor
+from widgets.elementeditor import ElementEditor, Mode
 from widgets.dropzone import DropZone
 from widgets.widgetmimedata import WidgetMimeData
 import resources
@@ -135,7 +135,14 @@ class SectionEditor(QWidget):
             pal.setColor(QPalette.Background, QColor(self.palette().base().color().name()))
         self.setPalette(pal)
 
-    def addElement(self, ee):
+    def addElement(self):
+        ee = ElementEditor()
+        self.layout.addWidget(ee, 0, Qt.AlignTop)
+        ee.elementEnabled.connect(self.addElement)
+        ee.elementDragged.connect(self.addElement)
+        # connect(ee, SIGNAL(elementCopied(ElementEditor*)), self, SLOT(copyElement(ElementEditor*)))
+
+    def addElementEditor(self, ee):
         ee.elementEnabled.connect(self.addElement)
         ee.elementDragged.connect(self.addElement)
 
@@ -163,7 +170,7 @@ class SectionEditor(QWidget):
                 ee = ElementEditor()
                 ee.setContent(item)
                 ee.setMode(Mode.ENABLED)
-                self.addElement(ee)
+                self.addElementEditor(ee)
 
     def getContentEditor(self):
         pe = self.parentWidget()
@@ -185,11 +192,11 @@ class SectionEditor(QWidget):
                 # insert a dropzone at the end
                 self.layout.addWidget(DropZone(myData.width, myData.height))
                 event.accept()
-            elif self.section.fullwidth and isinstance(myDate.getDate(), ElementEditor):
+            elif self.section.fullwidth and isinstance(myData.getData(), ElementEditor):
                 for i in range(self.layout.count()):
                     editor = self.layout.itemAt(i).widget()
-                    if editor and editor.mode == ElementEditor.Mode.Empty:
-                        editor.setMode(ElementEditor.Mode.Dropzone)
+                    if editor and editor.mode == Mode.EMPTY:
+                        editor.setMode(Mode.DROPZONE)
                         break
                 event.accept()
             else:
@@ -208,9 +215,9 @@ class SectionEditor(QWidget):
                 break
             
             editor = self.layout.itemAt(i).widget()
-            if isinstance(editor, ElementEditor) and editor.mode == ElementEditor.Mode.Dropzone:
+            if isinstance(editor, ElementEditor) and editor.mode == Mode.DROPZONE:
                 # put editor to the end of the list
-                editor.setMode(ElementEditor.Mode.Empty)
+                editor.setMode(Mode.EMPTY)
                 self.layout.removeWidget(editor)
                 self.layout.addWidget(editor)
                 break
@@ -247,10 +254,10 @@ class SectionEditor(QWidget):
             else:
                 ee = myData.getData()
                 if ee:
-                    row = event.pos().y() / (50 + self.layout.margin())
+                    row = event.pos().y() / 50
                     for i in range(self.layout.count()):
                         editor = self.layout.itemAt(i).widget()
-                        if editor and editor.mode == ElementEditor.Mode.Dropzone:
+                        if editor and editor.mode == Mode.DROPZONE:
                             if i != row:
                                 # put dropzone under mouse pointer
                                 self.layout.insertWidget(row, editor)
@@ -273,43 +280,48 @@ class SectionEditor(QWidget):
                     if isinstance(dz, DropZone):
                         dz.hide()
                         self.layout.replaceWidget(dz, re)
+                        new_pos = i
                         re.show()
                         del dz
                         break
                 
                 ce = self.getContentEditor()
                 if ce:
+                    myData.source_list.remove(re.row)
+                    self.section.insertElement(re.row, new_pos)
                     ce.editChanged("Move Row")
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
             else:
                 ee = myData.getData()
-                if ee:
+                if isinstance(ee, ElementEditor):
                     for i in range(self.layout.count()):
                         dz = self.layout.itemAt(i).widget()
-                        if isinstance(dz, DropZone) and dz.mode == ElementEditor.Mode.Dropzone:
+                        if isinstance(dz, ElementEditor) and dz.mode == Mode.DROPZONE:
                             # remove widget if it belongs to self layout
                             self.layout.removeWidget(ee)
 
                             # replace dropzone with dragged element
                             self.layout.replaceWidget(dz, ee)
-
+                            new_pos = i
                             # and put dropzone to the end of the list
-                            dz.setMode(ElementEditor.Mode.Empty)
+                            dz.setMode(Mode.EMPTY)
                             self.layout.removeWidget(dz)
                             self.layout.addWidget(dz)
                             break
                     ee.dropped()
                     ee.show()
-                    ee.elementEnabled.disconnect(self.addElement)
-                    ee.elementDragged.disconnect(self.addElement)
-                    # ee.elementCopied.disconnect(self.copyElement)
-                    ee.elementEndabled.connect(self.addElement)
-                    ee.elementDragged.conenct(self.addElement)
+                    ee.elementEnabled.disconnect()
+                    ee.elementDragged.disconnect()
+                    # ee.elementCopied.disconnect()
+                    ee.elementEnabled.connect(self.addElement)
+                    ee.elementDragged.connect(self.addElement)
                     # ee.elementCopied.connect(self.copyElement)
 
                     ce = self.getContentEditor()
                     if ce:
+                        myData.source_list.remove(ee.content)
+                        self.section.insertElement(ee.content, new_pos)
                         ce.editChanged("Move Element")
                     event.setDropAction(Qt.MoveAction)
                     event.accept()
@@ -349,3 +361,6 @@ class SectionEditor(QWidget):
         
         pe.enableColumnAcceptDrop(True)
         pe.enableSectionAcceptDrop(True)
+
+    def removeElement(self, content):
+        self.section._items.remove(content)

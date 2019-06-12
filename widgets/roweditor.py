@@ -296,9 +296,13 @@ class RowEditor(QWidget):
                 ce.setAcceptDrops(mode)
         
     def mousePressEvent(self, event):
+        from widgets.sectioneditor import SectionEditor
         mimeData = WidgetMimeData()
         mimeData.setSize(self.size().width(), self.size().height())
         mimeData.setData(self)
+        parent = self.parentWidget()
+        if isinstance(parent, SectionEditor):
+            mimeData.source_list = parent.section._items
 
         pixmap = QPixmap(self.size())
         self.render(pixmap)
