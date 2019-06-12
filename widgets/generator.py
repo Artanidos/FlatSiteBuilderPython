@@ -25,7 +25,10 @@ from widgets.plugins import Plugins
 import os
 import shutil
 import sys
+<<<<<<< HEAD
 import html
+=======
+>>>>>>> 5c5a3f268fe94783ab1d4aa10577d832a9080e51
 
 
 class Generator:

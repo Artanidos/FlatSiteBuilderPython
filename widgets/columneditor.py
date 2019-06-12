@@ -165,7 +165,11 @@ class ColumnEditor(QWidget):
 
                         # replace dropzone with dragged element
                         self.layout.replaceWidget(dz, ee)
+<<<<<<< HEAD
                         new_pos = i
+=======
+
+>>>>>>> 5c5a3f268fe94783ab1d4aa10577d832a9080e51
                         # and put dropzone to the end of the list
                         dz.setMode(Mode.EMPTY)
                         self.layout.removeWidget(dz)
@@ -178,8 +182,11 @@ class ColumnEditor(QWidget):
                 # ee.copied.disconnect(self.copyElement)
                 ce = self.getContentEditor()
                 if ce:
+<<<<<<< HEAD
                     myData.source_list.remove(ee.content)
                     self.column.insertElement(ee.content, new_pos)
+=======
+>>>>>>> 5c5a3f268fe94783ab1d4aa10577d832a9080e51
                     ce.editChanged("Move Element")
                 ee.elementEnabled.connect(self.addElement)
                 ee.elementDragged.connect(self.addElement)
@@ -190,6 +197,9 @@ class ColumnEditor(QWidget):
                 event.ignore()
         else:
             event.ignore()
+<<<<<<< HEAD
 
     def removeElement(self, content):
         self.column._items.remove(content)
+=======
+>>>>>>> 5c5a3f268fe94783ab1d4aa10577d832a9080e51
