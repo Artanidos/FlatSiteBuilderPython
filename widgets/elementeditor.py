@@ -190,11 +190,8 @@ class ElementEditor(QWidget):
             self.text.setText(content.tag_name)
 
     def mousePressEvent(self, event):
-<<<<<<< HEAD
         from widgets.columneditor import ColumnEditor
         from widgets.sectioneditor import SectionEditor
-=======
->>>>>>> 5c5a3f268fe94783ab1d4aa10577d832a9080e51
         if self.mode != Mode.ENABLED or event.button() != Qt.LeftButton:
             return
 
@@ -203,14 +200,11 @@ class ElementEditor(QWidget):
 
         mimeData = WidgetMimeData()
         mimeData.setData(self)
-<<<<<<< HEAD
         parent = self.parentWidget()
         if isinstance(parent, ColumnEditor):
             mimeData.source_list = parent.column._items
         elif isinstance(parent, SectionEditor):
             mimeData.source_list = parent.section._items
-=======
->>>>>>> 5c5a3f268fe94783ab1d4aa10577d832a9080e51
 
         pixmap = QPixmap(self.size())
         self.render(pixmap)

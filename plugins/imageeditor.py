@@ -207,11 +207,7 @@ class ImageEditor(ElementEditorInterface):
             self.content.alt = self.alt.text()
             self.content.title = self.title.text()
             self.content.adminlabel = self.adminlabel.text()
-<<<<<<< HEAD
             if self.animation_type.currentItem():
-=======
-            if self.animation_type.currentItem:
->>>>>>> 5c5a3f268fe94783ab1d4aa10577d832a9080e51
                 self.content.animation_type = self.animation_type.currentItem().data(Qt.DisplayRole)
             if self.animation_subtype.currentItem():
                 self.content.animation = self.animation_subtype.currentItem().data(Qt.UserRole)
@@ -234,7 +230,6 @@ class ImageEditor(ElementEditorInterface):
         self.adminlabel.setText(content.adminlabel)
         if content.src:
             self.image.setImage(QImage(os.path.join(self.site.source_path, "assets", "images", content.src)))
-<<<<<<< HEAD
         if self.animation_type:
             index = self.findData(self.animation_type, content.animation_type, Qt.DisplayRole)
             self.animation_type.setCurrentRow(index)
@@ -243,12 +238,6 @@ class ImageEditor(ElementEditorInterface):
                 self.animation_subtype.setCurrentRow(index)
         else:
             self.animation_type.setCurrentRow(0)
-=======
-        index = self.findData(self.animation_type, content.animation_type, Qt.DisplayRole)
-        self.animation_type.setCurrentRow(index)
-        index = self.findData(self.animation_subtype, content.animation, Qt.UserRole)
-        self.animation_subtype.setCurrentRow(index)
->>>>>>> 5c5a3f268fe94783ab1d4aa10577d832a9080e51
         self.changed = False
 
     def findData(self, list, value, role):
