@@ -165,7 +165,9 @@ class ContentEditor(AnimateableEditor):
 
     def scriptClicked(self):
         self.editor = Plugins.element_plugins["TextEditor"]
+        self.editor.setContent(None)
         self.editor.setText(self.content.script)
+        self.editor.setCaption("Page Script")
         self.editor.close.connect(self.scriptEditorClose)
         self.animate(self.scroll.widget().placeholder)
 
@@ -173,6 +175,7 @@ class ContentEditor(AnimateableEditor):
         if self.editor and self.editor.changed:
             self.content.script = self.editor.getText()
             self.editChanged("Update Script")
+            self.editor.close.disconnect()
         self.editorClosed()
 
     def previewPage(self):
@@ -191,6 +194,7 @@ class ContentEditor(AnimateableEditor):
         if self.editor and self.editor.changed:
             self.row_editor.load(self.editor.row)
             self.editChanged("Update Row")
+            self.editor.close.disconnect()
         self.editorClosed()
 
     def canUndoChanged(self, can):
@@ -286,6 +290,7 @@ class ContentEditor(AnimateableEditor):
         if self.editor.changed:
             self.section_editor.setSection(self.editor.section)
             self.editChanged("Update Section")
+            self.editor.close.disconnect()
         self.editorClosed()
     
     def load(self):
@@ -337,6 +342,7 @@ class ContentEditor(AnimateableEditor):
             self.editor = Plugins.element_plugins[plugin_name]
         else:
             self.editor = Plugins.element_plugins["TextEditor"]
+            self.editor.setCaption("Text Module")
         self.editor.site = self.site
         self.editor.setContent(ee.getContent())
         self.editor.close.connect(self.editorClose)
@@ -412,6 +418,7 @@ class ContentEditor(AnimateableEditor):
         if self.editor.changed:
             self.element_editor.setContent(self.editor.getContent())
             self.editChanged("Update Element")
+        self.editor.close.disconnect()
         self.editorClosed()
 
     def editorClosed(self):
