@@ -55,7 +55,7 @@ class ImageEditor(ElementEditorInterface):
         self.adminlabel.setMaximumWidth(200)
         seek = QPushButton("...")
         seek.setMaximumWidth(50)
-        titleLabel = QLabel("Image Module Plugin")
+        titleLabel = QLabel("Image Module")
         fnt = titleLabel.font()
         fnt.setPointSize(16)
         fnt.setBold(True)
