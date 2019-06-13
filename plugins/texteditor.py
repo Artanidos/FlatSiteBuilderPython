@@ -72,13 +72,13 @@ class TextEditor(ElementEditorInterface):
         self.adminlabel = QLineEdit()
         self.adminlabel.setMaximumWidth(200)
 
-        titleLabel = QLabel("Text Module")
-        fnt = titleLabel.font()
+        self.titleLabel = QLabel("Text Module")
+        fnt = self.titleLabel.font()
         fnt.setPointSize(16)
         fnt.setBold(True)
-        titleLabel.setFont(fnt)
+        self.titleLabel.setFont(fnt)
 
-        grid.addWidget(titleLabel, 0, 0)
+        grid.addWidget(self.titleLabel, 0, 0)
         grid.addWidget(close, 0, 1, 1, 1, Qt.AlignRight)
         grid.addWidget(self.html, 1, 0, 1, 2)
         grid.addWidget(QLabel("Admin Label"), 2, 0)
@@ -89,6 +89,9 @@ class TextEditor(ElementEditorInterface):
         self.html.textChanged.connect(self.contentChanged)
         self.adminlabel.textChanged.connect(self.contentChanged)
 
+    def setCaption(self, caption):
+        self.titleLabel.setText(caption)
+
     def setText(self, text):
         self.html.setPlainText(html.unescape(text))
 
@@ -97,13 +100,14 @@ class TextEditor(ElementEditorInterface):
 
     def setContent(self, content):
         self.content = content
-        if isinstance(content, Text):
-            self.adminlabel.setText(content.adminlabel)
-            self.html.setPlainText(html.unescape(content.text))
-        else:
-            self.html.setPlainText(html.unescape(content.text))
-            self.adminlabel.setText(content.adminlabel)
-        self.changed = False
+        if content:
+            if isinstance(content, Text):
+                self.adminlabel.setText(content.adminlabel)
+                self.html.setPlainText(html.unescape(content.text))
+            else:
+                self.html.setPlainText(html.unescape(content.text))
+                self.adminlabel.setText(content.adminlabel)
+            self.changed = False
 
     def getContent(self):
         return self.content
@@ -118,7 +122,7 @@ class TextEditor(ElementEditorInterface):
         if self.changed:
             if self.content:
                 self.content.adminlabel = self.adminlabel.text()
-                self.content.text = self.html.toPlainText()
+                self.content.text = html.escape(self.html.toPlainText())
         self.close.emit()
 
     def registerContenType(self):
@@ -144,7 +148,7 @@ class Text(Item):
         f.write("\n")
         f.write(" " * indent + "Text {\n")
         self.writeAttribute(f, indent + 4, "id", self._id)
-        self.writeAttribute(f, indent + 4, "text", html.escape(self._text))
+        self.writeAttribute(f, indent + 4, "text", self._text)
         self.writeAttribute(f, indent + 4, "adminlabel", self._adminlabel)
         f.write(" " * indent + "}\n")
 
