@@ -1,6 +1,7 @@
 __pycache__/
 build/
 dist/
+.vscode/
 main.spec
 imageeditor_rc.py
 texteditor_rc.py
