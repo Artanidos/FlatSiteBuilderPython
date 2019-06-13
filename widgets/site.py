@@ -24,6 +24,7 @@ from tempfile import NamedTemporaryFile
 from widgets.content import ContentType, Content
 from widgets.menu import Menu
 from widgets.menuitem import Menuitem
+from widgets.menus import Menus
 from widgets.generator import Generator
 from PyQt5.QtCore import QFileInfo, QObject, pyqtProperty, QUrl
 from PyQt5.QtQml import QQmlEngine, QQmlComponent
@@ -139,7 +140,8 @@ class Site(QObject):
             f.write("   logo: '" + self.logo + "'\n")
             f.write("   publisher: '" + self.publisher + "'\n")
             f.write("}\n")
-        self.win.statusBar().showMessage("Site has been saved")
+        if self.win:
+            self.win.statusBar().showMessage("Site has been saved")
 
     def saveMenus(self):
         with open(os.path.join(self.source_path, "Menus.qml"), "w") as f:
@@ -162,10 +164,13 @@ class Site(QObject):
                     f.write("        }\n")
                 f.write("    }\n")
             f.write("}\n")
-        self.win.statusBar().showMessage("Menus have been saved")
+        if self.win:
+            self.win.statusBar().showMessage("Menus have been saved")
 
     def addMenu(self, menu):
-        self.menus.menus.append(menu)
+        if not self.menus:
+            self.menus = Menus()
+        self.menus._menus.append(menu)
 
     def loadMenus(self):
         engine = QQmlEngine()

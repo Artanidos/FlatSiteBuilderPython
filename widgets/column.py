@@ -70,3 +70,6 @@ class Column(Item):
     
     def insertElement(self, content, new_pos):
         self._items.insert(new_pos, content)
+
+    def addItem(self, item):
+        self._items.append(item)

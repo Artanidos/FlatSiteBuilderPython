@@ -21,11 +21,17 @@
 
 import os
 import datetime
-#from lxml.etree import Element, CDATA, SubElement, ElementTree
 from PyQt5.QtWidgets import QWizard, QWizardPage, QLabel, QLineEdit, QComboBox, QGridLayout, QVBoxLayout
 from PyQt5.QtCore import pyqtSignal, QDir
 from PyQt5.QtGui import QPixmap
 import resources
+from widgets.site import Site
+from widgets.menu import Menu
+from widgets.menuitem import Menuitem
+from widgets.content import Content
+from widgets.section import Section
+from widgets.row import Row
+from widgets.column import Column
 
 class SiteWizard(QWizard):
     loadSite = pyqtSignal(object)
@@ -56,43 +62,43 @@ class SiteWizard(QWizard):
         os.mkdir(os.path.join(path, "assets", "js"))
         os.mkdir(os.path.join(path, "assets", "images"))
 
-        site = Element("Site")
-        site.attrib["theme"] = self.field("theme")
-        site.attrib["title"] = siteName
+        site = Site()
+        site.theme = self.field("theme")
+        site.title = siteName
         if description:
-            site.attrib["description"] = description
+            site.description = description
         if copyright:
-            site.attrib["copyright"] = copyright
-        tree = ElementTree(site)
-        tree.write(os.path.join(path, "Site.xml"), encoding = "utf-8", method = "xml", xml_declaration = True)
+            site.copyright = copyright
+        site.source_path = path
+        site.save()
 
-        menus = Element("Menus")
-        menu = SubElement(menus, "Menu")
-        menu.attrib["name"] = "default"
-        item = SubElement(menu, "Item")
-        item.attrib["title"] = "Index"
-        item.attrib["url"] = "index.html"
-        tree = ElementTree(menus)
-        tree.write(os.path.join(path, "Menus.xml"), encoding = "utf-8", method = "xml", xml_declaration = True)
-
-        page = Element("Content")
-        page.attrib["title"] = "Index"
-        page.attrib["menu"] = "default"
-        page.attrib["author"] = "admin"
-        page.attrib["layout"] = "default"
-        page.attrib["date"] = datetime.datetime.now().strftime("%d.%m.%Y")
-        section = SubElement(page, "Section")
-        row = SubElement(section, "Row")
-        column = SubElement(row, "Column")
-        column.attrib["span"] = "12"
-        text = SubElement(column, "Text")
-        text.text = CDATA("<h1>Welcome</h1>")
-        tree = ElementTree(page)
-        tree.write(os.path.join(path, "pages", "index.xml"), encoding = "utf-8", method = "xml", xml_declaration = True)
-
+        menu = Menu()
+        menu.name = "default"
+        item = Menuitem()
+        item.title = "Index"
+        item.url = "index.html"
+        menu.addMenuItem(item)
+        site.addMenu(menu)
+        site.saveMenus()
+        
+        content = Content()
+        content.title = "Index"
+        content.menu = "default"
+        content.author = "admin"
+        content.layout = "default"
+        content.date = datetime.datetime.now().strftime("%Y-%m-%d")
+        section = Section()
+        row = Row()
+        column = Column()
+        column.span = 12
+        row.addColumn(column)
+        section._items.append(row)
+        content._items.append(section)
+        content.save(os.path.join(path, "pages", "index.qml"))
+        
         super().accept()
 
-        self.loadSite.emit(path + "/Site.xml")
+        self.loadSite.emit(path + "/Site.qml")
         self.buildSite.emit()
 
 

@@ -36,7 +36,7 @@ class MenuList(UndoableEditor):
         self.menuInEditor = None
         self.editor = None
         self.titleLabel.setText("Menus")
-        self.filename = site.source_path + "/Menus.xml"
+        self.filename = site.source_path + "/Menus.qml"
         button = QPushButton("Add Menu")
         button.setMaximumWidth(120)
 

@@ -147,11 +147,15 @@ class Generator:
 
         for att, value in site.attributes.items():
             sitevars[att] = value
-        tei = Plugins.getThemePlugin(Plugins.actualThemeEditorPlugin())
-        if tei:
-            tei.setWindow(win)
-            tei.setSourcePath(site.source_path)
-            themevars = tei.themeVars()
+        act = Plugins.actualThemeEditorPlugin()
+        if act:
+            tei = Plugins.getThemePlugin(Plugins.actualThemeEditorPlugin())
+            if tei:
+                tei.setWindow(win)
+                tei.setSourcePath(site.source_path)
+                themevars = tei.themeVars()
+        else:
+            themevars = {}
 
         context = Context()
         context["site"] = sitevars

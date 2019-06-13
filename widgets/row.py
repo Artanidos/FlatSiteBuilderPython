@@ -71,3 +71,6 @@ class Row(Item):
     def collectPluginNames(self, list):
         for item in self._columns:
             item.collectPluginNames(list)
+
+    def addColumn(self, column):
+        self._columns.append(column)

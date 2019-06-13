@@ -148,10 +148,9 @@ class Dashboard(QWidget):
     def previewClicked(self):
         self.previewSite.emit()
 
-    @pyqtSlot()
     def siteLoaded(self, site):
         self.site = site
-        if not self.site.title():
+        if not self.site.title:
             self.info.setText("No site loaded yet...")
         else:
-            self.info.setText(self.site.title() + " loaded...")
+            self.info.setText(self.site.title + " loaded...")

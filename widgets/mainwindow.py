@@ -33,7 +33,6 @@ from widgets.contentlist import ContentList
 from widgets.menulist import MenuList
 from widgets.menueditor import MenuEditor
 from widgets.content import ContentType
-from widgets.xmlhighlighter import XmlHighlighter
 from widgets.plugins import Plugins
 from widgets.sitewizard import SiteWizard
 from widgets.contenteditor import ContentEditor
@@ -66,14 +65,14 @@ class MainWindow(QMainWindow):
         self.loadPlugins()
 
         if self.default_path:
-            self.loadProject(self.default_path + "/Site.qml")
+            if self.loadProject(self.default_path + "/Site.qml"):
 
-            # if site has never been generated (after install)
-            # then generate the site
-            site = QDir(Generator.sitesPath() + "/" + self.site.title)
-            if site.exists():
-                gen = Generator()
-                gen.generateSite(self, self.site)
+                # if site has never been generated (after install)
+                # then generate the site
+                site = QDir(Generator.sitesPath() + "/" + self.site.title)
+                if site.exists():
+                    gen = Generator()
+                    gen.generateSite(self, self.site)
 
         self.dashboard.setExpanded(True)
         self.showDashboard()
@@ -89,15 +88,17 @@ class MainWindow(QMainWindow):
                     break
 
     def loadProject(self, filename):
-        self.reloadProject(filename)
-
-        # create temp dir for undo redo
-        tempPath = self.site.source_path[self.site.source_path.rfind("/") + 1:]
-        temp = QDir(QDir.tempPath() + "/FlatSiteBuilder")
-        temp.mkdir(tempPath)
-        temp.cd(tempPath)
-        temp.mkdir("pages")
-        temp.mkdir("posts")
+        if self.reloadProject(filename):
+            # create temp dir for undo redo
+            tempPath = self.site.source_path[self.site.source_path.rfind("/") + 1:]
+            temp = QDir(QDir.tempPath() + "/FlatSiteBuilder")
+            temp.mkdir(tempPath)
+            temp.cd(tempPath)
+            temp.mkdir("pages")
+            temp.mkdir("posts")
+            return True
+        else:
+            return False
 
     def initUndoRedo(self):
         self.undoStack = QUndoStack()
@@ -200,9 +201,9 @@ class MainWindow(QMainWindow):
         super().setCentralWidget(widget)
         widget.show()
 
-        def closeEvent(self, event):
-            self.writeSettings()
-            event.accept()
+    def closeEvent(self, event):
+        self.writeSettings()
+        event.accept()
 
     def writeSettings(self):
         settings = QSettings(QSettings.IniFormat, QSettings.UserScope, QCoreApplication.organizationName(), QCoreApplication.applicationName())
@@ -216,9 +217,8 @@ class MainWindow(QMainWindow):
         geometry = settings.value("geometry", QByteArray())
         if geometry.isEmpty():
             availableGeometry = QApplication.desktop().availableGeometry(self)
-            print(availableGeometry)
             self.resize(availableGeometry.width() / 3, availableGeometry.height() / 2)
-            self.move(int((availableGeometry.width() - self.width() / 2)), int((availableGeometry.height() - self.height()) / 2))
+            self.move(int(((availableGeometry.width() - self.width()) / 2)), int((availableGeometry.height() - self.height()) / 2))
         else:
             self.restoreGeometry(geometry)
             self.restoreState(settings.value("state"))
@@ -235,6 +235,7 @@ class MainWindow(QMainWindow):
         else:
             for error in component.errors():
                 print(error.toString())
+            return False
 
         self.site.loadMenus()
         self.site.loadPages()
@@ -250,12 +251,13 @@ class MainWindow(QMainWindow):
                     self.theme_settings_button.setVisible(True)
                     break
 
-        if not self.site.publisher:
-            if len(Plugins.publishPluginNames()) > 0:
-                self.site.setPublisher(Plugins.publishPluginNames[0])
+        #if not self.site.publisher:
+        #    if len(Plugins.publishPluginNames()) > 0:
+        #        self.site.publisher = Plugins.publishPluginNames[0]
 
         Plugins.setActualPublishPlugin(self.site.publisher)
         self.siteLoaded.emit(self.site)
+        return True
 
     def dashboardExpanded(self, value):
         if value:

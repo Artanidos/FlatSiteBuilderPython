@@ -48,4 +48,4 @@ class Menu(QObject):
         self._name = name
 
     def addMenuItem(self, item):
-        self.items.append(item)
+        self._items.append(item)
