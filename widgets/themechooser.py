@@ -53,7 +53,17 @@ class ThemeChooser(UndoableEditor):
     def save(self):
         self.site.theme = self.themename
         self.site.save()
-        Plugins.setActualThemeEditorPlugin(self.themename)
+
+        Plugins.setActualThemeEditorPlugin("")
+        for key in Plugins.themePluginNames():
+            tei = Plugins.getThemePlugin(key)
+            if tei:
+                if tei.theme_name == self.site.theme:
+                    Plugins.setActualThemeEditorPlugin(tei.class_name)
+                    self.theme_settings_button.setVisible(True)
+                    break
+
+
         self.win.actualThemeChanged(self.themename)
         self.win.statusBar().showMessage("Theme has been changed. The site should be rebuildet on the dashboard.")
         self.load()
