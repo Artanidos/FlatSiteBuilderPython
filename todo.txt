@@ -1,8 +1,1 @@
-<<<<<<< HEAD
-undo / redo
 build install package
-=======
-page script edit
-use page script in generator
-ThemeEditor
->>>>>>> 5c5a3f268fe94783ab1d4aa10577d832a9080e51

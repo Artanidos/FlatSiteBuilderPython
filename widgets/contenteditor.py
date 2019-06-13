@@ -65,7 +65,7 @@ class ContentEditor(AnimateableEditor):
         self.script = QPushButton("Page Script")
         self.title = QLineEdit()
         self.source = QLineEdit()
-        self.source.setPlaceholderText("*.xml")
+        self.source.setPlaceholderText("*.qml")
         self.excerpt = QLineEdit()
         self.date = QLineEdit()
         self.labelPermalink = QLabel("Permalink")
@@ -267,7 +267,7 @@ class ContentEditor(AnimateableEditor):
 
     def titleChanged(self, title):
         if self.is_new:
-            source = title.lower().replace(" ", "_") + ".xml"
+            source = title.lower().replace(" ", "_") + ".qml"
             self.source.setText(source)
 
     def titleFinished(self):
@@ -474,18 +474,7 @@ class ContentEditor(AnimateableEditor):
         self.undoStack.push(changeCommand)
 
     def save(self):
-        with open(self.filename, "w") as f:
-            f.write("import FlatSiteBuilder 2.0\n")
-            
-            taglist = []
-            self.content.collectPluginNames(taglist)
-
-            for tag in taglist:
-                plugin_name = Plugins.getElementPluginByTagname(tag)
-                plugin = Plugins.element_plugins[plugin_name]
-                plugin.writeImportString(f)
-            f.write("\n")
-            self.content.save(f)
+        self.content.save(self.filename)
 
     def contentRenamed(self, name):
         self.filename = name

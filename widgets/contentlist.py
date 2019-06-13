@@ -18,10 +18,11 @@
 #
 #############################################################################
 
-import datetime
+import os
 from widgets.content import ContentType
 from widgets.flatbutton import FlatButton
 from widgets.tablecellbuttons import TableCellButtons
+from widgets.commands import DeleteContentCommand
 from PyQt5.QtWidgets import QWidget, QUndoStack, QTableWidgetItem, QVBoxLayout, QHBoxLayout, QGridLayout, QPushButton, QLabel, QTableWidget, QAbstractItemView, QHeaderView
 from PyQt5.QtCore import pyqtSignal, Qt, QFileInfo
 import resources
@@ -82,7 +83,7 @@ class ContentList(QWidget):
         vbox.addLayout(layout)
         self.setLayout(vbox)
 
-        button.clicked.connect(self.buttonClicked)
+        button.clicked.connect(self.addPage)
         self.list.cellDoubleClicked.connect(self.tableDoubleClicked)
         self.redo.clicked.connect(self.doredo)
         self.undo.clicked.connect(self.doundo)
@@ -94,36 +95,35 @@ class ContentList(QWidget):
         self.list.setRowCount(0)
         row = -1
 
-        contentToEdit = None
+        itemToEdit = None
         if self.type == ContentType.PAGE:
             self.site.loadPages()
             for i in range(len(self.site.pages)):
                 content = self.site.pages[i]
-                if content.source == self.addedContentName:
-                    contentToEdit = content
-                    row = self.list.rowCount()
                 self.addListItem(content)
+                if content.source == self.addedContentName:
+                    row = self.list.rowCount() - 1
+                    itemToEdit = self.list.item(row, 1)
         else:
             self.site.loadPosts()
             for i in range(0, len(self.site.posts)):
                 content = self.site.posts[i]
-                if content.source == self.addedContentName:
-                    contentToEdit = content
-                    row = self.list.rowCount()
                 self.addListItem(content)
+                if content.source == self.addedContentName:
+                    row = self.list.rowCount() - 1
 
-        if contentToEdit:
+        if itemToEdit:
             self.addedContentName = ""
             self.list.selectRow(row)
-            self.editContent(contentToEdit)
+            self.editContent.emit(itemToEdit)
 
     def addListItem(self, content):
         rows = self.list.rowCount()
         self.list.setRowCount(rows + 1)
         tcb = TableCellButtons()
         tcb.setItem(content)
-        #connect(tcb, SIGNAL(deleteItem(QObject*)), self, SLOT(deleteContent(QObject*)))
-        #connect(tcb, SIGNAL(editItem(QObject*)), self, SLOT(editContent(QObject*)))
+        tcb.deleteItem.connect(self.deleteContent)
+        tcb.editItem.connect(self.edit)
         self.list.setCellWidget(rows, 0, tcb)
         self.list.setRowHeight(rows, tcb.sizeHint().height())
         titleItem = QTableWidgetItem(content.title)
@@ -164,14 +164,36 @@ class ContentList(QWidget):
     def doredo(self):
         self.undoStack.redo()
 
-    def buttonClicked(self):
-        pass
-        #self.addedContentName = self.site.createTemporaryContent(self.type)
-        #info = QFileInfo(self.addedContentName)
-        #self.addedContentName = info.fileName()
-        #reload()
+    def addPage(self):
+        self.addedContentName = self.site.createTemporaryContent(self.type)
+        info = QFileInfo(self.addedContentName)
+        self.addedContentName = info.fileName()
+        self.reload()
 
     def tableDoubleClicked(self, r, i):
         item = self.list.item(r, 1)
         self.undoStack.clear()
         self.editContent.emit(item)
+
+    def edit(self, content):
+        for row in range(self.list.rowCount()):
+            item = self.list.item(row, 1)
+            m = item.data(Qt.UserRole)
+            if m == content:
+                self.list.selectRow(row)
+                self.undoStack.clear()
+                self.editContent.emit(item)
+                break
+
+    def deleteContent(self, content):
+        for row in range(self.list.rowCount()):
+            item = self.list.item(row, 1)
+            m = item.data(Qt.UserRole)
+            if m == content:
+                if m.content_type == ContentType.PAGE:
+                    subdir = "pages"
+                else:
+                    subdir = "posts"
+                delCommand = DeleteContentCommand(self, os.path.join(self.site.source_path, subdir, m.source), "delete content " + m.title)
+                self.undoStack.push(delCommand)
+                break

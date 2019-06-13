@@ -24,6 +24,7 @@ from PyQt5.QtQml import QQmlListProperty
 from enum import Enum
 from widgets.section import Section
 from widgets.item import Item
+from widgets.plugins import Plugins
 
 
 class ContentType(Enum):
@@ -139,25 +140,36 @@ class Content(QObject):
             elif isinstance(value, QDate):
                 f.write(" " * indent + att + ": \"" + value.toString("yyyy-MM-dd") + "\"\n")
 
-    def save(self, f):
-        f.write("Content {\n")
-        self.writeAttribute(f, 4, "title", self.title)
-        self.writeAttribute(f, 4, "menu", self.menu)
-        self.writeAttribute(f, 4, "author", self.author)
-        self.writeAttribute(f, 4, "keywords", self.keywords)
-        self.writeAttribute(f, 4, "script", self.script)
-        self.writeAttribute(f, 4, "layout", self.layout)
-        self.writeAttribute(f, 4, "date", self.date)
-        self.writeAttribute(f, 4, "logo", self.logo)
-        self.writeAttribute(f, 4, "excerpt", self.excerpt)
-
-        for att, value in self.attributes:
-            f.writeAttribute(f, 4, att, value) 
+    def save(self, filename):
+        with open(filename, "w") as f:
+            f.write("import FlatSiteBuilder 2.0\n")
             
-        for item in self._items:
-            item.save(f, 4)
+            taglist = []
+            self.collectPluginNames(taglist)
 
-        f.write("}\n")
+            for tag in taglist:
+                plugin_name = Plugins.getElementPluginByTagname(tag)
+                plugin = Plugins.element_plugins[plugin_name]
+                plugin.writeImportString(f)
+            f.write("\n")
+            f.write("Content {\n")
+            self.writeAttribute(f, 4, "title", self.title)
+            self.writeAttribute(f, 4, "menu", self.menu)
+            self.writeAttribute(f, 4, "author", self.author)
+            self.writeAttribute(f, 4, "keywords", self.keywords)
+            self.writeAttribute(f, 4, "script", self.script)
+            self.writeAttribute(f, 4, "layout", self.layout)
+            self.writeAttribute(f, 4, "date", self.date)
+            self.writeAttribute(f, 4, "logo", self.logo)
+            self.writeAttribute(f, 4, "excerpt", self.excerpt)
+
+            for att, value in self.attributes:
+                f.writeAttribute(f, 4, att, value) 
+            
+            for item in self._items:
+                item.save(f, 4)
+
+            f.write("}\n")
 
     def changeSectionPos(self, sec, new_pos):
         self._items.remove(sec)

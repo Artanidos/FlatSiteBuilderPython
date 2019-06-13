@@ -51,13 +51,13 @@ class ChangeContentCommand(QUndoCommand):
         ChangeContentCommand.file_version_number = ChangeContentCommand.file_version_number + 1
         self.setText(text)
 
-        sitedir = self.content_editor.site.source_path[self.content_editor.site.source_path.rfind("/") + 1:]
+        sitedir = ce.site.source_path[ce.site.source_path.rfind("/") + 1:]
         if self.content_editor.content.content_type == ContentType.PAGE:
             subdir = "/pages/"
         else: 
             subdir = "/posts/"
-        self.temp_filename = QDir.tempPath() + "/FlatSiteBuilder/" + sitedir + subdir + self.content_editor.content.source + "." + str(ChangeContentCommand.file_version_number) + ".undo"
-        self.redo_filename = QDir.tempPath() + "/FlatSiteBuilder/" + sitedir + subdir + self.content_editor.content.source + "." + str(ChangeContentCommand.file_version_number) + ".redo"
+        self.temp_filename = os.path.join(QDir.tempPath(), "FlatSiteBuilder", sitedir, subdir, ce.content.source + "." + str(ChangeContentCommand.file_version_number) + ".undo")
+        self.redo_filename = os.path.join(QDir.tempPath(), "FlatSiteBuilder", sitedir, subdir, ce.content.source + "." + str(ChangeContentCommand.file_version_number) + ".redo")
 
     def undo(self):
 
@@ -120,3 +120,32 @@ class RenameContentCommand(QUndoCommand):
         shutil.copy(self.oldname, self.newname)
         os.remove(self.oldname)
         self.content_editor.contentRenamed(self.newname)
+
+
+class DeleteContentCommand(QUndoCommand):
+    file_version_number = 0
+
+    def __init__(self, cl, filename, text, parent = None):
+        super().__init__(parent)
+
+        self.content_list = cl
+        self.filename = filename
+        DeleteContentCommand.file_version_number = DeleteContentCommand.file_version_number + 1
+        self.setText(text)
+        basename = os.path.basename(filename)
+        sitedir = cl.site.source_path[cl.site.source_path.rfind("/") + 1:]
+        if cl.type == ContentType.PAGE:
+            subdir = "pages"
+        else: 
+            subdir = "posts"
+        self.undo_filename = os.path.join(QDir.tempPath(),  "FlatSiteBuilder", sitedir, subdir, basename + "." + str(DeleteContentCommand.file_version_number) + ".undo")
+
+    def undo(self):
+        shutil.copy(self.undo_filename, self.filename)
+        self.content_list.reload()
+
+    def redo(self):
+        if not os.path.exists(self.undo_filename):
+            shutil.copy(self.filename, self.undo_filename)
+        os.remove(self.filename)
+        self.content_list.reload()

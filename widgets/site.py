@@ -20,6 +20,7 @@
 
 import datetime
 import os
+from tempfile import NamedTemporaryFile
 from widgets.content import ContentType, Content
 from widgets.menu import Menu
 from widgets.menuitem import Menuitem
@@ -219,3 +220,26 @@ class Site(QObject):
                 post = self.loadContent(file, ContentType.POST)
                 self.posts.append(post)
         self.win.statusBar().showMessage("Posts have been loaded")
+
+    def createTemporaryContent(self, type):
+        temp = NamedTemporaryFile()
+        name = os.path.basename(temp.name)
+        if type == ContentType.PAGE:
+            filename = os.path.join(self.source_path, "pages", name + ".qml")
+        else:
+            filename = os.path.join(self.source_path, "posts", name + ".qml")
+        temp.close()
+
+        content = Content()
+        content.author = self.author
+        content.keywords = self.keywords
+        content.menu = self.menus.menus[0]
+        content.source = filename
+        if type == ContentType.PAGE:
+            content.layout = "default"
+        else:
+            content.layout = "post"
+        content.date = datetime.datetime.now().strftime("%Y-%m-%d")
+        content.save(filename)
+
+        return filename
