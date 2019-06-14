@@ -7,3 +7,4 @@ packages/com.vendor.product/data/
 main.spec
 imageeditor_rc.py
 texteditor_rc.py
+FlatSiteBuilder-*
