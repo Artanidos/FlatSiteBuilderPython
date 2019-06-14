@@ -48,16 +48,16 @@ import resources
 class MainWindow(QMainWindow):
     siteLoaded = pyqtSignal(object)
 
-    def __init__(self, install_directory):
+    def __init__(self):
         QMainWindow.__init__(self)
         self.site = None
         self.editor = ""
-        self.install_directory = install_directory
+        self.install_directory = os.getcwd()
         self.content_after_animation = ""
         self.default_path = ""
         self.method_after_animation = ""
 
-        Generator.install_directory = install_directory
+        Generator.install_directory = self.install_directory
 
         self.initUndoRedo()
         self.initGui()

@@ -29,6 +29,7 @@ class ImageSelector(QWidget):
 
     def __init__(self):
         QWidget.__init__(self)
+        self.item = None
 
     def setImage(self, image):
         self.image = image

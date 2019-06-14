@@ -1,6 +1,8 @@
 __pycache__/
 build/
 dist/
+sites/
+packages/com.vendor.product/data/
 .vscode/
 main.spec
 imageeditor_rc.py

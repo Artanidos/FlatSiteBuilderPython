@@ -202,23 +202,26 @@ class Generator:
         cm["keywords"] = content.keywords
         cm["script"] = html.unescape(content.script)
 
-        used_plugin_list = []
+        used_tag_list = []
         self.content = ""
         for item in content.items:
             self.content += item.getHtml()
-            item.collectPluginNames(used_plugin_list)
+            item.collectTagNames(used_tag_list)
 
         pluginvars = {}
+        pluginvars["styles"] = ""
+        pluginvars["scripts"] = ""
         for name in Plugins.elementPluginNames():
-            if name in used_plugin_list:
+            plugin = Plugins.element_plugins[name]
+            if plugin.tag_name in used_tag_list:
                 plugin = Plugins.element_plugins[name]
                 pluginvars["styles"] = pluginvars["styles"] + plugin.pluginStyles()
                 pluginvars["scripts"] = pluginvars["scripts"] + plugin.pluginScripts()
-                plugin.installAssets(os.path.join(self.site.source_path, self.site.title, "assets"))
+                plugin.installAssets(os.path.join(Generator.install_directory, "sites", self.site.title, "assets"))
         
-        #context["plugin"] = {"styles": ""}
+        pluginvars["styles"] = mark_safe(pluginvars["styles"])
+        pluginvars["scripts"] = mark_safe(pluginvars["scripts"])
         context["plugin"] = pluginvars
-        #context["theme"] = {"darkness": "dark"}
 
         layout = content.layout
         if not layout:

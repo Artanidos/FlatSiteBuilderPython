@@ -41,7 +41,13 @@ class ElementEditorInterface(AnimateableEditor):
 
     def setContent(self, content):
         pass
-    
+
+    def getDefaultContent(self):
+        return Item()
+
+    def writeImportString(self, f):
+        pass
+
     def pluginStyles(self):
         return ""
 
@@ -49,12 +55,6 @@ class ElementEditorInterface(AnimateableEditor):
         return ""
 
     def installAssets(self, assets_path):
-        pass
-
-    def getDefaultContent(self):
-        return Item()
-
-    def writeImportString(self, f):
         pass
 
 

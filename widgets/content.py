@@ -145,7 +145,7 @@ class Content(QObject):
             f.write("import FlatSiteBuilder 2.0\n")
             
             taglist = []
-            self.collectPluginNames(taglist)
+            self.collectTagNames(taglist)
 
             for tag in taglist:
                 plugin_name = Plugins.getElementPluginByTagname(tag)
@@ -181,6 +181,6 @@ class Content(QObject):
     def removeSection(self, sec):
         self._items.remove(sec)
 
-    def collectPluginNames(self, list):
+    def collectTagNames(self, list):
          for item in self._items:
-             item.collectPluginNames(list)
+             item.collectTagNames(list)

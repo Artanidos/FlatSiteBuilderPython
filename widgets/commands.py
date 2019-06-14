@@ -53,14 +53,13 @@ class ChangeContentCommand(QUndoCommand):
 
         sitedir = ce.site.source_path[ce.site.source_path.rfind("/") + 1:]
         if self.content_editor.content.content_type == ContentType.PAGE:
-            subdir = "/pages/"
+            subdir = "pages"
         else: 
-            subdir = "/posts/"
+            subdir = "posts"
         self.temp_filename = os.path.join(QDir.tempPath(), "FlatSiteBuilder", sitedir, subdir, ce.content.source + "." + str(ChangeContentCommand.file_version_number) + ".undo")
         self.redo_filename = os.path.join(QDir.tempPath(), "FlatSiteBuilder", sitedir, subdir, ce.content.source + "." + str(ChangeContentCommand.file_version_number) + ".redo")
 
     def undo(self):
-
         if os.path.exists(self.content_editor.filename):
             os.remove(self.content_editor.filename)
         shutil.copy(self.temp_filename, self.content_editor.filename)

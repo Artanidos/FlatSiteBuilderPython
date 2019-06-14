@@ -118,7 +118,6 @@ class ImageEditor(ElementEditorInterface):
             self.addSubItem("Bounce", "bounce")
             self.addSubItem("Flash", "flash")
             self.addSubItem("Pulse","pulse")
-            self.addSubItem("Rubber Band","rubberBand")
             self.addSubItem("Shake","shake")
             self.addSubItem("Swing","swing")
             self.addSubItem("Tada","tada")
@@ -285,6 +284,16 @@ class ImageEditor(ElementEditorInterface):
     def writeImportString(self, f):
         f.write("import ImageEditor 1.0\n")
 
+    def pluginStyles(self):
+        return "<link href=\"assets/plugins/animate/animate.css\" rel=\"stylesheet\" type=\"text/css\"/>\n"
+
+    def installAssets(self, assets_path):
+        assets = QDir(assets_path)
+        assets.mkdir("plugins")
+        assets.cd("plugins")
+        assets.mkdir("animate")
+        QFile.copy(":/animate.css", assets_path + "/plugins/animate/animate.css")
+
 
 class Image(Item):
     def __init__(self, parent = None):
@@ -353,16 +362,6 @@ class Image(Item):
         else:
             return "<img alt=\"" + self.alt + "\" title=\"" + self.title + "\" class=\"img-responsive pull-left inner\" src=\"assets/images/" + self.src + "\">\n"
 
-
-    def pluginStyles(self):
-        return "<link href=\"assets/plugins/animate/animate.css\" rel=\"stylesheet\" type=\"text/css\"/>\n"
-
-    def installAssets(self, assets_path):
-        assets = QDir(assets_path)
-        assets.mkdir("plugins")
-        assets.cd("plugins")
-        assets.mkdir("animate")
-        QFile.copy(":/animate.css", assets_path + "/plugins/animate/animate.css")
 
 qt_resource_data = b"\
 \x00\x00\x17\x53\

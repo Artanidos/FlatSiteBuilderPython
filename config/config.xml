@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <Installer>
+      <Name>FlatSiteBuilder</Name>
+      <Version>2.0.0</Version>
+      <Title>FlatSiteBuilder</Title>
+      <Publisher>Artanidos</Publisher>
+      <StartMenuDir></StartMenuDir>
+      <TargetDir>@HomeDir@/FlatSiteBuilder</TargetDir>
+      <Translations>
+        <Translation>en.qm</Translation>
+    </Translations>
+  </Installer>

@@ -21,7 +21,6 @@
 #############################################################################
 
 import sys
-from widgets.installdialog import InstallDialog
 from widgets.mainwindow import MainWindow
 from widgets.site import Site
 from widgets.content import Content
@@ -76,19 +75,7 @@ if __name__ == "__main__":
     p.setColor(QPalette.Disabled, QPalette.ButtonText, Qt.darkGray)
     p.setColor(QPalette.Link, QColor("#bbb"))
     app.setPalette(p)
-    app.setWindowIcon(QIcon(":/images/logo.svg"))
-
-    settings = QSettings(QSettings.IniFormat, QSettings.UserScope, QCoreApplication.organizationName(), QCoreApplication.applicationName())
-    install_directory = settings.value("installDirectory")
-    if not install_directory:
-        dlg = InstallDialog()
-        dlg.exec_()
-        install_directory = dlg.install_directory
-        if not install_directory:
-            sys.exit(-1)
-        settings.setValue("installDirectory", install_directory)
-        del dlg
-
-    win = MainWindow(install_directory)
+    app.setWindowIcon(QIcon(":/images/logo.svg"))        
+    win = MainWindow()
     win.show()
     sys.exit(app.exec_())
