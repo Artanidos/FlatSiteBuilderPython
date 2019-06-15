@@ -11,24 +11,24 @@ Have a look at our web site: https://artanidos.github.io/FlatSiteBuilder
 The syntax for the templates is based on [Django](https://www.djangoproject.com/start/). That also means that we render the HTML using [Django](https://www.djangoproject.com/start/).
 
 ## Variable
-```
+```django
 {{ varname }}
 ```
 
 ## Includes
-```
+```django
 {% include "filename" %}
 ```
 
 ## Loop
-```
+```django
 {% for page in pages %}
     {{ page.title }}
 {% endfor %}
 ```
 
 ## Contitional
-```
+```django
 {% if condition %}
     do something
 {% endif %}
