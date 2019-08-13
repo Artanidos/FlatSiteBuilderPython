@@ -1,2 +1,3 @@
 build install package
 DefaultThemeEditor load / save
+RevolutionSlider Editor

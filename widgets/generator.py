@@ -167,10 +167,9 @@ class Generator:
             copy_assets = True
 
         if not content_to_build or copy_assets:
-            # first copy assets from site, they will not be overridden by theme assets
+            self.copytree(os.path.join(Generator.install_directory, "themes", site.theme, "assets"), os.path.join(Generator.install_directory, "sites", site.title, "assets"))
             self.copytree(os.path.join(site.source_path, "assets"), os.path.join(Generator.install_directory, "sites", site.title, "assets"))
             self.copytree(os.path.join(site.source_path, "content"), os.path.join(Generator.install_directory, "sites", site.title))
-            self.copytree(os.path.join(Generator.install_directory, "themes", site.theme, "assets"), os.path.join(Generator.install_directory, "sites", site.title, "assets"))
 
             for page in site.pages:
                 self.generateContent(page, context)
@@ -214,6 +213,7 @@ class Generator:
         for name in Plugins.elementPluginNames():
             plugin = Plugins.element_plugins[name]
             if plugin.tag_name in used_tag_list:
+                
                 plugin = Plugins.element_plugins[name]
                 pluginvars["styles"] = pluginvars["styles"] + plugin.pluginStyles()
                 pluginvars["scripts"] = pluginvars["scripts"] + plugin.pluginScripts()

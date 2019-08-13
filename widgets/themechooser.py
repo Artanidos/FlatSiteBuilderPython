@@ -60,7 +60,7 @@ class ThemeChooser(UndoableEditor):
             if tei:
                 if tei.theme_name == self.site.theme:
                     Plugins.setActualThemeEditorPlugin(tei.class_name)
-                    self.theme_settings_button.setVisible(True)
+                    #self.theme_settings_button.setVisible(True)
                     break
 
 

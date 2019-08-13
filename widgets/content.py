@@ -46,6 +46,7 @@ class Content(QObject):
         self._layout = ""
         self._date = None
         self._logo = ""
+        self._language = ""
         self.source = ""
         self.content_type = None
         self.attributes = {}
@@ -62,6 +63,14 @@ class Content(QObject):
     @title.setter
     def title(self, title):
         self._title = title
+
+    @pyqtProperty('QString')
+    def language(self):
+        return self._language
+    
+    @language.setter
+    def language(self, language):
+        self._language = language
 
     @pyqtProperty('QString')
     def logo(self):
