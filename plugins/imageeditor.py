@@ -357,10 +357,11 @@ class Image(Item):
         f.write(" " * indent + "}\n")
 
     def getHtml(self):
+        src = self.src[self.src.index("/assets/images") + 14:]
         if self._animation:
-            return "<img alt=\"" + self.alt + "\" title=\"" + self.title + "\" class=\"img-responsive animated " + self._animation + " pull-left inner\" src=\"assets/images/" + self.src + "\">\n"
+            return "<img alt=\"" + self.alt + "\" title=\"" + self.title + "\" class=\"img-responsive animated " + self._animation + " pull-left inner\" src=\"assets/images/" + src + "\">\n"
         else:
-            return "<img alt=\"" + self.alt + "\" title=\"" + self.title + "\" class=\"img-responsive pull-left inner\" src=\"assets/images/" + self.src + "\">\n"
+            return "<img alt=\"" + self.alt + "\" title=\"" + self.title + "\" class=\"img-responsive pull-left inner\" src=\"assets/images/" + src + "\">\n"
 
 
 qt_resource_data = b"\

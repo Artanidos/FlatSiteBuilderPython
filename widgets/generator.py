@@ -172,13 +172,13 @@ class Generator:
             self.copytree(os.path.join(site.source_path, "content"), os.path.join(Generator.install_directory, "sites", site.title))
 
             for page in site.pages:
-                self.generateContent(page, context)
+                self.generateContent(page, context, menus)
             for post in site.posts:
-                self.generateContent(post, context)
+                self.generateContent(post, context, menus)
         else:
-            self.generateContent(content_to_build, context)
+            self.generateContent(content_to_build, context, menus)
 
-    def generateContent(self, content, context):
+    def generateContent(self, content, context, menus):
         dirs = [
             os.path.join(self.site.source_path, "includes"),
             os.path.join(self.site.source_path, "layouts"),
@@ -200,6 +200,7 @@ class Generator:
         cm["logo"] = content.logo
         cm["keywords"] = content.keywords
         cm["script"] = html.unescape(content.script)
+        cm["menuitems"] = menus[content.menu]
 
         used_tag_list = []
         self.content = ""

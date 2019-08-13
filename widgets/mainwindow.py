@@ -39,7 +39,7 @@ from widgets.contenteditor import ContentEditor
 from widgets.themechooser import ThemeChooser
 from widgets.interfaces import ElementEditorInterface, ThemeEditorInterface, PublisherInterface
 from widgets.sitesettingseditor import SiteSettingsEditor
-from PyQt5.QtWidgets import QVBoxLayout, QMainWindow, QWidget, QScrollArea, QDockWidget, QUndoStack, QApplication
+from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QMainWindow, QWidget, QScrollArea, QDockWidget, QUndoStack, QApplication
 from PyQt5.QtCore import pyqtSignal, Qt, QUrl, QRect, QCoreApplication, QDir, QSettings, QByteArray, QEvent, QPoint, QAbstractAnimation, QPropertyAnimation
 from PyQt5.QtQml import QQmlEngine, QQmlComponent
 from PyQt5.QtWebEngineWidgets import QWebEngineView
@@ -385,7 +385,7 @@ class MainWindow(QMainWindow):
             self.setCentralWidget(self.webView)
             self.webView.loadFinished.disconnect(self.webViewLoadFinished)
         else:
-            QMessageBox.warning(this, "FlatSiteBuilder", "Unable to open webpage.")
+            QMessageBox.warning(self, "FlatSiteBuilder", "Unable to open webpage.")
         self.setCursor(Qt.ArrowCursor)
 
     def publishSite(self):
