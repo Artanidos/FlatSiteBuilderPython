@@ -26,6 +26,7 @@ import os
 import shutil
 import sys
 import html
+from jinja2 import Template
 
 
 class Generator:
@@ -229,13 +230,19 @@ class Generator:
             layout = "default"
 
         context["page"] = cm
-        context["content"] = mark_safe(self.content)
+
+        ctx = {}
+        ctx["page"] = content
+        ctx["site"] = self.site
+        tmp = Template(self.content)
+        xhtml = tmp.render(ctx)
+        context["content"] = mark_safe(xhtml)
 
         outputfile = os.path.join(Generator.install_directory, "sites", self.site.title, content.url())
 
         try:
             with open(outputfile, 'w') as f:
-                f.write(eng.render_to_string(layout + ".html", context = context))
+                f.write(eng.render_to_string(layout + ".html", context=context))
         except:
             type, value, traceback = sys.exc_info()
             msg = "Generate content failed: Unable to create file " + outputfile

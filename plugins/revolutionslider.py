@@ -87,6 +87,14 @@ class Slide(Item):
 
     def getHtml(self):
         return ""
+    
+    def save(self, f, indent):
+        f.write("\n")
+        f.write(" " * indent + "Slide {\n")
+        self.writeAttribute(f, indent + 4, "id", self._id)
+        self.writeAttribute(f, indent + 4, "src", self._src)
+        self.writeAttribute(f, indent + 4, "text", self._text)
+        f.write(" " * indent + "}\n")
 
 class RevolutionSlider(Item):
     Q_CLASSINFO('DefaultProperty', 'items')
@@ -156,10 +164,22 @@ class RevolutionSlider(Item):
             htm += "<li data-transition=\"" + self._data_transition + "\" data-masterspeed=\"" + self._data_masterspeed + "\""
             htm += ">\n"
             htm += "<img src=\"" + url + "\" alt=\"\" data-bgfit=\"cover\" data-bgposition=\"center center\" data-bgrepeat=\"no-repeat\">\n"
-            htm += html.unescape(slide.text) + "\n"
+            htm += html.unescape(slide._text) + "\n"
             htm += "</li>\n"        
         htm += "</ul>\n"
         htm += "<div class=\"tp-bannertimer\"></div>\n"
         htm += "</div>\n"
         htm += "</div>\n"
         return htm
+
+    def save(self, f, indent):
+        f.write("\n")
+        f.write(" " * indent + "RevolutionSlider {\n")
+        self.writeAttribute(f, indent + 4, "id", self._id)
+        self.writeAttribute(f, indent + 4, "text", self._text)
+        self.writeAttribute(f, indent + 4, "adminlabel", self._adminlabel)
+        self.writeAttribute(f, indent + 4, "fullwidth", self._fullwidth)
+        self.writeAttribute(f, indent + 4, "fullscreen", self._fullscreen)
+        for slide in self._items:
+            slide.save(f, indent + 4)
+        f.write(" " * indent + "}\n")
