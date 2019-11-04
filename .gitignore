@@ -2,7 +2,6 @@ __pycache__/
 build/
 dist/
 sites/
-themes/atropos/
 packages/com.vendor.product/data/
 .vscode/
 main.spec
