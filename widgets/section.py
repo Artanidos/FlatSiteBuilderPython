@@ -129,6 +129,7 @@ class Section(Item):
             html += ">\n"
             for item in self._items:
                 html += item.getHtml()
+            html += "</section>\n"
         return html
 
     def insertElement(self, sec, new_pos):

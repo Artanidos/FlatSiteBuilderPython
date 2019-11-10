@@ -356,8 +356,11 @@ class Image(Item):
         self.writeAttribute(f, indent + 4, "animation_type", self._animation_type)
         f.write(" " * indent + "}\n")
 
-    def getHtml(self):
-        src = self.src[self.src.index("/assets/images") + 14:]
+    def getHtml(self): 
+        if "/assets/images" in self.src:
+            src = self.src[self.src.index("/assets/images") + 14:]
+        else:
+            src = self.src  
         if self._animation:
             return "<img alt=\"" + self.alt + "\" title=\"" + self.title + "\" class=\"img-responsive animated " + self._animation + " pull-left inner\" src=\"assets/images/" + src + "\">\n"
         else:

@@ -24,6 +24,8 @@ from widgets.item import Item
 from PyQt5.QtQml import qmlRegisterType
 from PyQt5.QtCore import pyqtProperty, QObject, Q_CLASSINFO, QDir, QFile
 from PyQt5.QtQml import QQmlListProperty
+from PyQt5.QtGui import QImage
+import resources
 
 class RevolutionSliderEditor(ElementEditorInterface):
     def __init__(self):
@@ -32,6 +34,8 @@ class RevolutionSliderEditor(ElementEditorInterface):
         self.display_name = "RevolutionSlider"
         self.tag_name = "RevolutionSlider"
         self.version = "1.0"
+        # todo change icon
+        self.icon = QImage(":/texteditor.png")
 
     def closeEditor(self):
         if self.changed:

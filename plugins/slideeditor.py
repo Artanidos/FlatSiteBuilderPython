@@ -22,12 +22,16 @@ from widgets.interfaces import ElementEditorInterface
 from widgets.item import Item
 from PyQt5.QtQml import qmlRegisterType
 from PyQt5.QtCore import pyqtProperty
-
+from PyQt5.QtGui import QImage
+import resources
 
 
 class SlideEditor(ElementEditorInterface):
     def __init__(self):
         ElementEditorInterface.__init__(self)
+        self.version = "1.0"
+        # todo change icon
+        self.icon = QImage(":/texteditor.png")
 
     def closeEditor(self):
         if self.changed:

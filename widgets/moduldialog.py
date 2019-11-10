@@ -52,6 +52,7 @@ class ModulDialog(QDialog):
 
         for name in Plugins.elementPluginNames():
             plugin = Plugins.element_plugins[name]
+            print("Plugin: ", plugin)
             btn = self.createButton(plugin.icon, plugin.display_name)
             btn.returncode = name
             self.grid.addWidget(btn, row, col)
