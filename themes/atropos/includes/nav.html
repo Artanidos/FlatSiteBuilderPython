@@ -1,47 +1,28 @@
-<!-- TOP NAV -->
-<header id="topNav"><!-- remove class="topHead" if no topHead used! -->
-	<div class="container">
-
-	<!-- Mobile Menu Button -->
-	<button class="btn btn-mobile" data-toggle="collapse" data-target=".nav-main-collapse">
-		<i class="fa fa-bars"></i>
-	</button>
-
-	<!-- Logo text or image -->
-	<a class="logo" href="index.html">
-		<img src="assets/images/logo.png" alt="Artananda" />
-	</a>
-
-	<!-- Top Nav -->
+<!-- Top Nav -->
 <div class="navbar-collapse nav-main-collapse collapse pull-right">
 	<nav class="nav-main mega-menu">
 		<ul class="nav nav-pills nav-main scroll-menu" id="topMain">
-									<li>
-				<a class="scrollTo" href="#wrapper">Home</a>
+			{% for item in page.menuitems %}
+			{% if item.hasItems == "true" %}
+			<li class="dropdown">
+				<a class="dropdown-toggle" href="#">
+					<img src="{{ item.icon }}" width="16" height="11" alt="{{ item.title }}" /> {{ item.title }} <i class="fa fa-angle-down"></i>
+				</a>
+				<ul class="dropdown-menu">
+					{% for subitem in item.items %}
+					<li>
+						<a href="{{ subitem.url }}"><img src="{{ subitem.icon }}" width="16" height="11" alt="{{ subitem.title }}" /> {{ subitem.title }}</a>
+					</li>
+					{% endfor %}
+				</ul>
 			</li>
-												<li>
-				<a class="scrollTo" href="#portfolio">Portfolio</a>
+			{% else %}
+			<li{% if item.url == page.url %} class="active"{% endif %}>
+				<a {{ item.attributes }} href="{{ item.url }}">{% if item.icon != "" %}<img src="{{ item.icon }}" width="16" height="11"/>{% endif %}{{ item.title }}</a>
 			</li>
-												<li>
-				<a class="scrollTo" href="#prices">Preise</a>
-			</li>
-												<li>
-				<a class="scrollTo" href="#team">Team</a>
-			</li>
-
-			<li><a href="blog.html">Blog</a></li>
-												<li>
-				<a  href="book.html">Bücher</a>
-			</li>
-												<li>
-				<a class="scrollTo" href="#contact">Kontakt</a>
-			</li>
-								</ul>
+			{% endif %}
+			{% endfor %}
+		</ul>
 	</nav>
 </div>
 <!-- Top Nav end -->
-	</div>
-</header>
-
-<span id="header_shadow"></span>
-<!-- /TOP NAV -->

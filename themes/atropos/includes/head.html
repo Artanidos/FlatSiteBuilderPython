@@ -1,9 +1,8 @@
-<head>
 <meta charset="utf-8" />
-<title>Artananda</title>
-<meta name="keywords" content="tantra,sex,bodywork,massage" />
-<meta name="description" content="Sexological Bodywork and Tantra" />
-<meta name="Author" content="Olaf" />
+<title>{{ page.title }}</title>
+<meta name="keywords" content="{{ page.keywords }}" />
+<meta name="description" content="{{ site.description }}" />
+<meta name="Author" content="{{ page.author }}" />
 
 <!-- mobile settings -->
 <meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=0" />
@@ -28,14 +27,17 @@
 <link href="assets/css/essentials.css" rel="stylesheet" type="text/css" />
 <link href="assets/css/layout.css" rel="stylesheet" type="text/css" />
 <link href="assets/css/layout-responsive.css" rel="stylesheet" type="text/css" />
-<link href="assets/css/color_scheme/orange.css" rel="stylesheet" type="text/css" />
+<link href="assets/css/color_scheme/{{ theme.accentcolor }}.css" rel="stylesheet" type="text/css" />
+{% if theme.darkness == "dark" %}<link id="css_dark_skin" href="assets/css/layout-dark.css" rel="stylesheet" type="text/css" />{% endif %}
 
 <!-- YOUR STYLE HERE -->
 <link href="assets/css/style.css" rel="stylesheet" type="text/css" />
 
 <!-- Morenizr -->
 <script type="text/javascript" src="assets/plugins/modernizr.min.js"></script>
-<script id="mcjs">!function(c,h,i,m,p){m=c.createElement(h),p=c.getElementsByTagName(h)[0],m.async=1,m.src=i,p.parentNode.insertBefore(m,p)}(document,"script","https://chimpstatic.com/mcjs-connected/js/users/12db9814ff19f2466f75cf6f4/10e2cd99169fa54535215a471.js");</script>
-<link href="assets/plugins/revolution-slider/css/settings.css" rel="stylesheet" type="text/css"/>
-</head>
 
+{% if site.useFbPixelCode == "true" %}
+{% include "facebook-pixelcode.html" %}
+{% endif %}
+
+{{ plugin.styles }}
