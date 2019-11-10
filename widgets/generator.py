@@ -234,7 +234,7 @@ class Generator:
         ctx = {}
         ctx["page"] = content
         ctx["site"] = self.site
-        print("cont", self.content)
+
         tmp = Template(self.content)
         xhtml = tmp.render(ctx)
         context["content"] = mark_safe(xhtml)
