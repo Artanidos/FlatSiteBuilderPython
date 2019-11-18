@@ -234,12 +234,20 @@ class Generator:
         ctx = {}
         ctx["page"] = content
         ctx["site"] = self.site
-
         tmp = Template(self.content)
-        xhtml = tmp.render(ctx)
+        try:
+            xhtml = tmp.render(ctx)
+        except:
+            type, value, traceback = sys.exc_info()
+            msg = "Render content failed"
+            print(msg, type, value, traceback)
+            #print("Template:\n", self.content)
+            #print("Context:\n", ctx)
+            return
+
         context["content"] = mark_safe(xhtml)
 
-        outputfile = os.path.join(Generator.install_directory, "sites", self.site.title, content.url())
+        outputfile = os.path.join(Generator.install_directory, "sites", self.site.title, content.url)
 
         try:
             with open(outputfile, 'w') as f:

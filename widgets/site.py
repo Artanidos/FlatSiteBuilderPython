@@ -197,8 +197,9 @@ class Site(QObject):
         self.pages.clear()
         for root, dirs, files in os.walk(os.path.join(self.source_path, "pages")):
             for file in files:
-                page = self.loadContent(file, ContentType.PAGE)
-                self.pages.append(page)
+                if file.endswith(".qml"):
+                    page = self.loadContent(file, ContentType.PAGE)
+                    self.pages.append(page)
         self.win.statusBar().showMessage("Pages have been loaded")
 
     def loadContent(self, source, type):
@@ -222,8 +223,9 @@ class Site(QObject):
         self.posts.clear()
         for root, dirs, files in os.walk(os.path.join(self.source_path, "posts")):
             for file in files:
-                post = self.loadContent(file, ContentType.POST)
-                self.posts.append(post)
+                if file.endswith(".qml"):
+                    post = self.loadContent(file, ContentType.POST)
+                    self.posts.append(post)
         self.win.statusBar().showMessage("Posts have been loaded")
 
     def createTemporaryContent(self, type):

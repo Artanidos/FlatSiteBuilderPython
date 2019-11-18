@@ -38,7 +38,7 @@ class Content(QObject):
     def __init__(self, parent = None):
         super().__init__(parent)
         self._title = ""
-        self._menu = ""
+        self._menu = "default"
         self._author = ""
         self._excerpt = ""
         self._keywords = ""
@@ -136,6 +136,7 @@ class Content(QObject):
     def date(self, date):
         self._date = date
 
+    @pyqtProperty('QString')
     def url(self):
         url = self.source
         return url.replace(".qml", ".html")
