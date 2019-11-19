@@ -104,26 +104,15 @@ class Generator:
                 menuitem["title"] = item.title
                 menuitem["url"] = item.url
                 menuitem["icon"] = item.icon
-                attributes = ""
-                for att, value in item.attributes.items():
-                    if attributes:
-                        attributes += " "
-                    attributes += att + "=\"" + value + "\""
+                menuitem["attributes"] = mark_safe(item.attributes)
 
-                menuitem["attributes"] = attributes
                 subitems = []
                 for subitem in item.items:
                     submenuitem = {}
                     submenuitem["title"] = subitem.title
                     submenuitem["url"] = subitem.url
                     submenuitem["icon"] = subitem.icon
-                    attributes = ""
-                    for att, value in subitem.attributes.items():
-                        if attributes:
-                            attributes += " "
-                        attributes += att + "=\"" + subitem.attributes().value(att) + "\""
-
-                    submenuitem["attributes"] = attributes
+                    submenuitem["attributes"] = mark_safe(subitem.attributes)
                     subitems.append(submenuitem)
 
                 menuitem["items"] = subitems
@@ -241,8 +230,7 @@ class Generator:
             type, value, traceback = sys.exc_info()
             msg = "Render content failed"
             print(msg, type, value, traceback)
-            #print("Template:\n", self.content)
-            #print("Context:\n", ctx)
+            #todo: debug info from rendering
             return
 
         context["content"] = mark_safe(xhtml)

@@ -30,7 +30,9 @@ class Menuitem(QObject):
         self._title = ""
         self._url = ""
         self._icon = ""
-        self.attributes = {}
+        #self._attr = ""
+        self._attributes = ""
+        #self.attributes = {}
         self._items = []
         self.parentItem = None
 
@@ -62,8 +64,16 @@ class Menuitem(QObject):
     def icon(self, icon):
         self._icon = icon
 
-    def addAttribute(self, key, value):
-        self.attributes[key] = value
+    @pyqtProperty('QString')
+    def attributes(self):
+        return self._attributes
+
+    @attributes.setter
+    def attributes(self, attributes):
+        self._attributes = attributes
+
+ #   def addAttribute(self, key, value):
+ #       self.attributes[key] = value
 
     def isSubitem(self):
         return self.isSubitem
