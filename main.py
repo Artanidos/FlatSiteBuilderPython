@@ -34,6 +34,7 @@ from PyQt5.QtWidgets import QApplication, QStyleFactory
 from PyQt5.QtCore import Qt, QCoreApplication, QSettings
 from PyQt5.QtGui import QPalette, QColor, QIcon, QFont
 from PyQt5.QtQml import qmlRegisterType
+from dulwich import porcelain #needed for the github plugin and pyinstaller
 import main_rc
 
 

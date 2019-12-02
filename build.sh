@@ -1,7 +1,7 @@
 rm -r dist/*
 rm -r packages/com.vendor.product/data/*
 pyinstaller main.py
-mkdir packages/com.vendor.product/data
+#mkdir packages/com.vendor.product/data
 mkdir packages/com.vendor.product/data/plugins
 mkdir packages/com.vendor.product/data/themes
 mkdir packages/com.vendor.product/data/sources
