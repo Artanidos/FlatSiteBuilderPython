@@ -55,7 +55,7 @@ html = \
 "<p style=\"font-family: Courier;\">" \
 "    <ul>" \
 "	    <li>cd ~/FlatSiteBuilder</li>" \
-"		<li>cd sites</li>" \
+"		<li>cd sources</li>" \
 "		<li>cd MyProject</li>" \
 "		<li>git init</li>" \
 "		<li>git checkout --orphan gh-pages</li>" \
@@ -71,7 +71,7 @@ html = \
 "<p style=\"font-family: Courier;\">" \
 "    <ul>" \
 "	    <li>cd ~/FlatSiteBuilder</li>" \
-"		<li>cd sites</li>" \
+"		<li>cd sources</li>" \
 "		<li>git clone -b gh-pages https://github.com/mycompany/myproject.git MyProject</li>" \
 "	<ul>" \
 "</p>" \

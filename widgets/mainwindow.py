@@ -53,6 +53,10 @@ class MainWindow(QMainWindow):
         self.site = None
         self.editor = ""
         self.install_directory = os.getcwd()
+
+        # switch to install path in dev machine
+        if "SourceCode" in self.install_directory:
+            self.install_directory = "/home/art/Software/FlatSiteBuilder"
         self.content_after_animation = ""
         self.default_path = ""
         self.method_after_animation = ""
@@ -66,13 +70,8 @@ class MainWindow(QMainWindow):
 
         if self.default_path:
             if self.loadProject(self.default_path + "/Site.qml"):
-
-                # if site has never been generated (after install)
-                # then generate the site
-                site = QDir(Generator.sitesPath() + "/" + self.site.title)
-                if site.exists():
-                    gen = Generator()
-                    gen.generateSite(self, self.site)
+                gen = Generator()
+                gen.generateSite(self, self.site)
 
         self.dashboard.setExpanded(True)
         self.showDashboard()
@@ -358,23 +357,23 @@ class MainWindow(QMainWindow):
             self.editor.closeEditor()
             return
 
-        dir = os.path.join(self.install_directory, "sites")
-        path = os.path.join(dir, self.site.title)
+        dir = os.path.join(self.default_path, "docs")
+        #path = os.path.join(dir, self.site.title)
         if not content:
             if len(self.site.pages) > 0:
                 content = self.site.pages[0]
                 for c in self.site.pages:
-                    if c.url() == "index.html":
+                    if c.url == "index.html":
                         content = c
                         break
             elif len(self.site.posts) > 0:
                 content = self.site.posts()[0]
 
         if content:
-            file = content.url()
+            file = content.url
             self.webView = QWebEngineView()
             self.webView.loadFinished.connect(self.webViewLoadFinished)
-            url = pathlib.Path(os.path.join(path, file)).as_uri()
+            url = pathlib.Path(os.path.join(dir, file)).as_uri()
             self.webView.setUrl(QUrl(url))
             self.setCursor(Qt.WaitCursor)
         else:
@@ -393,7 +392,7 @@ class MainWindow(QMainWindow):
         pi = Plugins.getPublishPlugin(pluginName)
         if pi:
             self.setCentralWidget(pi)
-            pi.setSitePath(self.site.deploy_path)
+            pi.setSitePath(self.site.source_path)
 
     def createSite(self):
         wiz = SiteWizard(self.install_directory, parent = self)

@@ -125,17 +125,17 @@ class SiteSettingsEditor(UndoableEditor):
             self.image.setImage(QImage(os.path.join(self.site.source_path, "assets", "images", self.site.logo)))
         index = self.publisher.findData(self.site.publisher)
         self.publisher.setCurrentIndex(index)
-        if oldTitle != self.site.title:
-            os.rename(Generator.sitesPath() + "/" + oldTitle, Generator.sitesPath() + "/" + self.site.title)
-            print("renaming1: " + Generator.sitesPath() + "/" + oldTitle)
-            self.win.statusBar().showMessage("Site settings have been loaded. Site should be rebuilded. Output path has been renamed to " + self.site.title())
+        #if oldTitle != self.site.title:
+        #    os.rename(Generator.sitesPath() + "/" + oldTitle, Generator.sitesPath() + "/" + self.site.title)
+        #    print("renaming1: " + Generator.sitesPath() + "/" + oldTitle)
+        #    self.win.statusBar().showMessage("Site settings have been loaded. Site should be rebuilded. Output path has been renamed to " + self.site.title())
 
     def save(self):
         if self.site.title != self.title.text():
             oldTitle = self.site.title
             self.site.title = self.title.text()
             self.site.save()
-            os.rename(Generator.sitesPath() + "/" + oldTitle, Generator.sitesPath() + "/" + self.site.title)
+            #os.rename(Generator.sitesPath() + "/" + oldTitle, Generator.sitesPath() + "/" + self.site.title)
             self.win.statusBar().showMessage("Site settings have been saved. Site should be rebuilded. Output path has been renamed to " + self.title.text())
         else:
             self.site.author = self.author.text()
@@ -143,6 +143,7 @@ class SiteSettingsEditor(UndoableEditor):
             self.site.description = self.description.text()
             self.site.keywords = self.keywords.text()
             self.site.publisher = self.publisher.currentData()
+            Plugins.setActualPublishPlugin(self.site.publisher)
             self.site.logo = self.logo.text()
             self.site.save()
             self.win.statusBar().showMessage("Site settings have been saved. Site should be rebuilded on the dashboard.")

@@ -36,24 +36,20 @@ class Generator:
         self.content = ""
 
     @staticmethod
-    def sitesPath():
-        return os.path.join(Generator.install_directory, "sites")
-
-    @staticmethod
     def themesPath():
         return os.path.join(Generator.install_directory, "themes")
 
     def generateSite(self, win, site, content_to_build = None):
         self.site = site
-        site_dir = os.path.join(Generator.install_directory, "sites", site.title)
+        site_dir = os.path.join(site.source_path, "docs")
         if not content_to_build:
             # clear directory
             for r, dirs, files in os.walk(site_dir):
-                for f in files:
-                    os.remove(os.path.join(site_dir, f))
+                if not ".git" in r:
+                    for f in files:
+                        os.remove(os.path.join(site_dir, f))
 
-                for d in dirs:
-                    if d != ".git":
+                    for d in dirs:
                         shutil.rmtree(os.path.join(site_dir, d))
 
         pages = []
@@ -157,18 +153,18 @@ class Generator:
             copy_assets = True
 
         if not content_to_build or copy_assets:
-            self.copytree(os.path.join(Generator.install_directory, "themes", site.theme, "assets"), os.path.join(Generator.install_directory, "sites", site.title, "assets"))
-            self.copytree(os.path.join(site.source_path, "assets"), os.path.join(Generator.install_directory, "sites", site.title, "assets"))
-            self.copytree(os.path.join(site.source_path, "content"), os.path.join(Generator.install_directory, "sites", site.title))
+            self.copytree(os.path.join(Generator.install_directory, "themes", site.theme, "assets"), os.path.join(site.source_path, "docs", "assets"))
+            self.copytree(os.path.join(site.source_path, "assets"), os.path.join(site.source_path, "docs", "assets"))
+            self.copytree(os.path.join(site.source_path, "content"), os.path.join(site.source_path, "docs"))
 
             for page in site.pages:
-                self.generateContent(page, context, menus)
+                self.generateContent(page, context, menus, site)
             for post in site.posts:
-                self.generateContent(post, context, menus)
+                self.generateContent(post, context, menus, site)
         else:
-            self.generateContent(content_to_build, context, menus)
+            self.generateContent(content_to_build, context, menus, site)
 
-    def generateContent(self, content, context, menus):
+    def generateContent(self, content, context, menus, site):
         dirs = [
             os.path.join(self.site.source_path, "includes"),
             os.path.join(self.site.source_path, "layouts"),
@@ -208,7 +204,7 @@ class Generator:
                 plugin = Plugins.element_plugins[name]
                 pluginvars["styles"] = pluginvars["styles"] + plugin.pluginStyles()
                 pluginvars["scripts"] = pluginvars["scripts"] + plugin.pluginScripts()
-                plugin.installAssets(os.path.join(Generator.install_directory, "sites", self.site.title, "assets"))
+                plugin.installAssets(os.path.join(site.source_path, "docs", "assets"))
         
         pluginvars["styles"] = mark_safe(pluginvars["styles"])
         pluginvars["scripts"] = mark_safe(pluginvars["scripts"])
@@ -235,7 +231,7 @@ class Generator:
 
         context["content"] = mark_safe(xhtml)
 
-        outputfile = os.path.join(Generator.install_directory, "sites", self.site.title, content.url)
+        outputfile = os.path.join(site.source_path, "docs", content.url)
 
         try:
             with open(outputfile, 'w') as f:

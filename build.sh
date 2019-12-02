@@ -4,7 +4,6 @@ pyinstaller main.py
 mkdir packages/com.vendor.product/data/plugins
 mkdir packages/com.vendor.product/data/themes
 mkdir packages/com.vendor.product/data/sources
-mkdir packages/com.vendor.product/data/sites
 cp -r dist/main/* packages/com.vendor.product/data
 cp plugins/*.py packages/com.vendor.product/data/plugins
 cp -r themes/* packages/com.vendor.product/data/themes
