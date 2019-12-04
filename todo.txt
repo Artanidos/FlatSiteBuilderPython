@@ -2,4 +2,3 @@ build install package
 DefaultThemeEditor load / save
 RevolutionSlider Editor
 Wysiwyg editor for HTML
-github publisher using dulwich for publishing directly to github (https://www.dulwich.io/docs/)
