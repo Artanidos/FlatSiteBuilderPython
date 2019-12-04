@@ -7,6 +7,11 @@ Have a look at our web site: https://artanidos.github.io/FlatSiteBuilder
 
 ![](flatsitebuilder.png)
 
+# Atropos Theme
+The atropos theme which is included in this package is only for demonstration.
+I only have **one** license for this.
+You can buy it here: https://wrapbootstrap.com/user/stepofweb
+
 # Syntax
 The syntax for the templates is based on [Django](https://www.djangoproject.com/start/). That also means that we render the HTML using [Django](https://www.djangoproject.com/start/).
 
