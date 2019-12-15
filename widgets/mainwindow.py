@@ -87,6 +87,7 @@ class MainWindow(QMainWindow):
                     break
 
     def loadProject(self, filename):
+        self.default_path = filename[0:-9] # - /Site.qml
         if self.reloadProject(filename):
             # create temp dir for undo redo
             tempPath = self.site.source_path[self.site.source_path.rfind("/") + 1:]
@@ -358,7 +359,6 @@ class MainWindow(QMainWindow):
             return
 
         dir = os.path.join(self.default_path, "docs")
-        #path = os.path.join(dir, self.site.title)
         if not content:
             if len(self.site.pages) > 0:
                 content = self.site.pages[0]
