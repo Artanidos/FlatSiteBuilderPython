@@ -18,20 +18,23 @@
 #
 #############################################################################
 
+import html
 from widgets.interfaces import ElementEditorInterface
 from widgets.item import Item
 from PyQt5.QtQml import qmlRegisterType
 from PyQt5.QtCore import pyqtProperty
 from PyQt5.QtGui import QImage
-import resources
+import plugins.carousel_rc
 
 
-class SlideEditor(ElementEditorInterface):
+class CarouselEditor(ElementEditorInterface):
     def __init__(self):
         ElementEditorInterface.__init__(self)
+        self.class_name = "CarouselEditor"
+        self.display_name = "Carousel"
+        self.tag_name = "Carousel"
         self.version = "1.0"
-        # todo change icon
-        self.icon = QImage(":/texteditor.png")
+        self.icon = QImage(":/carousel.png")
 
     def closeEditor(self):
         if self.changed:
@@ -45,6 +48,9 @@ class SlideEditor(ElementEditorInterface):
 
     def writeImportString(self, f):
         f.write("import Slide 1.0\n")
+
+    def getDefaultContent(self):
+        return Slide()
 
 
 class Slide(Item):
