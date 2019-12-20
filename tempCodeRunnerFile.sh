@@ -1,0 +1,1 @@
+pyrcc5 plugins/carousel.qrc -o carousel_rc.py

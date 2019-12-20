@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import QUndoStack, QHBoxLayout, QTextEdit, QVBoxLayout, QGr
 from PyQt5.QtCore import Qt, QUrl, QRegExp, pyqtSignal, qVersion, qRegisterResourceData, qUnregisterResourceData
 from PyQt5.QtGui import QFont, QFontMetrics, QImage, QSyntaxHighlighter, QTextCharFormat, QColor
 from PyQt5.QtQml import qmlRegisterType
-import resources
+import plugins.texteditor_rc
 
 
 class TextEditor(ElementEditorInterface):

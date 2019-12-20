@@ -21,10 +21,13 @@
 import html
 from widgets.interfaces import ElementEditorInterface
 from widgets.item import Item
+from widgets.flatbutton import FlatButton
 from PyQt5.QtQml import qmlRegisterType
-from PyQt5.QtCore import pyqtProperty, QObject, Q_CLASSINFO, QDir, QFile
+from PyQt5.QtCore import Qt, pyqtProperty, QObject, Q_CLASSINFO, QDir, QFile
 from PyQt5.QtQml import QQmlListProperty
 from PyQt5.QtGui import QImage
+from PyQt5.QtWidgets import QLineEdit, QGridLayout, QLabel, QPushButton, QTableWidget, QAbstractItemView, QHeaderView
+
 import plugins.revolution_rc
 
 class RevolutionSliderEditor(ElementEditorInterface):
@@ -35,12 +38,60 @@ class RevolutionSliderEditor(ElementEditorInterface):
         self.tag_name = "RevolutionSlider"
         self.version = "1.0"
         self.icon = QImage(":/revolution.png")
+        self.changed = False
+        self.setAutoFillBackground(True)
+
+        grid = QGridLayout()
+        self.id = QLineEdit()
+        self.id.setMaximumWidth(200)
+        self.adminlabel = QLineEdit()
+        self.adminlabel.setMaximumWidth(200)
+        titleLabel = QLabel("Slider Module")
+        fnt = titleLabel.font()
+        fnt.setPointSize(16)
+        fnt.setBold(True)
+        titleLabel.setFont(fnt)
+
+        close = FlatButton(":/images/close_normal.png", ":/images/close_hover.png")
+        close.setToolTip("Close Editor")
+
+        addSlide = QPushButton("Add Slide")
+        addSlide.setMaximumWidth(120)
+
+        self.list = QTableWidget(0, 2, self)
+        self.list.verticalHeader().hide()
+        self.list.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.list.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.list.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch )
+        self.list.setToolTip("Double click to edit item")
+        labels = ["", "Name"]
+        self.list.setHorizontalHeaderLabels(labels)
+
+        grid.addWidget(titleLabel, 0, 0)
+        grid.addWidget(close, 0, 2, 1, 1, Qt.AlignRight)
+        grid.addWidget(addSlide, 1, 0)
+        grid.addWidget(self.list, 2, 0, 1, 3)
+        grid.addWidget(QLabel("Id"), 4, 0)
+        grid.addWidget(self.id, 5, 0)
+        grid.addWidget(QLabel("Admin Label"), 6, 0)
+        grid.addWidget(self.adminlabel, 7, 0)
+
+        self.setLayout(grid)
+
+        #connect(addSlide, SIGNAL(clicked(bool)), this, SLOT(addSlide()))
+        self.adminlabel.textChanged.connect(self.contentChanged)
+        #connect(m_id, SIGNAL(textChanged(QString)), this, SLOT(contentChanged()))
+        close.clicked.connect(self.closeEditor)
+        #connect(m_list, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(tableDoubleClicked(int, int)))
+
+        self.installEventFilter(self)
+
 
     def closeEditor(self):
         if self.changed:
             if self.content:
                 self.content.adminlabel = self.adminlabel.text()
-                self.content.text = html.escape(self.html.toPlainText())
+                #self.content.text = html.escape(self.html.toPlainText())
         self.close.emit()
 
     def registerContenType(self):
@@ -74,7 +125,16 @@ class RevolutionSliderEditor(ElementEditorInterface):
         QFile.copy(":/assets", assets_path + "/plugins/revolution-slider/assets")
 
     def getDefaultContent(self):
-        return Slide()
+        return RevolutionSlider()
+
+    def setContent(self, content):
+        self.content = content
+        if content:
+            #self.adminlabel.setText(content.adminlabel)
+            self.changed = False
+
+    def getContent(self):
+        return self.content
 
 
 class Slide(Item):

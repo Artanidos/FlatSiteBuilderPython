@@ -1,3 +1,10 @@
+pyrcc5 main.qrc -o main_rc.py
+pyrcc5 resources.qrc -o resources.py
+pyrcc5 plugins/carousel.qrc -o plugins/carousel_rc.py
+pyrcc5 plugins/imageeditor.qrc -o plugins/imageeditor_rc.py
+pyrcc5 plugins/revolution.qrc -o plugins/revolution_rc.py
+pyrcc5 plugins/texteditor.qrc -o plugins/texteditor_rc.py
+
 rm -r dist/*
 rm -r packages/com.vendor.product/data/*
 pyinstaller main.py

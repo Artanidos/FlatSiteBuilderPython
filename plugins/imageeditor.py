@@ -28,6 +28,7 @@ from PyQt5.QtQml import qmlRegisterType
 from widgets.imageselector import ImageSelector
 from widgets.flatbutton import FlatButton
 from widgets.item import Item
+import plugins.imageeditor_rc
 
 
 class ImageEditor(ElementEditorInterface):
