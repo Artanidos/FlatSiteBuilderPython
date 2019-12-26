@@ -79,12 +79,12 @@ class GithubPublisher(PublisherInterface):
         settings.setValue("github.username", username)
         settings.setValue("github.reponame", reponame)
         os.chdir(self.site_path)
-        # drop the old repo
+
         gitpath = os.path.join(self.site_path, ".git")
         if os.path.exists(gitpath):
-            shutil.rmtree(gitpath)
-        # and create a new one
-        repo = porcelain.init(self.site_path)
+            repo = porcelain.open_repo(self.site_path)
+        else:
+            repo = porcelain.init(self.site_path)
         for r, dirs, files in os.walk(self.site_path):
             for f in files:
                 p = os.path.join(r, f)[len(self.site_path) + 1:]

@@ -22,11 +22,15 @@ import html
 from widgets.interfaces import ElementEditorInterface
 from widgets.item import Item
 from widgets.flatbutton import FlatButton
+from widgets.tablecellbuttons import TableCellButtons
+from widgets.animateableeditor import AnimateableEditor
+from widgets.imageselector import ImageSelector
+from plugins.texteditor import XmlHighlighter 
 from PyQt5.QtQml import qmlRegisterType
-from PyQt5.QtCore import Qt, pyqtProperty, QObject, Q_CLASSINFO, QDir, QFile
-from PyQt5.QtGui import QImage
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtProperty, QObject, Q_CLASSINFO, QDir, QFile, QPoint, QAbstractAnimation, QParallelAnimationGroup, QPropertyAnimation
+from PyQt5.QtGui import QImage, QFont, QFontMetrics
 from PyQt5.QtQml import QQmlListProperty
-from PyQt5.QtWidgets import QLineEdit, QGridLayout, QLabel, QPushButton, QTableWidget, QAbstractItemView, QHeaderView
+from PyQt5.QtWidgets import QWidget, QTextEdit, QTableWidgetItem, QLineEdit, QGridLayout, QLabel, QPushButton, QTableWidget, QAbstractItemView, QHeaderView
 import plugins.carousel_rc
 
 
@@ -116,10 +120,124 @@ class CarouselEditor(ElementEditorInterface):
         return Carousel()
 
     def addSlide(self):
+        slide = Slide()
+        self.addListItem(slide)
+        self.contentChanged()
+        self.tableDoubleClicked(self.list.rowCount() - 1)
+
+    def addListItem(self, slide):
+        rows = self.list.rowCount()
+        self.list.setRowCount(rows + 1)
+        tcb = TableCellButtons()
+        tcb.setItem(slide)
+        tcb.deleteItem.connect(self.deleteSlide)
+        tcb.editItem.connect(self.editSlide)
+        self.list.setCellWidget(rows, 0, tcb)
+        self.list.setRowHeight(rows, tcb.sizeHint().height())
+        titleItem = QTableWidgetItem(slide.title)
+        titleItem.setFlags(titleItem.flags() ^ Qt.ItemIsEditable)
+        titleItem.setData(Qt.UserRole, slide)
+        self.list.setItem(rows, 1, titleItem)
+
+    def tableDoubleClicked(self, row):
+        item = self.list.item(row, 1)
+        slide = item.data(Qt.UserRole)
+
+        self.editor = SlideEditor()
+        #self.editor.setSite(self.site)
+        self.editor.setSlide(slide)
+        self.editor.closes.connect(self.editorClosed)
+        self.animate(item)
+
+    def animate(self, item):
+        self.row = item.row()
+
+        # create a cell widget to get the right position in the table
+        self.sourcewidget = QWidget()
+        self.list.setCellWidget(self.row, 1, self.sourcewidget)
+        pos = self.sourcewidget.mapTo(self, QPoint(0,0))
+
+        self.editor.setParent(self)
+        self.editor.move(pos)
+        self.editor.resize(self.sourcewidget.size())
+        self.editor.show()
+
+        self.animationgroup = QParallelAnimationGroup()
+        self.animx = QPropertyAnimation()
+        self.animx.setDuration(300)
+        self.animx.setStartValue(pos.x())
+        self.animx.setEndValue(0)
+        self.animx.setTargetObject(self.editor)
+        self.animx.setPropertyName("x".encode("utf-8"))
+        self.animationgroup.addAnimation(self.animx)
+        self.animy = QPropertyAnimation()
+        self.animy.setDuration(300)
+        self.animy.setStartValue(pos.y())
+        self.animy.setEndValue(0)
+        self.animy.setTargetObject(self.editor)
+        self.animy.setPropertyName("y".encode("utf-8"))
+        self.animationgroup.addAnimation(self.animy)
+        self.animw = QPropertyAnimation()
+        self.animw.setDuration(300)
+        self.animw.setStartValue(self.sourcewidget.size().width())
+        self.animw.setEndValue(self.size().width())
+        self.animw.setTargetObject(self.editor)
+        self.animw.setPropertyName("width".encode("utf-8"))
+        self.animationgroup.addAnimation(self.animw)
+        self.animh = QPropertyAnimation()
+        self.animh.setDuration(300)
+        self.animh.setStartValue(self.sourcewidget.size().height())
+        self.animh.setEndValue(self.size().height())
+        self.animh.setTargetObject(self.editor)
+        self.animh.setPropertyName("height".encode("utf-8"))
+        self.animationgroup.addAnimation(self.animh)
+        self.animationgroup.finished.connect(self.animationFineshedZoomIn)
+        self.animationgroup.start()
+
+    def animationFineshedZoomIn(self):
         pass
 
-    def tableDoubleClicked(self):
-        pass 
+    def editorClosed(self):
+        pos = self.sourcewidget.mapTo(self, QPoint(0,0))
+        # correct end values in case of resizing the window
+        self.animx.setStartValue(pos.x())
+        self.animy.setStartValue(pos.y())
+        self.animw.setStartValue(self.sourcewidget.size().width())
+        self.animh.setStartValue(self.sourcewidget.size().height())
+        self.animationgroup.setDirection(QAbstractAnimation.Backward)
+        #self.animationgroup.finished()), this, SLOT(animationFineshedZoomIn()));
+        #connect(m_animationgroup, SIGNAL(finished()), this, SLOT(animationFineshedZoomOut()));
+        self.animationgroup.start()
+
+        item = self.list.item(self.row, 1)
+        item.setData(Qt.UserRole, self.editor.slide)
+        item.setText(self.editor.slide.title)
+        if self.editor.changed:
+            self.contentChanged()
+
+    def animationFineshedZoomOut(self):
+        #delete m_animationgroup
+        #delete m_editor
+        #self.editor = None
+        pass
+
+    def deleteSlide(self, slide):
+        for row in range(self.list.rowCount()):
+            item = self.list.item(row, 1)
+            m = item.data(Qt.UserRole)
+            if m == slide:
+                self.list.removeRow(row)
+                self.contentChanged()
+                break
+
+    def editSlide(self, slide):
+        for row in range(self.list.rowCount()):
+            item = self.list.item(row, 1)
+            m = item.data(Qt.UserRole)
+            if m == slide:
+                self.list.selectRow(row)
+                self.tableDoubleClicked(row)
+                break
 
 
 class Slide(Item):
@@ -127,6 +245,7 @@ class Slide(Item):
         super().__init__(parent)
         self.tag_name = "Slide"
         self._src = ""
+        self._title = ""
 
     @pyqtProperty('QString')
     def src(self):
@@ -135,6 +254,14 @@ class Slide(Item):
     @src.setter
     def src(self, src):
         self._src = src
+
+    @pyqtProperty('QString')
+    def title(self):
+        return self._title
+    
+    @title.setter
+    def title(self, title):
+        self._title = title
 
     def getHtml(self):
         return ""
@@ -261,3 +388,80 @@ class Carousel(Item):
         html += "</a>\n"
         html += "</div>\n"
         return html
+
+
+class SlideEditor(AnimateableEditor):
+
+    def __init__(self):
+        super().__init__()
+        self.changed = False
+        self.setAutoFillBackground(True)
+
+        grid = QGridLayout()
+
+        seek = QPushButton("...")
+        seek.setMaximumWidth(50)
+        self.adminlabel = QLineEdit()
+        self.adminlabel.setMaximumWidth(200)
+        titleLabel = QLabel("Slide")
+        fnt = titleLabel.font()
+        fnt.setPointSize(16)
+        fnt.setBold(True)
+        titleLabel.setFont(fnt)
+        self.source = QLineEdit()
+        self.image = ImageSelector()
+        self.image.setImage(QImage(":/images/image_placeholder.png"))
+
+        close = FlatButton(":/images/close_normal.png", ":/images/close_hover.png")
+        close.setToolTip("Close Editor")
+
+        font = QFont()
+        font.setFamily("Courier")
+        font.setFixedPitch(True)
+        font.setPointSize(13)
+        self.innerHtml = QTextEdit()
+        self.innerHtml.setMaximumHeight(120)
+        self.innerHtml.setFont(font)
+        self.innerHtml.setAcceptRichText(False)
+        self.innerHtml.setLineWrapMode(QTextEdit.NoWrap)
+        metrics = QFontMetrics(font)
+        self.innerHtml.setTabStopWidth(4 * metrics.width(' '))
+        XmlHighlighter(self.innerHtml.document())
+
+        grid.addWidget(titleLabel, 0, 0)
+        grid.addWidget(close, 0, 2, 1, 1, Qt.AlignRight)
+        grid.addWidget(QLabel("Path"), 1, 0)
+        grid.addWidget(self.source, 2, 0, 1, 2)
+        grid.addWidget(seek, 2, 2)
+        grid.addWidget(self.image, 3, 0, 1, 2)
+        grid.setRowStretch(3, 1)
+        grid.addWidget(QLabel("Inner HTML"), 4, 0)
+        grid.addWidget(self.innerHtml, 5, 0, 1, 3)
+        grid.addWidget(QLabel("Admin Label"), 6, 0)
+        grid.addWidget(self.adminlabel, 7, 0)
+        self.setLayout(grid)
+
+        close.clicked.connect(self.closeEditor)
+        #connect(self.image, SIGNAL(clicked()), this, SLOT(seek()))
+        #connect(seek, SIGNAL(clicked(bool)), this, SLOT(seek()))
+        #connect(self.source, SIGNAL(textChanged(QString)), this, SLOT(contentChanged()))
+        #connect(self.adminlabel, SIGNAL(textChanged(QString)), this, SLOT(contentChanged()))
+        #connect(self.innerHtml, SIGNAL(textChanged()), this, SLOT(contentChanged()))
+
+    def setSlide(self, slide):
+        self.slide = slide
+        self.source.setText(slide.src)
+        if slide.src:
+            self.image.setImage(QImage(slide.src))
+        else:
+            self.image.setImage(QImage(":/images/image_placeholder.png"))
+        self.innerHtml.setPlainText(slide._text)
+        self.adminlabel.setText(slide._adminlabel)
+        self.changed = False
+
+    def closeEditor(self):
+        if self.changed:
+            self.slide.setSource(self.source.text())
+            self.slide.setInnerHtml(self.innerHtml.toPlainText())
+            self.slide.setAdminLabel(self.adminlabel.text())
+        self.closes.emit()

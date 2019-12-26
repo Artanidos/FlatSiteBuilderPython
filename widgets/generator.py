@@ -177,7 +177,7 @@ class Generator:
         if content.content_type == ContentType.POST:
             cm["excerpt"] = content.excerpt
         cm["author"] = content.author
-        cm["date"] = content.date
+        cm["date"] = content.date.toString("dd.MM.yyyy")
         cm["layout"] = content.layout
         cm["menu"] = content.menu
         cm["source"] = content.source

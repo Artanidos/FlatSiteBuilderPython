@@ -1,4 +1,6 @@
 build install package
 DefaultThemeEditor load / save
 RevolutionSlider Editor
+Carousel Editor not ready yet
 Wysiwyg editor for HTML
+Menu Editor not ready yet
