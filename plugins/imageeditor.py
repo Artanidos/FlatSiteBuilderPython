@@ -273,7 +273,7 @@ class ImageEditor(ElementEditorInterface):
         shutil.copy(fileName, path)
 
         # also copy file to deploy dir for previews
-        dpath = os.path.join(self.site.deploy_path, "docs", "assets", "images", name)
+        dpath = os.path.join(self.site.source_path, "docs", "assets", "images", name)
         shutil.copy(fileName, dpath)
 
         self.image.setImage(QImage(path))

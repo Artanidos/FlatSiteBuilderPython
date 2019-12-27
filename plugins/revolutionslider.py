@@ -278,7 +278,6 @@ class Slide(Item):
         super().__init__(parent)
         self.tag_name = "Slide"
         self._src = ""
-        self._title = ""
 
     @pyqtProperty('QString')
     def src(self):
@@ -290,22 +289,23 @@ class Slide(Item):
 
     @pyqtProperty('QString')
     def title(self):
-        return self._title
-    
-    @title.setter
-    def title(self, title):
-        self._title = title
+        if self.adminlabel:
+            return self._adminlabel
+        else:
+            return "New Slide"
 
     def getHtml(self):
         return ""
     
     def save(self, f, indent):
         f.write("\n")
-        f.write(" " * indent + "Slide {\n")
+        f.write(" " * indent + self.tag_name + " {\n")
         self.writeAttribute(f, indent + 4, "id", self._id)
         self.writeAttribute(f, indent + 4, "src", self._src)
         self.writeAttribute(f, indent + 4, "text", self._text)
+        self.writeAttribute(f, indent + 4, "adminlabel", self._adminlabel)
         f.write(" " * indent + "}\n")
+
 
 class RevolutionSlider(Item):
     Q_CLASSINFO('DefaultProperty', 'items')
@@ -476,7 +476,7 @@ class SlideEditor(AnimateableEditor):
         if self.changed:
             self.slide.src = self.source.text()
             self.slide._text = html.escape(self.innerHtml.toPlainText())
-            self.slide._adminLabel = self.adminlabel.text()
+            self.slide._adminlabel = self.adminlabel.text()
         self.closes.emit()
 
     def seek(self):

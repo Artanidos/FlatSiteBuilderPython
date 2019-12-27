@@ -65,7 +65,10 @@ class Generator:
             cm["source"] = content.source
             cm["title"] = content.title
             cm["url"] = content.url
-            cm["logo"] = content.logo
+            if content.logo:
+                cm["logo"] = content.logo
+            else:
+                cm["logo"] = site.logo
             cm["keywords"] = content.keywords
             cm["script"] = content.script
 
@@ -84,7 +87,10 @@ class Generator:
             cm["source"] = content.source
             cm["title"] = content.title
             cm["url"] = content.url
-            cm["logo"] = content.logo
+            if content.logo:
+                cm["logo"] = content.logo
+            else:
+                cm["logo"] = site.logo
             cm["keywords"] = content.keywords
             cm["script"] = content.script
 
@@ -127,7 +133,10 @@ class Generator:
         sitevars["source"] = site.source_path
         sitevars["keywords"] = site.keywords
         sitevars["author"] = site.author
-        sitevars["logo"] = site.logo
+        if site.logo:
+            sitevars["logo"] = site.logo
+        else:
+            sitevars["logo"] = "logo.png"
         sitevars["pages"] = pages
         sitevars["posts"] = posts
 
@@ -183,7 +192,10 @@ class Generator:
         cm["source"] = content.source
         cm["title"] = content.title
         cm["url"] = content.url
-        cm["logo"] = content.logo
+        if content.logo:
+            cm["logo"] = content.logo
+        else:
+            cm["logo"] = site.logo
         cm["keywords"] = content.keywords
         cm["script"] = html.unescape(content.script)
         cm["menuitems"] = menus[content.menu]
