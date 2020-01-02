@@ -4,6 +4,7 @@ pyrcc5 plugins/carousel.qrc -o plugins/carousel_rc.py
 pyrcc5 plugins/imageeditor.qrc -o plugins/imageeditor_rc.py
 pyrcc5 plugins/revolution.qrc -o plugins/revolution_rc.py
 pyrcc5 plugins/texteditor.qrc -o plugins/texteditor_rc.py
+pyrcc5 plugins/github.qrc -o plugins/github_rc.py
 
 rm -r dist/*
 rm -r packages/com.vendor.product/data/*
@@ -16,5 +17,5 @@ cp -r dist/main/* packages/com.vendor.product/data
 cp plugins/*.py packages/com.vendor.product/data/plugins
 cp -r themes/* packages/com.vendor.product/data/themes
 mv packages/com.vendor.product/data/main packages/com.vendor.product/data/FlatSiteBuilder
-/home/art/Qt/Tools/QtInstallerFramework/3.1/bin/binarycreator -f -c config/config.xml -p packages FlatSiteBuilder-Linux-2.1.0.Setup
+/home/art/Qt/Tools/QtInstallerFramework/3.1/bin/binarycreator -f -c config/config.xml -p packages FlatSiteBuilder-Linux-2.1.2.Setup
 

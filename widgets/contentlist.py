@@ -106,6 +106,8 @@ class ContentList(QWidget):
                     itemToEdit = self.list.item(row, 1)
         else:
             self.site.loadPosts()
+            # todo, do sort here
+            self.site.posts.sort(key=self.sortPost, reverse=True)
             for i in range(0, len(self.site.posts)):
                 content = self.site.posts[i]
                 self.addListItem(content)
@@ -116,6 +118,9 @@ class ContentList(QWidget):
             self.addedContentName = ""
             self.list.selectRow(row)
             self.editContent.emit(itemToEdit)
+
+    def sortPost(self, a):
+        return a.date
 
     def addListItem(self, content):
         rows = self.list.rowCount()

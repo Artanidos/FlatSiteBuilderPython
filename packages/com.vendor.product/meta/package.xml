@@ -3,6 +3,6 @@
       <DisplayName>FlatSiteBuilder</DisplayName>
       <Description>Install this application.</Description>
       <Version>0.1.0-1</Version>
-      <ReleaseDate>2019-12-02</ReleaseDate>
+      <ReleaseDate>2020-01-02</ReleaseDate>
       <Default>true</Default>
   </Package>

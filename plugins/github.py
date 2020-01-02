@@ -20,6 +20,7 @@
 
 from PyQt5.QtWidgets import QApplication, QWidget, QTextBrowser, QGridLayout, QPushButton, QLabel, QLineEdit
 from PyQt5 import QtCore
+from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import Qt, QFile, QCoreApplication, QSettings
 from widgets.interfaces import PublisherInterface
 from dulwich.repo import Repo
@@ -27,6 +28,7 @@ from dulwich.objects import Commit
 from dulwich import porcelain
 import shutil
 import os
+import plugins.github_rc
 
 class GithubPublisher(PublisherInterface):
     def __init__(self):
@@ -43,17 +45,20 @@ class GithubPublisher(PublisherInterface):
         self.html = ""
         self.browser = QTextBrowser()
         self.browser.setHtml(self.html)
+        self.image = QLabel()
+        self.image.setPixmap(QPixmap.fromImage(QImage(":/github.png")))
         layout = QGridLayout()
-        layout.addWidget(caption, 0, 0)
-        layout.addWidget(QLabel("Organisation"), 1, 0)
-        layout.addWidget(self.username, 1, 1)
-        layout.addWidget(QLabel("Repository"), 2, 0)
-        layout.addWidget(self.reponame, 2, 1)
-        layout.addWidget(QLabel("User Id"), 3, 0)
-        layout.addWidget(self.userid, 3, 1)
-        layout.addWidget(QLabel("Password"), 4, 0)
-        layout.addWidget(self.password, 4, 1)
-        layout.addWidget(self.browser, 5, 0, 1, 2)
+        layout.addWidget(self.image, 0, 0, 1, 2)
+        layout.addWidget(caption, 1, 0)
+        layout.addWidget(QLabel("Organisation"), 2, 0)
+        layout.addWidget(self.username, 2, 1)
+        layout.addWidget(QLabel("Repository"), 3, 0)
+        layout.addWidget(self.reponame, 3, 1)
+        layout.addWidget(QLabel("User Id"), 4, 0)
+        layout.addWidget(self.userid, 4, 1)
+        layout.addWidget(QLabel("Password"), 5, 0)
+        layout.addWidget(self.password, 5, 1)
+        layout.addWidget(self.browser, 6, 0, 1, 2)
         layout.addWidget(publish)
         self.setLayout(layout)
         self.site_path = ""
