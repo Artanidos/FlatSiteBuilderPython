@@ -54,7 +54,7 @@ class TextEditor(ElementEditorInterface):
         font = QFont()
         font.setFamily("Courier")
         font.setFixedPitch(True)
-        font.setPointSize(12)
+        font.setPointSize(15)
 
         grid = QGridLayout()
 
