@@ -465,7 +465,7 @@ class ContentEditor(AnimateableEditor):
         if isinstance(self.editor, RowPropertyEditor):
             del self.editor
         elif isinstance(self.editor, SectionPropertyEditor):
-            self.editor.close.disconnect(self.sectionEditorClose)
+            #self.editor.close.disconnect(self.sectionEditorClose)
             del self.editor
         self.editor = None
 

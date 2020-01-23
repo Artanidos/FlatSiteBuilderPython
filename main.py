@@ -40,7 +40,7 @@ import main_rc
 
 if __name__ == "__main__":
     QCoreApplication.setApplicationName("FlatSiteBuilder")
-    QCoreApplication.setApplicationVersion("2.1.2")
+    QCoreApplication.setApplicationVersion("2.1.3")
     QCoreApplication.setOrganizationName("Artanidos")
 
     app = QApplication(sys.argv)
