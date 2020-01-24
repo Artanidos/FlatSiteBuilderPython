@@ -96,7 +96,10 @@ class TextEditor(ElementEditorInterface):
         self.html.setPlainText(html.unescape(text))
 
     def getText(self):
-        return html.escape(self.html.toPlainText())
+            return html.escape(self.html.toPlainText())
+
+    def getUnescapedText(self):
+            return self.html.toPlainText()
 
     def setContent(self, content):
         self.content = content

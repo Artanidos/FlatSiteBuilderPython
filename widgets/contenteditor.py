@@ -173,7 +173,8 @@ class ContentEditor(AnimateableEditor):
 
     def scriptEditorClose(self):
         if self.editor and self.editor.changed:
-            self.content.script = self.editor.getText()
+            self.content.script = self.editor.getUnescapedText()
+            print(self.content.script)
             self.editChanged("Update Script")
             self.editor.close.disconnect()
         self.editorClosed()

@@ -4,9 +4,8 @@ Site {
    title: 'Test'
    theme: 'default'
    description: 'bb'
-   copyright: 'bb'
+   copyright: '(C) 2020 Me'
    keywords: ''
    author: ''
    logo: ''
-   publisher: ''
 }

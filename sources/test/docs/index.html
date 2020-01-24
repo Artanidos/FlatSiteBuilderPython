@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Test : bb">
+  <title>Test</title>
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/css/bootstrap-theme.min.css" rel="stylesheet">
+  <link href="assets/css/font-awesome.min.css" rel="stylesheet"> 
+  <link href="assets/css/theme.css" rel="stylesheet">
+  
+</head>
+
+  <body>
+    <!-- Fixed navbar -->
+ <nav class="navbar navbar-inverse navbar-fixed-top">
+   <div class="container">
+     <div class="navbar-header">
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+		 <span class="icon-bar"></span>
+		 <span class="icon-bar"></span>
+		 <span class="icon-bar"></span>
+		</button>
+	   <a class="navbar-brand" href="index.html">Test</a>
+	 </div>
+	 <div class="navbar-collapse collapse" id="navbar-main">
+	   <ul class="nav navbar-nav">
+		
+		
+		<li class="active">
+		       <a href="index.html">
+			       Index
+			   </a>
+		</li>
+		
+		
+		</ul>
+	 </div>
+   </div>
+ </nav>
+
+	  <section class="container">
+<div class="row">
+<div class="col-md-12">
+test
+</div>
+</div>
+</section>
+    <hr>
+<footer class="footer">
+  <div class="container">
+  <p class="copyright">(C) 2020 Me</p>
+  
+  </div>
+</footer>
+
+    <script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="http://sdks.shopifycdn.com/js-buy-sdk/v1/latest/index.umd.min.js"></script>	
+
+<script type="module">
+// https://shopify.github.io/js-buy-sdk/#installation
+
+const client = window.ShopifyBuy.buildClient({
+  domain: 'crowdwaredev.myshopify.com',
+  storefrontAccessToken: '01fd412bcadac7389f7af39e30e56091'
+});
+
+client.product.fetchAll().then((products) => {
+ 
+  console.log(products);
+});
+
+alert('Hello you');
+
+
+</script>
+  </body>
+</html>
+

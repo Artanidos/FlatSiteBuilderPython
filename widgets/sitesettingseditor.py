@@ -36,6 +36,7 @@ class SiteSettingsEditor(UndoableEditor):
         self.site = site
         self.title = QLineEdit()
         self.titleLabel.setText("Site Settings")
+        print(site)
         self.filename = site.source_path + "/" + site.filename
         self.description = QLineEdit()
         self.copyright = QLineEdit()
