@@ -12,11 +12,14 @@ const client = window.ShopifyBuy.buildClient({
 });
 
 client.product.fetchAll().then((products) => {
- 
-  console.log(products);
+	var i;
+	for (i=0; i < products.length; i++) {
+  		alert(products[i].title);
+		console.log(products[i]);
+	}
 });
 
-alert('Hello you');
+
 
 "
     layout: "default"
