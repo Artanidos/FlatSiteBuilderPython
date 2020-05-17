@@ -118,7 +118,10 @@ class Generator:
                     subitems.append(submenuitem)
 
                 menuitem["items"] = subitems
-                menuitem["hasItems"] = len(subitems) > 0
+                if len(subitems) > 0:
+                    menuitem["hasItems"] = "true"
+                else:
+                    menuitem["hasItems"] = "false"
                 items.append(menuitem)
 
             menus[menu.name] = items
