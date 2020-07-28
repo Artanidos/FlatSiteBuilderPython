@@ -43,8 +43,7 @@ The syntax for the templates is based on [Django](https://www.djangoproject.com/
 If you have any feature requests then just send me an email with your ideas to artanidos@gmail.com
 
 ## Donations
-If you like to support my work on the FlatSiteBuilder you are invited to become a patron.
-[Become a patron](https://www.patreon.com/artananda) 
+If you like to support my work on the FlatSiteBuilder you are invited to [become a patron](https://www.patreon.com/artananda). 
 
 
 
