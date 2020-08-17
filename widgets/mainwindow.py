@@ -56,7 +56,7 @@ class MainWindow(QMainWindow):
 
         # switch to install path in dev machine
         if "SourceCode" in self.install_directory:
-            self.install_directory = "/home/art/FlatSiteBuilder"
+            self.install_directory = "/media/art/data/SourceCode/FlatSiteBuilderPython"
         self.content_after_animation = ""
         self.default_path = ""
         self.method_after_animation = ""
