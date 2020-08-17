@@ -40,7 +40,7 @@ import main_rc
 
 if __name__ == "__main__":
     QCoreApplication.setApplicationName("FlatSiteBuilder")
-    QCoreApplication.setApplicationVersion("2.1.2")
+    QCoreApplication.setApplicationVersion("2.1.3")
     QCoreApplication.setOrganizationName("Artanidos")
 
     app = QApplication(sys.argv)
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     qmlRegisterType(Row, 'FlatSiteBuilder', 2, 0, 'Row')
     qmlRegisterType(Column, 'FlatSiteBuilder', 2, 0, 'Column')
 
-    font = QFont("Sans Serif", 10)
+    font = QFont("Sans Serif", 15)
     app.setFont(font)
 
     p = app.palette()

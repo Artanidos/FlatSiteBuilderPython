@@ -56,7 +56,14 @@ class MainWindow(QMainWindow):
 
         # switch to install path in dev machine
         if "SourceCode" in self.install_directory:
+<<<<<<< HEAD
             self.install_directory = "/media/art/data/SourceCode/FlatSiteBuilderPython"
+=======
+            if os.name == "posix":
+                self.install_directory = "/Users/user/SourceCode/FlatSiteBuilderPython"
+            else:
+                self.install_directory = "/home/art/FlatSiteBuilder"
+>>>>>>> fa737617f575e3e397874edc04ceef3802d56709
         self.content_after_animation = ""
         self.default_path = ""
         self.method_after_animation = ""
@@ -225,6 +232,7 @@ class MainWindow(QMainWindow):
         self.default_path = settings.value("lastSite")
 
     def reloadProject(self, filename):
+        sys.stdout.flush()
         engine = QQmlEngine()
         component = QQmlComponent(engine)
         component.loadUrl(QUrl(filename))

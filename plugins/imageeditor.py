@@ -270,7 +270,10 @@ class ImageEditor(ElementEditorInterface):
         name = os.path.basename(fileName).replace(" ", "_")
         path = os.path.join(self.site.source_path, "assets", "images", name)
         self.source.setText(os.path.basename(path))
-        shutil.copy(fileName, path)
+        try:
+            shutil.copy(fileName, path)
+        except shutil.SameFileError:
+            pass
 
         # also copy file to deploy dir for previews
         dpath = os.path.join(self.site.source_path, "docs", "assets", "images", name)

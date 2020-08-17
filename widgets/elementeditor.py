@@ -183,6 +183,7 @@ class ElementEditor(QWidget):
 
     def setContent(self, content):
         self.content = content
+        print(content)
         self.type = content.tag_name
         if content.adminlabel:
             self.text.setText(content.adminlabel)

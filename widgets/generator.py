@@ -204,7 +204,7 @@ class Generator:
         else:
             cm["logo"] = site.logo
         cm["keywords"] = content.keywords
-        cm["script"] = html.unescape(content.script)
+        cm["script"] = mark_safe(content.script)
         cm["menuitems"] = menus[content.menu]
 
         used_tag_list = []

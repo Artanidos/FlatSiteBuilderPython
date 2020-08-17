@@ -497,8 +497,10 @@ class SlideEditor(AnimateableEditor):
         name = info.fileName().replace(" ", "_")
         path = os.path.join(self.site.source_path, "assets", "images",  name)
         self.source.setText(path)
-        shutil.copy2(fileName, path)
-
+        try:
+            shutil.copy2(fileName, path)
+        except shutil.SameFileError:
+            pass # just ignore
         # also copy file to deploy dir for previews
         dpath = os.path.join(self.site.source_path, "docs", "assets", "images", name)
         shutil.copy2(fileName, dpath)

@@ -5,6 +5,7 @@ pyrcc5 plugins/imageeditor.qrc -o plugins/imageeditor_rc.py
 pyrcc5 plugins/revolution.qrc -o plugins/revolution_rc.py
 pyrcc5 plugins/texteditor.qrc -o plugins/texteditor_rc.py
 pyrcc5 plugins/github.qrc -o plugins/github_rc.py
+pyrcc5 plugins/shopify.qrc -o plugins/shopify_rc.py
 
 rm -r dist/*
 rm -r packages/com.vendor.product/data/*
