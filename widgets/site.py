@@ -45,6 +45,7 @@ class Site(QObject):
         self._theme = ""
         self._title = ""
         self._logo = ""
+        self._output = ""
         self.attributes = {}
         self.pages = []
         self.posts = []
@@ -57,6 +58,14 @@ class Site(QObject):
     @publisher.setter
     def publisher(self, publisher):
         self._publisher = publisher
+
+    @pyqtProperty('QString')
+    def output(self):
+        return self._output
+
+    @output.setter
+    def output(self, output):
+        self._output = output
 
     @pyqtProperty('QString')
     def copyright(self):
@@ -137,6 +146,7 @@ class Site(QObject):
             f.write("   author: '" + self.author + "'\n")
             f.write("   logo: '" + self.logo + "'\n")
             f.write("   publisher: '" + self.publisher + "'\n")
+            f.write("   output: '" + self.output + "'\n")
             f.write("}\n")
         if self.win:
             self.win.statusBar().showMessage("Site has been saved")

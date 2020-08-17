@@ -34,6 +34,7 @@ class Generator:
 
     def __init__(self):
         self.content = ""
+        self.output_dir = ""
 
     @staticmethod
     def themesPath():
@@ -41,7 +42,10 @@ class Generator:
 
     def generateSite(self, win, site, content_to_build = None):
         self.site = site
-        site_dir = os.path.join(site.source_path, "docs")
+        self.output_dir = site.output
+        if not self.output_dir:
+            self.output_dir = "docs"
+        site_dir = os.path.join(site.source_path, self.output_dir)
         if not content_to_build:
             # clear directory
             for r, dirs, files in os.walk(site_dir):
@@ -165,9 +169,9 @@ class Generator:
             copy_assets = True
 
         if not content_to_build or copy_assets:
-            self.copytree(os.path.join(Generator.install_directory, "themes", site.theme, "assets"), os.path.join(site.source_path, "docs", "assets"))
-            self.copytree(os.path.join(site.source_path, "assets"), os.path.join(site.source_path, "docs", "assets"))
-            self.copytree(os.path.join(site.source_path, "content"), os.path.join(site.source_path, "docs"))
+            self.copytree(os.path.join(Generator.install_directory, "themes", site.theme, "assets"), os.path.join(site.source_path, self.output_dir, "assets"))
+            self.copytree(os.path.join(site.source_path, "assets"), os.path.join(site.source_path, self.output_dir, "assets"))
+            self.copytree(os.path.join(site.source_path, "content"), os.path.join(site.source_path, self.output_dir))
 
             for page in site.pages:
                 self.generateContent(page, context, menus, site)
@@ -219,7 +223,7 @@ class Generator:
                 plugin = Plugins.element_plugins[name]
                 pluginvars["styles"] = pluginvars["styles"] + plugin.pluginStyles()
                 pluginvars["scripts"] = pluginvars["scripts"] + plugin.pluginScripts()
-                plugin.installAssets(os.path.join(site.source_path, "docs", "assets"))
+                plugin.installAssets(os.path.join(site.source_path, self.output_dir, "assets"))
         
         pluginvars["styles"] = mark_safe(pluginvars["styles"])
         pluginvars["scripts"] = mark_safe(pluginvars["scripts"])
@@ -246,7 +250,7 @@ class Generator:
 
         context["content"] = mark_safe(xhtml)
 
-        outputfile = os.path.join(site.source_path, "docs", content.url)
+        outputfile = os.path.join(site.source_path, self.output_dir, content.url)
 
         try:
             with open(outputfile, 'w') as f:
