@@ -82,3 +82,16 @@ class PublisherInterface(QWidget):
 
     def setSitePath(self, path):
         self._site_path = path
+
+
+class GeneratorInterface():
+    def __init__(self):
+        self.class_name = ""
+        self.display_name = ""
+        self.version = ""
+        self.normal_image = ""
+        self.hover_image = ""
+        self.pressed_image = ""
+
+    def clicked(self):
+        pass

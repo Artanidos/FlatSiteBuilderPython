@@ -18,6 +18,8 @@
 #
 #############################################################################
 
+import sys
+import os
 
 class Plugins:
     actual_theme_editor_plugin = None
@@ -25,6 +27,7 @@ class Plugins:
     theme_plugins = {}
     publish_plugins = {}
     element_plugins = {}
+    generator_plugins = {}
 
     def __init__(self):
         pass
@@ -46,6 +49,10 @@ class Plugins:
         return Plugins.element_plugins.keys()
 
     @staticmethod
+    def generatorPluginNames():
+        return Plugins.generator_plugins.keys()
+
+    @staticmethod
     def setActualPublishPlugin(ap):
         Plugins.actual_publish_plugin = ap
 
@@ -60,6 +67,10 @@ class Plugins:
     @staticmethod
     def addPublishPlugin(name, plugin):
         Plugins.publish_plugins[name] = plugin
+
+    @staticmethod
+    def addGeneratorPlugin(name, plugin):
+        Plugins.generator_plugins[name] = plugin
 
     @staticmethod
     def getElementPluginByTagname(tag):
@@ -84,3 +95,15 @@ class Plugins:
     @staticmethod
     def getThemePlugin(name):
         return Plugins.theme_plugins[name]
+
+    @staticmethod
+    def getGeneratorPlugin(name):
+        return Plugins.generator_plugins[name]
+
+    @staticmethod
+    def getBundleDir():
+        if getattr(sys, "frozen", False):
+            bundle_dir = sys._MEIPASS
+        else:
+            bundle_dir = os.getcwd()
+        return bundle_dir

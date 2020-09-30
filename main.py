@@ -40,8 +40,8 @@ import main_rc
 
 if __name__ == "__main__":
     QCoreApplication.setApplicationName("FlatSiteBuilder")
-    QCoreApplication.setApplicationVersion("2.1.4")
-    QCoreApplication.setOrganizationName("Artanidos")
+    QCoreApplication.setApplicationVersion("2.1.5")
+    QCoreApplication.setOrganizationName("CrowdWare")
 
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create("Fusion"))

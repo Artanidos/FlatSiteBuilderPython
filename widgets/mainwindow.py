@@ -37,7 +37,7 @@ from widgets.plugins import Plugins
 from widgets.sitewizard import SiteWizard
 from widgets.contenteditor import ContentEditor
 from widgets.themechooser import ThemeChooser
-from widgets.interfaces import ElementEditorInterface, ThemeEditorInterface, PublisherInterface
+from widgets.interfaces import ElementEditorInterface, ThemeEditorInterface, PublisherInterface, GeneratorInterface
 from widgets.sitesettingseditor import SiteSettingsEditor
 from PyQt5.QtWidgets import QMessageBox, QVBoxLayout, QMainWindow, QWidget, QScrollArea, QDockWidget, QUndoStack, QApplication
 from PyQt5.QtCore import pyqtSignal, Qt, QUrl, QRect, QCoreApplication, QDir, QSettings, QByteArray, QEvent, QPoint, QAbstractAnimation, QPropertyAnimation
@@ -190,6 +190,7 @@ class MainWindow(QMainWindow):
         db.publishSite.connect(self.publishSite)
         db.createSite.connect(self.createSite)
         db.buildSite.connect(self.buildSite)
+
         self.siteLoaded.connect(db.siteLoaded)
         self.setCentralWidget(db)
 
@@ -531,7 +532,7 @@ class MainWindow(QMainWindow):
                         print("copy", file)
                     break # do not copy __pycache__
         else:
-            bundle_dir = os.getcwd() # os.path.dirname(os.path.abspath(__file__))
+            bundle_dir = os.getcwd()
         
         plugins_dir = os.path.join(bundle_dir, "plugins")
         for root, dirs, files in os.walk(plugins_dir):
@@ -549,4 +550,6 @@ class MainWindow(QMainWindow):
                                 Plugins.addThemePlugin(name, instance)
                             elif isinstance(instance, PublisherInterface):
                                 Plugins.addPublishPlugin(name, instance)
+                            elif isinstance(instance, GeneratorInterface):
+                                Plugins.addGeneratorPlugin(name, instance)
             break # not to list __pycache__

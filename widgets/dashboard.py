@@ -19,12 +19,14 @@
 #############################################################################
 
 import os
+import sys
 from widgets.flatbutton import FlatButton
 from widgets.generator import Generator
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QTextBrowser, QFileDialog
 from PyQt5.QtGui import QFont, QDesktopServices
 from PyQt5.QtCore import QUrl, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
+from widgets.plugins import Plugins
 import resources
 
 class Dashboard(QWidget):
@@ -91,6 +93,17 @@ class Dashboard(QWidget):
         layout.addWidget(space2, 4, 0)
         layout.addWidget(self.preview_button, 5, 0, 1, 1, Qt.AlignCenter)
         layout.addWidget(self.build_button, 5, 1, 1, 1, Qt.AlignCenter)
+
+        #load generator plugins here
+        
+        for plugin_name in Plugins.generatorPluginNames():
+            
+            p = Plugins.getGeneratorPlugin(plugin_name)
+            button = FlatButton(os.path.join(Plugins.getBundleDir(), "plugins",p.normal_image), os.path.join(Plugins.getBundleDir(), "plugins",p.hover_image), os.path.join(Plugins.getBundleDir(), "plugins",p.pressed_image))
+            button.setToolTip("Build the website")
+            button.clicked.connect(p.clicked)
+            layout.addWidget(button, 5, 2, 1, 1, Qt.AlignCenter)
+
         vbox.addLayout(layout)
         vbox.addSpacing(40)
         vbox.addWidget(self.browser)
