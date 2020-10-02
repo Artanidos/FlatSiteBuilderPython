@@ -51,7 +51,7 @@ class SiteWizard(QWizard):
         description = self.field("description")
         copyright = self.field("copyright")
         theme = self.field("theme")
-        template = self.field("template")
+
         path = os.path.join(self.install_directory, "sources", siteName.lower())
         os.mkdir(path)
         os.mkdir(os.path.join(path, "pages"))
@@ -66,18 +66,14 @@ class SiteWizard(QWizard):
         os.mkdir(os.path.join(path, "assets", "images"))
 
 
-        if template == "Default":
-            self.createDefault(siteName, description, copyright, theme, path)
-        elif template == "Association":
-            self.createAssociation(siteName, description, copyright, theme, path)    
+        self.createSite(siteName, description, copyright, theme, path)
         
         super().accept()
 
         self.loadSite.emit(path + "/Site.qml")
         self.buildSite.emit()
 
-    def createDefault(self, siteName, description, copyright, theme, path):
-        print("Path", path)
+    def createSite(self, siteName, description, copyright, theme, path):
         site = Site()
         site.theme = theme
         site.title = siteName
@@ -107,44 +103,8 @@ class SiteWizard(QWizard):
         row = Row()
         column = Column()
         column.span = 12
-        row.addColumn(column)
-        section._items.append(row)
-        content._items.append(section)
-        content.save(os.path.join(path, "pages", "index.qml"))
-
-    def createAssociation(self, siteName, description, copyright, theme, path):
-        site = Site()
-        site.theme = theme
-        site.title = siteName
-        if description:
-            site.description = description
-        if copyright:
-            site.copyright = copyright
-        site.source_path = path
-        site.save()
-
-        menu = Menu()
-        menu.name = "default"
-        item = Menuitem()
-        item.title = "Index"
-        item.url = "index.html"
-        menu.addMenuItem(item)
-        site.addMenu(menu)
-        site.saveMenus()
-        
-        content = Content()
-        content.title = "Index"
-        content.menu = "default"
-        content.author = "admin"
-        content.layout = "default"
-        content.date = datetime.datetime.now().strftime("%Y-%m-%d")
-        section = Section()
-        row = Row()
-        column = Column()
-        column.span = 12
-        # To be continued
         text = Text()
-        text.text = "<h1>Willkommen</h1>\n<p>Todo...</p>"
+        text.text = "<h1>Welcome</h1>\n<p>Todo...</p>"
         column.addItem(text)
         row.addColumn(column)
         section._items.append(row)
@@ -202,17 +162,10 @@ class SiteInfoPage(QWizardPage):
         for theme in themesDir.entryList(QDir.NoDotAndDotDot | QDir.Dirs):
             self.theme.addItem(theme)
 
-        self.templateLabel = QLabel("&Template")
-        self.template = QComboBox()
-        self.templateLabel.setBuddy(self.template)
-        self.template.addItem("Default")
-        self.template.addItem("Association")
-
         self.registerField("siteName*", self.siteNameLineEdit)
         self.registerField("description", self.descriptionLineEdit)
         self.registerField("copyright", self.copyrightLineEdit)
         self.registerField("theme", self.theme, "currentText")
-        self.registerField("template", self.template, "currentText")
 
         self.warning = QLabel("")
         self.warning.setStyleSheet("QLabel  color : orange ")
@@ -226,9 +179,7 @@ class SiteInfoPage(QWizardPage):
         layout.addWidget(self.copyrightLineEdit, 2, 1)
         layout.addWidget(self.themeLabel, 3, 0)
         layout.addWidget(self.theme, 3, 1)
-        layout.addWidget(self.templateLabel, 4, 0)
-        layout.addWidget(self.template, 4, 1)
-        layout.addWidget(self.warning, 5, 0, 1, 2)
+        layout.addWidget(self.warning, 4, 0, 1, 2)
         self.setLayout(layout)
         self.siteNameLineEdit.textChanged.connect(self.siteNameChanged)
 
