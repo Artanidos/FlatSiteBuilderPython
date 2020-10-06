@@ -2,7 +2,7 @@
 
 # Resource object code
 #
-# Created by: The Resource Compiler for PyQt5 (Qt v5.13.2)
+# Created by: The Resource Compiler for PyQt5 (Qt v5.15.1)
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -84,7 +84,7 @@ qt_resource_struct_v2 = b"\
 \x00\x00\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x01\
 \x00\x00\x00\x00\x00\x00\x00\x00\
 \x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\
-\x00\x00\x01\x6f\x23\x89\x60\x87\
+\x00\x00\x01\x74\xfc\x51\xb7\x86\
 "
 
 qt_version = [int(v) for v in QtCore.qVersion().split('.')]

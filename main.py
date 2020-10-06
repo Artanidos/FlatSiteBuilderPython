@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-
 #############################################################################
-# Copyright (C) 2019 Olaf Japp
+# Copyright (C) 2020 Olaf Japp
 #
 # This file is part of FlatSiteBuilder.
 #
@@ -56,7 +54,7 @@ if __name__ == "__main__":
     qmlRegisterType(Row, 'FlatSiteBuilder', 2, 0, 'Row')
     qmlRegisterType(Column, 'FlatSiteBuilder', 2, 0, 'Column')
 
-    font = QFont("Sans Serif", 11) #15 on mac
+    font = QFont("Sans Serif", 15) #15 on mac, 11 on Linux
     app.setFont(font)
 
     p = app.palette()

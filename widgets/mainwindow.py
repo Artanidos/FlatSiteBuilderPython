@@ -1,5 +1,5 @@
 #############################################################################
-# Copyright (C) 2019 Olaf Japp
+# Copyright (C) 2020 Olaf Japp
 #
 # This file is part of FlatSiteBuilder.
 #
@@ -53,10 +53,6 @@ class MainWindow(QMainWindow):
         self.site = None
         self.editor = ""
         self.install_directory = os.getcwd()
-
-        # switch to install path in dev machine
-        if "SourceCode" in self.install_directory:
-            self.install_directory = "/media/art/data/SourceCode/FlatSiteBuilderPython"
         self.content_after_animation = ""
         self.default_path = ""
         self.method_after_animation = ""

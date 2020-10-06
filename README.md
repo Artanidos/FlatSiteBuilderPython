@@ -7,6 +7,15 @@ Have a look at our web site: https://artanidos.github.io/FlatSiteBuilder
 
 ![](flatsitebuilder.png)
 
+## Prerequisits
+In order to work with FlatSiteBuilder you have to install the following packages.  
+```console
+pip3 install --user PyQt5
+pip3 install --user PyQtWebEngine
+pip3 install --user django
+pip3 install --user dulwich
+```
+
 # Atropos Theme
 The atropos theme which is included in this package is only for demonstration.
 I only have **one** license for this.
@@ -40,7 +49,7 @@ The syntax for the templates is based on [Django](https://www.djangoproject.com/
 ```
 
 ## Contact
-If you have any feature requests then just send me an email with your ideas to artanidos@gmail.com
+If you have any feature requests then just send me an email with your ideas to artanidos@crowdware.at
 
 ## Donations
 If you like to support my work on the FlatSiteBuilder you are invited to [become a patron](https://www.patreon.com/artananda). 
