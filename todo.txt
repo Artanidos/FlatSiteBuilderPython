@@ -7,8 +7,4 @@ Menu Editor not ready yet
 Image Editor does not show the right image when starting and also not after seeking
 Blog.html is not regeneratet every time
 Logo for page and post editable
-<<<<<<< HEAD
-output dir should be editable in settings editor
-=======
 RevolutionSlider fullwidth att editable
->>>>>>> fa737617f575e3e397874edc04ceef3802d56709
